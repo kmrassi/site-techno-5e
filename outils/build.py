@@ -20,6 +20,8 @@ BACK = ('<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-i
         'font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">'
         '← Retour au site</a>')
 
+GC = '<script data-goatcounter="https://mrassi-techno5e.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>\n'
+
 def write_activity(rel, html, title):
     if "<html" not in html[:400].lower():
         html = ('<!DOCTYPE html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n'
@@ -27,9 +29,9 @@ def write_activity(rel, html, title):
                 f'<title>{title}</title>\n</head>\n<body>\n{html}\n</body>\n</html>\n')
     if "</body>" in html:
         k = html.rfind("</body>")
-        html = html[:k] + BACK + "\n" + html[k:]
+        html = html[:k] + BACK + "\n" + GC + html[k:]
     else:
-        html += BACK
+        html += BACK + GC
     p = os.path.join(OUT, rel)
     os.makedirs(os.path.dirname(p), exist_ok=True)
     open(p, "w", encoding="utf-8").write(html)

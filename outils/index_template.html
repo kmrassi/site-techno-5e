@@ -170,7 +170,7 @@ function seqView(s){
  <div class="pn">${prev?`<a href="#${prev.id}">← Séquence ${prev.n} — ${esc(prev.t)}</a>`:'<span></span>'}${next?`<a href="#${next.id}">Séquence ${next.n} — ${esc(next.t)} →</a>`:'<span></span>'}</div>`}
 
 function route(){const h=(location.hash||'#accueil').slice(1),[id,j]=h.split('-'),s=S.find(x=>x.id===id);
- $('#main').innerHTML=(s?seqView(s):home())+'<footer>Technologie 5e — M\'RASSI</footer>';
+ $('#main').innerHTML=(s?seqView(s):home())+'<footer>Technologie 5e — M\'RASSI<span id="gcv">'+(typeof GCV!=='undefined'&&GCV?' · 👀 '+GCV+' visites':'')+'</span></footer>';
  markNav();$('#side').classList.remove('open');
  const el=j!==undefined&&document.getElementById(h);if(el)el.scrollIntoView();else window.scrollTo(0,0)}
 
@@ -186,5 +186,7 @@ $('#menubtn').addEventListener('click',()=>$('#side').classList.toggle('open'));
 window.addEventListener('hashchange',route);
 buildNav();route();
 </script>
+<script>window.goatcounter={path:function(p){return location.pathname+(location.hash&&location.hash!=="#accueil"?location.hash:"")}};window.addEventListener("hashchange",function(){if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:location.pathname+location.hash})});var GCV="";fetch("https://mrassi-techno5e.goatcounter.com/counter/TOTAL.json").then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&j.count){GCV=j.count;var e=document.getElementById("gcv");if(e)e.textContent=" · 👀 "+GCV+" visites"}}).catch(function(){});</script>
+<script data-goatcounter="https://mrassi-techno5e.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
