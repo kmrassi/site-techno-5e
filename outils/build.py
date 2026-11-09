@@ -185,7 +185,8 @@ s3["seances"].append({"t": "Séances 0, 1 et 2 — Les procédés de fabrication
     doc(drives(19)[0], "Les procédés de fabrication", "Corrigé (PDF)", "CORRIGE"),
 ]})
 s3["seances"].append({"t": "Initiation à Onshape", "img": imgs(21),
-    "note": ["Crée ton compte Onshape avec ton adresse mail ert."], "items": [
+    "note": ["Crée ton compte Onshape avec ton adresse mail ert."],
+    "links": [["🧊 Aller sur Onshape (créer mon compte)", "https://www.onshape.com/fr/"]], "items": [
     doc(drives(21)[0], "Cours : la modélisation 3D avec Onshape", "Cours (PDF)", "DOC"),
     doc(drives(22)[0], "Tuto vidéo Onshape", "Vidéo", "VIDEO"),
     doc(drives(23)[0], "Simulation : la force et les matériaux", "Vidéo", "VIDEO"),
