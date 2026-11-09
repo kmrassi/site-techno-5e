@@ -145,7 +145,7 @@ s2 = {"id": "seq2", "n": "2", "t": "Le réseau informatique",
 p = drives(14)
 s2["seances"].append({"t": "Séance 1 — Découvrir le réseau", "img": imgs(14), "items": [
     doc(p[0], "Fiche de la séance 1", "Document (PDF)", "DOC"),
-    doc(p[1], "Le réseau du collège de Kervallon", "Fiche (PDF)", "DOC"),
+    doc(p[1], "Le réseau du collège PMF", "Fiche (PDF)", "DOC"),
     {"k": "VIDEO", "t": "Vidéo : comment fonctionne un réseau ?", "s": "Vidéo YouTube", "yt": "5AVY6E-7yCc"},
 ]})
 p = drives(15)
