@@ -150,7 +150,8 @@ s2["seances"].append({"t": "Séance 1 — Découvrir le réseau", "img": imgs(14
 ]})
 p = drives(15)
 s2["seances"].append({"t": "Séance 2 — Le réseau du collège", "img": imgs(15),
-    "note": ["Le logiciel Filius sert à simuler un réseau. Ton professeur te donne le lien pour l'installer à la maison."], "items": [
+    "note": ["Le logiciel Filius sert à simuler un réseau. Tu peux l'installer à la maison avec le lien ci-dessous."],
+    "links": [["💾 Télécharger Filius (site officiel)", "https://freischlad.name/Herunterladen"]], "items": [
     act("seq2/01_Seance2_Reseau_informatique_du_college.html", code(15), "Le réseau informatique du collège", "Activité interactive de la séance 2"),
     doc(p[0], "Fiche de la séance 2", "Document (PDF)", "DOC"),
     doc(p[1], "Le masque et l'adresse IP", "Fiche (PDF)", "DOC"),

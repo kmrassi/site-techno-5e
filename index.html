@@ -450,7 +450,13 @@ const S=[
 "https://lh3.googleusercontent.com/docsubipk/AP9E6xXNnFVLWlLUxliXVZopR7VyYpmOCFI5S94jQc_mAwm-lApiX_3omjHBR0MLnFYztq3eremwGFBr2hGsseU7kjklwAun4HvKkGrhXxqaD-lzO6cPELey9zYq2PlobQBL-ZV0UYOL-K0"
 ],
 "note": [
-"Le logiciel Filius sert à simuler un réseau. Ton professeur te donne le lien pour l'installer à la maison."
+"Le logiciel Filius sert à simuler un réseau. Tu peux l'installer à la maison avec le lien ci-dessous."
+],
+"links": [
+[
+"💾 Télécharger Filius (site officiel)",
+"https://freischlad.name/Herunterladen"
+]
 ],
 "items": [
 {
@@ -931,7 +937,7 @@ function seqView(s){
  <div class="box obj"><b>🎯 Ce que tu vas apprendre</b><ul>${s.o.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
  <h2>🗺️ Les séances</h2>
  ${s.seances.map((x,j)=>{const num=/^[^\wÀ-ÿ]/.test(x.t)?'':++n;return `<section class="seance" id="${s.id}-${j}"><h3>${num?`<span class="sn">${num}</span>`:''}${esc(x.t)}</h3>
-  ${x.note?`<div class="note">${x.note.map(t=>`<p>👉 ${esc(t)}</p>`).join('')}</div>`:''}
+  ${x.note||x.links?`<div class="note">${(x.note||[]).map(t=>`<p>👉 ${esc(t)}</p>`).join('')}${(x.links||[]).map(([l,u])=>`<p><a href="${u}" target="_blank" rel="noopener" style="font-weight:700;color:var(--vert)">${esc(l)} ↗</a></p>`).join('')}</div>`:''}
   ${x.img&&x.img.length?`<div class="pics">${x.img.map(u=>`<img src="${u}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`).join('')}</div>`:''}
   <div class="list">${x.items.map(card).join('')}</div></section>`}).join('')}
  <div class="pn">${prev?`<a href="#${prev.id}">← Séquence ${prev.n} — ${esc(prev.t)}</a>`:'<span></span>'}${next?`<a href="#${next.id}">Séquence ${next.n} — ${esc(next.t)} →</a>`:'<span></span>'}</div>`}
