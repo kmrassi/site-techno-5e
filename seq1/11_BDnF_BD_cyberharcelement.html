@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BDnF — Fabrique ta BD sur le cyberharcèlement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF4E3;
+    --paper-dark:#F2E7CB;
+    --ink:#20201D;
+    --red:#E1432A;
+    --red-dark:#B92E19;
+    --blue:#2A5C8A;
+    --blue-dark:#1B3E5E;
+    --yellow:#F4C542;
+    --green:#3C8C63;
+    --panel-shadow: 6px 6px 0 var(--ink);
+    --panel-shadow-sm: 4px 4px 0 var(--ink);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html{ scroll-behavior:smooth; }
+
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      radial-gradient(var(--paper-dark) 1.4px, transparent 1.4px);
+    background-size: 22px 22px;
+    color:var(--ink);
+    font-family:'Poppins', sans-serif;
+    line-height:1.55;
+    padding-bottom: 60px;
+  }
+
+  .wrap{
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 28px 20px 10px;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    background: var(--red);
+    border: 5px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: var(--panel-shadow);
+    padding: 34px 26px 30px;
+    margin-bottom: 34px;
+    overflow:hidden;
+    transform: rotate(-0.4deg);
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image: radial-gradient(rgba(255,255,255,0.18) 2px, transparent 2px);
+    background-size: 14px 14px;
+    pointer-events:none;
+  }
+  .hero .kicker{
+    display:inline-block;
+    background:var(--yellow);
+    color:var(--ink);
+    border:3px solid var(--ink);
+    border-radius:999px;
+    padding:4px 16px;
+    font-weight:700;
+    font-size:0.8rem;
+    letter-spacing:0.02em;
+    transform: rotate(-3deg);
+    margin-bottom:14px;
+  }
+  .hero h1{
+    font-family:'Bangers', cursive;
+    color:#fff;
+    -webkit-text-stroke: 2px var(--ink);
+    paint-order: stroke fill;
+    font-size: 3.1rem;
+    line-height:1;
+    margin:0 0 10px;
+    letter-spacing:0.02em;
+  }
+  .hero p{
+    color:#fff;
+    font-weight:500;
+    max-width: 55ch;
+    margin:0;
+    font-size:1.02rem;
+  }
+  .hero .badge{
+    position:absolute;
+    top:22px; right:22px;
+    background:#fff;
+    border:4px solid var(--ink);
+    border-radius:50%;
+    width:108px; height:108px;
+    display:flex; align-items:center; justify-content:center;
+    text-align:center;
+    font-family:'Bangers', cursive;
+    color:var(--red-dark);
+    font-size:1.05rem;
+    line-height:1.05;
+    transform: rotate(8deg);
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  /* ---------- SECTION TITLES ---------- */
+  .section-title{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin: 0 0 20px;
+  }
+  .section-title .num{
+    font-family:'Bangers', cursive;
+    font-size:1.6rem;
+    color:#fff;
+    background:var(--blue);
+    border:4px solid var(--ink);
+    width:52px; height:52px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    flex:none;
+    box-shadow: var(--panel-shadow-sm);
+  }
+  .section-title h2{
+    font-family:'Bangers', cursive;
+    font-weight:400;
+    font-size:1.7rem;
+    letter-spacing:0.01em;
+    margin:0;
+    color:var(--blue-dark);
+  }
+  section{ margin-bottom: 46px; }
+
+  /* ---------- PANELS (steps) ---------- */
+  .panels{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  .panel{
+    position:relative;
+    background:#fff;
+    border:4px solid var(--ink);
+    border-radius:10px;
+    box-shadow: var(--panel-shadow-sm);
+    padding: 18px 20px 18px 62px;
+  }
+  .panel .step-badge{
+    position:absolute;
+    left:-18px; top:16px;
+    width:40px; height:40px;
+    background:var(--yellow);
+    border:3px solid var(--ink);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Bangers', cursive;
+    font-size:1.15rem;
+    color:var(--ink);
+  }
+  .panel h3{
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .panel p{ margin:0; font-size:0.96rem; }
+  .panel p + p{ margin-top:8px; }
+  .panel code{
+    background:var(--paper-dark);
+    border:1px solid #d8cba0;
+    border-radius:5px;
+    padding:1px 7px;
+    font-size:0.88em;
+  }
+
+  /* ---------- CALLOUT / TIP ---------- */
+  .callout{
+    background: var(--yellow);
+    border:4px solid var(--ink);
+    border-radius:10px;
+    box-shadow: var(--panel-shadow-sm);
+    padding: 18px 20px;
+    position:relative;
+    margin: 22px 0;
+  }
+  .callout .tag{
+    font-family:'Bangers', cursive;
+    font-size:1.1rem;
+    color:var(--red-dark);
+    display:block;
+    margin-bottom:6px;
+  }
+  .callout p{ margin:0; font-size:0.95rem; }
+  .callout ul{ margin: 8px 0 0; padding-left: 20px; }
+  .callout li{ margin-bottom:4px; font-size:0.95rem; }
+
+  .callout.blue{ background:#DDEBF7; }
+  .callout.blue .tag{ color: var(--blue-dark); }
+
+  .callout.green{ background:#E1F3EB; }
+  .callout.green .tag{ color:#245C40; }
+
+  /* ---------- SCENARIO CARD ---------- */
+  .scenario{
+    background: var(--blue);
+    border:5px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: var(--panel-shadow);
+    color:#fff;
+    padding: 24px 26px;
+    position:relative;
+    transform: rotate(0.3deg);
+  }
+  .scenario h3{
+    font-family:'Bangers', cursive;
+    font-size:1.5rem;
+    margin:0 0 10px;
+    letter-spacing:0.02em;
+  }
+  .scenario p{ margin:0 0 10px; font-size:0.98rem; }
+  .scenario p:last-child{ margin-bottom:0; }
+  .scenario .bubble{
+    position:absolute;
+    top:-22px; right:26px;
+    background:#fff;
+    color:var(--ink);
+    border:3px solid var(--ink);
+    border-radius: 16px;
+    padding: 6px 14px;
+    font-weight:700;
+    font-size:0.85rem;
+    transform: rotate(-4deg);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    text-align:center;
+    font-size:0.85rem;
+    color:#6b6455;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 560px){
+    .hero h1{ font-size:2.3rem; }
+    .hero .badge{ width:84px; height:84px; font-size:0.85rem; top:16px; right:16px;}
+    .panel{ padding-left:54px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="hero">
+    <span class="kicker">Tutoriel élève</span>
+    <h1>BDnF<br>la fabrique à BD</h1>
+    <p>Utiliser le logiciel depuis ta clé USB pour créer une bande dessinée sur le cyberharcèlement.</p>
+    <div class="badge">5e<br>Technologie</div>
+  </div>
+
+  <section id="demarrer">
+    <div class="section-title"><span class="num">1</span><h2>Démarrer BDnF depuis ta clé USB</h2></div>
+    <div class="panels">
+      <div class="panel">
+        <span class="step-badge">1</span>
+        <h3>Branche ta clé USB</h3>
+        <p>Insère ta clé USB dans un port de l'ordinateur. Attends quelques secondes que l'ordinateur la détecte (une fenêtre peut s'ouvrir automatiquement).</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">2</span>
+        <h3>Ouvre le dossier de la clé</h3>
+        <p>Ouvre l'<strong>Explorateur de fichiers</strong>, puis clique sur ta clé USB dans la colonne de gauche (elle porte le nom que tu lui as donné, ou « Disque amovible »).</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">3</span>
+        <h3>Repère le dossier BDnF</h3>
+        <p>Cherche le dossier <code>BDnF</code> (ou <code>bdnf</code>) sur la clé, puis ouvre-le en double-cliquant dessus.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">4</span>
+        <h3>Lance <code>bdnf.exe</code></h3>
+        <p>Double-clique sur le fichier <code>bdnf.exe</code>. Comme le logiciel n'a pas besoin d'installation, il s'ouvre directement depuis la clé.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">5</span>
+        <h3>Autorise le démarrage</h3>
+        <p>Si un message de sécurité Windows apparaît (« Windows a protégé votre ordinateur »), clique sur <strong>« Informations complémentaires »</strong> puis sur <strong>« Exécuter quand même »</strong>. C'est normal pour un logiciel lancé depuis une clé USB.</p>
+      </div>
+    </div>
+    <div class="callout blue">
+      <span class="tag">💡 Astuce</span>
+      <p>Ne débranche jamais la clé USB pendant que BDnF est ouvert : le logiciel lit et enregistre tes fichiers directement dessus.</p>
+    </div>
+  </section>
+
+  <section id="interface">
+    <div class="section-title"><span class="num">2</span><h2>Découvrir l'écran d'accueil</h2></div>
+    <div class="panels">
+      <div class="panel">
+        <span class="step-badge">1</span>
+        <h3>Nouveau projet</h3>
+        <p>Sur l'écran d'accueil, choisis <strong>« Créer / Nouveau projet »</strong>.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">2</span>
+        <h3>Choisis un format</h3>
+        <p>Sélectionne le format <strong>« planche de BD »</strong> classique, avec plusieurs cases.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">3</span>
+        <h3>Choisis le nombre de cases</h3>
+        <p>Une planche d'une seule page suffit pour cette activité : choisis un modèle avec 3 à 6 cases.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="creer">
+    <div class="section-title"><span class="num">3</span><h2>Créer ta BD sur le cyberharcèlement</h2></div>
+
+    <div class="scenario">
+      <span class="bubble">Rappel</span>
+      <h3>Le scénario à illustrer</h3>
+      <p>Louis est témoin de cyberharcèlement envers Charlie : celui-ci reçoit régulièrement des messages d'insultes sur un réseau social.</p>
+      <p><strong>Ta mission :</strong> imaginer, en une planche, comment Louis peut aider Charlie.</p>
+    </div>
+
+    <div class="panels" style="margin-top:20px;">
+      <div class="panel">
+        <span class="step-badge">1</span>
+        <h3>Écris ton scénario</h3>
+        <p>Avant de commencer, note sur brouillon ce qui se passe dans chaque case : qui parle, où se déroule la scène, ce que fait Louis.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">2</span>
+        <h3>Choisis un décor</h3>
+        <p>Dans le menu <strong>« Décors »</strong>, sélectionne un fond pour chaque case (collège, chambre, réseau social...).</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">3</span>
+        <h3>Ajoute tes personnages</h3>
+        <p>Depuis le menu <strong>« Personnages »</strong>, place Louis et Charlie dans la case. Tu peux régler leur position, leur taille et leur expression (content, triste, inquiet…).</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">4</span>
+        <h3>Ajoute des bulles de dialogue</h3>
+        <p>Utilise le menu <strong>« Bulles »</strong> pour ajouter une bulle de parole ou de pensée, puis écris le texte à l'intérieur.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">5</span>
+        <h3>Ajoute un texte de narration</h3>
+        <p>Si besoin, ajoute un cartouche de texte en haut d'une case pour expliquer où et quand se passe la scène.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">6</span>
+        <h3>Passe à la case suivante</h3>
+        <p>Recommence les étapes 2 à 5 pour chaque case, jusqu'à ce que ta planche raconte toute l'histoire.</p>
+      </div>
+    </div>
+
+    <div class="callout green">
+      <span class="tag">✅ Ta BD doit montrer</span>
+      <ul>
+        <li>La situation de cyberharcèlement subie par Charlie ;</li>
+        <li>La réaction de Louis, témoin de la situation ;</li>
+        <li>Un comportement responsable : en parler à un adulte, ne pas rester silencieux, soutenir la victime.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="sauvegarder">
+    <div class="section-title"><span class="num">4</span><h2>Enregistrer et exporter sur ta clé USB</h2></div>
+    <div class="panels">
+      <div class="panel">
+        <span class="step-badge">1</span>
+        <h3>Enregistre ton projet</h3>
+        <p>Clique sur <strong>« Enregistrer »</strong> et choisis un dossier sur ta clé USB (par exemple <code>0_Rentrée</code>). Donne à ton fichier un nom clair : <code>Prénom_Nom_BD_cyberharcelement</code>.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">2</span>
+        <h3>Exporte ta planche en image</h3>
+        <p>Utilise <strong>« Exporter »</strong> pour générer un fichier image (.png ou .jpg) ou PDF de ta planche terminée.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">3</span>
+        <h3>Vérifie le fichier sur la clé</h3>
+        <p>Ouvre l'Explorateur de fichiers, retourne dans le dossier choisi et vérifie que ton image ou ton PDF apparaît bien.</p>
+      </div>
+      <div class="panel">
+        <span class="step-badge">4</span>
+        <h3>Retire la clé en toute sécurité</h3>
+        <p>Clique sur l'icône <strong>« Retirer le périphérique en toute sécurité »</strong> dans la barre des tâches avant de débrancher ta clé USB.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="tag">⚠️ Attention</span>
+      <p>Débrancher la clé sans l'éjecter correctement, ou pendant un enregistrement, peut abîmer ton fichier — pense à toujours enregistrer avant de retirer la clé.</p>
+    </div>
+  </section>
+
+  <footer>
+    Tutoriel réalisé pour la séquence « Cybersécurité » — 5e — Collège PMF — M'rassi
+  </footer>
+
+</div>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

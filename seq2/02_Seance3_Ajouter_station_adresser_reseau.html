@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Séance 3 – Ajouter une station et adresser le réseau – 5ème</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5F8; --surface:#FFFFFF; --surface-2:#E8F0F7; --ink:#15314D; --ink-soft:#4A6178;
+  --blue:#0B6BB8; --blue-2:#0A4F8A; --on-blue:#FFFFFF; --line:#C9D6E3;
+  --cable:#D7263D; --ok:#1F7A45; --ok-bg:#E1F2E7; --ko:#B3261E; --ko-bg:#FBE6E3;
+  --amber:#9A5B00; --amber-bg:#FFF0D1;
+  --term-bg:#0E1B2A; --term-ink:#DCE7F2; --term-ok:#7BE0A0; --term-ko:#FF8F8F; --term-dim:#8BA0B6;
+  --room-labo:#FFF7D6; --room-tech:#E7ECF1; --room-multi:#E4F2EA; --room-cdi:#E8EEFB;
+  --icon-fill:#FFFFFF; --icon-screen:#CFE6F8; --icon-dark:#2B3E52;
+  --radius:10px;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Lexend",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1822; --surface:#152433; --surface-2:#1C3044; --ink:#E4EDF5; --ink-soft:#A3B6C8;
+    --blue:#4FA3E8; --blue-2:#7DBBEE; --on-blue:#07131E; --line:#2B4258;
+    --cable:#FF5C70; --ok:#6FD39A; --ok-bg:#15372A; --ko:#FF8A80; --ko-bg:#3D1B1A;
+    --amber:#F2B45A; --amber-bg:#3A2A10;
+    --room-labo:#2C2A18; --room-tech:#1E2B38; --room-multi:#172D24; --room-cdi:#1A2440;
+    --icon-fill:#22384D; --icon-screen:#2D5B80; --icon-dark:#CFDDEA;
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#0D1822; --surface:#152433; --surface-2:#1C3044; --ink:#E4EDF5; --ink-soft:#A3B6C8;
+    --blue:#4FA3E8; --blue-2:#7DBBEE; --on-blue:#07131E; --line:#2B4258;
+    --cable:#FF5C70; --ok:#6FD39A; --ok-bg:#15372A; --ko:#FF8A80; --ko-bg:#3D1B1A;
+    --amber:#F2B45A; --amber-bg:#3A2A10;
+    --room-labo:#2C2A18; --room-tech:#1E2B38; --room-multi:#172D24; --room-cdi:#1A2440;
+    --icon-fill:#22384D; --icon-screen:#2D5B80; --icon-dark:#CFDDEA;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+img,svg{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:4px}
+h1,h2,h3{line-height:1.2;margin:0}
+p{margin:0 0 .6em}
+
+/* En-tête */
+.top{background:var(--blue-2);color:#fff;padding:18px 20px 0}
+:root:not([data-theme="light"]) .top{background:#0A3F6E}
+@media (prefers-color-scheme: light){ .top{background:#0A4F8A} }
+.top-inner{max-width:1180px;margin:0 auto}
+.top h1{font-size:clamp(1.35rem,2.6vw,1.9rem);font-weight:700;letter-spacing:-.01em}
+.top .sub{opacity:.85;font-size:.95rem;margin-top:2px}
+.tabs{display:flex;gap:4px;margin-top:16px;overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:transparent;color:#fff;opacity:.8;padding:10px 16px 12px;border-radius:10px 10px 0 0;cursor:pointer;white-space:nowrap;font-weight:500}
+.tabs button:hover{opacity:1;background:rgba(255,255,255,.08)}
+.tabs button[aria-selected="true"]{background:var(--bg);color:var(--ink);opacity:1}
+.tabs .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);font-size:.8rem;margin-right:8px}
+.tabs button[aria-selected="true"] .num{background:var(--blue);color:var(--on-blue)}
+
+main{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+section.panel[hidden]{display:none}
+.lede{font-size:1.05rem;color:var(--ink-soft);max-width:70ch;margin-bottom:22px}
+.block{margin:30px 0 0}
+.block > h2{font-size:1.25rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.block > h2::before{content:"";width:6px;height:1.1em;border-radius:3px;background:var(--blue)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.muted{color:var(--ink-soft)}
+.small{font-size:.88rem}
+
+.btn{border:1px solid var(--blue);background:var(--blue);color:var(--on-blue);padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;color:var(--blue)}
+.btn.quiet{border-color:var(--line);background:var(--surface);color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.feedback{border-radius:8px;padding:10px 12px;margin-top:10px;font-size:.95rem}
+.feedback.ok{background:var(--ok-bg);color:var(--ok)}
+.feedback.ko{background:var(--ko-bg);color:var(--ko)}
+.feedback.info{background:var(--amber-bg);color:var(--amber)}
+.feedback:empty{display:none}
+
+/* Terminal */
+.term{background:var(--term-bg);color:var(--term-ink);font-family:var(--mono);font-size:.86rem;border-radius:8px;padding:12px;line-height:1.5}
+.term pre{margin:0;white-space:pre-wrap;word-break:break-word;min-height:1.5em;max-height:260px;overflow:auto}
+.term .l-ok{color:var(--term-ok)} .term .l-ko{color:var(--term-ko)} .term .l-dim{color:var(--term-dim)}
+.term .prompt{display:flex;gap:8px;align-items:center;margin-top:6px}
+.term .prompt span{color:var(--term-ok)}
+.term input{flex:1;min-width:0;background:transparent;border:0;color:var(--term-ink);font-family:var(--mono);font-size:.9rem;outline:none;padding:4px 0}
+.term input:focus-visible{outline:none;border-bottom:1px solid var(--term-ok)}
+
+/* ---------- Onglet 1 : fiche ressource ---------- */
+.elements{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.flip{position:relative;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:14px;text-align:left;cursor:pointer;min-height:190px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s}
+.flip:hover{border-color:var(--blue)}
+.flip svg{width:74px;height:74px}
+.flip .name{font-weight:600}
+.flip .role{display:none;font-size:.9rem;color:var(--ink-soft)}
+.flip .hint{font-size:.8rem;color:var(--blue);margin-top:auto}
+.flip[aria-pressed="true"]{border-color:var(--blue);background:var(--surface-2)}
+.flip[aria-pressed="true"] svg{width:40px;height:40px}
+.flip[aria-pressed="true"] .role{display:block}
+.flip[aria-pressed="true"] .hint{display:none}
+.cable-card{display:flex;gap:18px;align-items:center}
+.cable-card svg{flex:0 0 90px;height:60px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:6px}
+.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.steps li::before{content:counter(s);flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--blue);font-weight:600;font-size:.9rem}
+.steps li.done{opacity:.65}
+.steps li.done::before{content:"✓";background:var(--ok);color:#fff}
+.kbd{font-family:var(--mono);font-size:.85em;background:var(--term-bg);color:var(--term-ok);padding:1px 6px;border-radius:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.interp{display:grid;gap:12px}
+.interp .choice{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.choice button{border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:8px;cursor:pointer}
+.choice button.sel-ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.choice button.sel-ko{background:var(--ko-bg);border-color:var(--ko);color:var(--ko)}
+
+/* ---------- Réseau SVG (partagé) ---------- */
+.net-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.net-wrap svg{display:block;width:100%;min-width:720px;height:auto;user-select:none}
+.room rect{stroke:var(--line);stroke-width:1.5}
+.room text{fill:var(--ink);font-family:var(--sans);font-weight:600;font-size:21px}
+.room.labo rect{fill:var(--room-labo)} .room.tech rect{fill:var(--room-tech)}
+.room.multi rect{fill:var(--room-multi)} .room.cdi rect{fill:var(--room-cdi)}
+.cable{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.cable-hit{stroke:transparent;stroke-width:18;cursor:pointer}
+.cable-hit:hover + .cable, .cable.hover{stroke:var(--cable)}
+.cable.ghost{stroke:var(--cable);stroke-dasharray:8 7;opacity:.55}
+.node{cursor:pointer}
+.node .halo{fill:transparent;stroke:transparent;stroke-width:3}
+.node:hover .halo{stroke:var(--line);fill:var(--surface-2)}
+.node.sel .halo{stroke:var(--blue);fill:var(--surface-2);stroke-width:3}
+.node.pulse .halo{stroke:var(--cable);stroke-width:4;fill:transparent}
+.node.bad .halo{stroke:var(--ko);stroke-width:3}
+.node:focus-visible{outline:none}
+.node:focus-visible .halo{stroke:var(--blue);stroke-dasharray:4 3}
+.node .lbl,.node .ip{paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+.node .lbl{fill:var(--ink);font-family:var(--sans);font-size:17px;font-weight:500}
+.node .ip{fill:var(--blue);font-family:var(--mono);font-size:16px;font-weight:500}
+.node .ip.none{fill:var(--ink-soft)}
+.packet{fill:var(--blue);stroke:#fff;stroke-width:2}
+.packet.lost{fill:var(--ko)}
+.ico-body{fill:var(--icon-fill);stroke:var(--icon-dark);stroke-width:2.2}
+.ico-screen{fill:var(--icon-screen);stroke:var(--icon-dark);stroke-width:1.6}
+.ico-dark{fill:var(--icon-dark)}
+.ico-line{stroke:var(--icon-dark);stroke-width:2.2;fill:none;stroke-linecap:round}
+.ico-led{fill:#2FB36B}
+.ico-cable{stroke:var(--cable);fill:none;stroke-width:5;stroke-linecap:round}
+
+/* ---------- Onglet 2 : simulateur ---------- */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:10px 16px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+.sim{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;margin-top:14px;align-items:start}
+@media (max-width:980px){.sim{grid-template-columns:1fr}}
+.side{display:grid;gap:12px}
+.side h3{font-size:1.05rem;font-weight:600;margin-bottom:6px}
+.checks{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px;font-size:.92rem}
+.checks li{display:flex;gap:8px;align-items:flex-start}
+.checks li::before{flex:0 0 20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700;margin-top:2px}
+.checks li.y::before{content:"✓";background:var(--ok);color:#fff}
+.checks li.n::before{content:"✕";background:var(--ko);color:#fff}
+.form-grid{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;font-size:.92rem}
+.form-grid input{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:7px 9px;font-family:var(--mono);font-size:.9rem;width:100%}
+.form-grid output{font-family:var(--mono);font-size:.88rem;color:var(--ink-soft)}
+details.teacher{border:1px dashed var(--line);border-radius:var(--radius);padding:10px 14px;background:var(--surface)}
+details.teacher summary{cursor:pointer;font-weight:600}
+details.teacher .row{margin-top:10px}
+
+/* ---------- Onglet 3 : fiche de travail ---------- */
+.idline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.idline{grid-template-columns:1fr 1fr}}
+.idline label{display:grid;gap:4px;font-size:.85rem;color:var(--ink-soft)}
+.field{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:8px 10px;width:100%}
+.field.mono{font-family:var(--mono)}
+.field.ok{border-color:var(--ok);background:var(--ok-bg)}
+.field.ko{border-color:var(--ko);background:var(--ko-bg)}
+.descs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:820px){.descs{grid-template-columns:1fr}}
+.desc{background:var(--surface-2);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px}
+.desc ul{margin:0;padding-left:18px}
+.desc select{margin-top:auto}
+.pingpick{display:grid;gap:10px}
+.pingpick label{display:grid;grid-template-columns:auto minmax(0,1fr) 190px;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px;cursor:pointer}
+@media (max-width:760px){.pingpick label{grid-template-columns:auto 1fr}.pingpick label .term{grid-column:1/-1}}
+.pingpick input{width:20px;height:20px;accent-color:var(--blue)}
+.pingpick .term{font-size:.8rem;padding:8px 10px}
+.cfg{width:100%;border-collapse:separate;border-spacing:0;font-size:.95rem}
+.cfg th,.cfg td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}
+.cfg th{font-weight:600;background:var(--surface-2)}
+.cfg td.mono{font-family:var(--mono)}
+.cfg-wrap{overflow-x:auto}
+textarea.field{min-height:74px;resize:vertical}
+.model{margin-top:8px;border-left:4px solid var(--ok);background:var(--ok-bg);padding:10px 12px;border-radius:0 8px 8px 0;color:var(--ink)}
+.model[hidden]{display:none}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;font-weight:600;font-size:.88rem}
+.badge.ok{background:var(--ok-bg);color:var(--ok)} .badge.ko{background:var(--ko-bg);color:var(--ko)} .badge.wait{background:var(--surface-2);color:var(--ink-soft)}
+.used{font-size:.88rem;color:var(--ink-soft);margin:8px 0 0}
+.used code{font-family:var(--mono)}
+
+/* ---------- Onglet 4 : QCM ---------- */
+.qcm{max-width:860px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.dots{display:flex;gap:6px}
+.dots span{width:30px;height:8px;border-radius:4px;background:var(--line)}
+.dots span.cur{background:var(--blue)}
+.dots span.ok{background:var(--ok)} .dots span.ko{background:var(--ko)}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.qcard .qn{color:var(--blue);font-weight:600;margin-bottom:6px}
+.qcard .qt{font-size:1.15rem;margin-bottom:16px}
+.projection .qcard .qt{font-size:clamp(1.3rem,2.6vw,1.8rem)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:12px;cursor:pointer;font-size:1rem}
+.projection .opt{font-size:1.2rem;padding:16px}
+.opt .L{flex:0 0 36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--surface-2);color:var(--blue);font-weight:700}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)} .opt.right .L{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--ko);background:var(--ko-bg)} .opt.wrong .L{background:var(--ko);color:#fff}
+.explain{margin-top:14px}
+.score{font-size:2.4rem;font-weight:700;color:var(--blue)}
+.recap{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
+.recap li{padding:8px 12px;border-radius:8px}
+.recap li.ok{background:var(--ok-bg)} .recap li.ko{background:var(--ko-bg)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.h3{font-size:1.02rem;font-weight:600;margin-bottom:10px}
+.mission{border-left:5px solid var(--cable);font-size:1.08rem}
+.plan-rule{display:flex;flex-wrap:wrap;gap:4px;align-items:center;font-family:var(--mono);font-size:1rem;margin:0 0 6px}
+.plan-rule span{background:var(--surface-2);color:var(--blue);padding:3px 9px;border-radius:6px;font-family:var(--sans);font-weight:600;font-size:.9rem}
+.ipbuild{display:flex;align-items:flex-end;gap:6px;flex-wrap:wrap}
+.ipbuild label{display:grid;gap:3px;font-size:.78rem;color:var(--ink-soft)}
+.ipbuild input{width:74px;text-align:center;font-size:1.05rem}
+.ipbuild b{font-size:1.4rem;padding-bottom:6px}
+.zone{cursor:pointer}
+.zone rect{stroke:var(--line);stroke-width:2}
+.zone:hover rect,.zone:focus-visible rect{stroke:var(--blue)}
+.zone:focus-visible{outline:none}
+.zone .zn{font-family:var(--sans);font-weight:600;font-size:15px;fill:var(--ink)}
+.zone .zc{font-family:var(--mono);font-weight:600;font-size:22px;fill:var(--cable)}
+.zone .zx{font-family:var(--mono);font-size:12.5px;fill:var(--blue)}
+.bld-roof{fill:var(--icon-dark);opacity:.85}
+.octets{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:16px 0 8px;font-family:var(--mono);font-size:1.6rem;font-weight:500}
+.octets .o{padding:6px 12px;border-radius:8px;transition:background .25s,color .25s}
+.octets .o.net{background:var(--surface-2);color:var(--blue);box-shadow:inset 0 -3px 0 var(--blue)}
+.octets .o.host{background:var(--amber-bg);color:var(--amber);box-shadow:inset 0 -3px 0 var(--amber)}
+.legend{display:flex;gap:14px;font-size:.85rem;margin-top:4px;font-family:var(--sans);font-weight:400}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.chips{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.chips{grid-template-columns:repeat(2,1fr)}}
+.chip{border:2px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 6px;font-family:var(--mono);font-size:.95rem;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--blue);background:var(--surface-2);color:var(--blue)}
+.chip.good{border-color:var(--ok);background:var(--ok-bg);color:var(--ok)}
+.chip.bad{border-color:var(--ko);background:var(--ko-bg);color:var(--ko)}
+.chip.miss{border-style:dashed;border-color:var(--ok)}
+.bits{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;max-width:560px}
+.bitcol{display:grid;gap:4px;text-align:center}
+.bitcol .w{font-size:.82rem;color:var(--ink-soft);font-weight:600}
+.bit{font-family:var(--mono);font-size:1.5rem;font-weight:600;border:2px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 0;cursor:pointer}
+.bit[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.calc{font-family:var(--mono);font-size:1rem;margin:12px 0;min-height:1.5em}
+.calc strong{color:var(--blue);font-size:1.25rem}
+.bin-ip{display:grid;grid-template-columns:auto repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.bin-ip > *{padding:10px;text-align:center;border-left:1px solid var(--line);font-family:var(--mono)}
+.bin-ip > span{border-left:0;font-weight:600;font-family:var(--sans);background:var(--surface-2)}
+.bin-ip button{border:0;border-left:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:1rem;letter-spacing:.06em}
+.bin-ip button:hover{background:var(--surface-2);color:var(--blue)}
+@media (max-width:640px){.bin-ip{grid-template-columns:1fr 1fr}.bin-ip > span{grid-column:1/-1}}
+.defi{font-family:var(--mono);font-size:1.8rem;letter-spacing:.12em;margin:4px 0 10px;color:var(--blue)}
+.mono-lines{font-family:var(--mono);font-size:.92rem}
+.node.new .lbl{fill:var(--cable)}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-pc" viewBox="0 0 80 80">
+      <rect class="ico-body" x="8" y="10" width="64" height="44" rx="5"/>
+      <rect class="ico-screen" x="14" y="16" width="52" height="32" rx="2"/>
+      <path class="ico-line" d="M40 54v10M26 68h28"/>
+    </symbol>
+    <symbol id="i-laptop" viewBox="0 0 80 80">
+      <rect class="ico-body" x="16" y="16" width="48" height="34" rx="4"/>
+      <rect class="ico-screen" x="21" y="21" width="38" height="24" rx="2"/>
+      <path class="ico-body" d="M8 58h64l-6 8H14z"/>
+    </symbol>
+    <symbol id="i-server" viewBox="0 0 80 80">
+      <rect class="ico-body" x="22" y="4" width="36" height="72" rx="5"/>
+      <path class="ico-line" d="M29 18h22M29 28h22M29 38h22"/>
+      <circle class="ico-led" cx="30" cy="62" r="3"/><circle class="ico-dark" cx="40" cy="62" r="3"/>
+    </symbol>
+    <symbol id="i-switch" viewBox="0 0 80 80">
+      <path class="ico-body" d="M4 34l8-8h56l8 8v18H4z"/>
+      <g class="ico-dark"><rect x="10" y="38" width="7" height="6" rx="1"/><rect x="21" y="38" width="7" height="6" rx="1"/><rect x="32" y="38" width="7" height="6" rx="1"/><rect x="43" y="38" width="7" height="6" rx="1"/><rect x="54" y="38" width="7" height="6" rx="1"/></g>
+      <circle class="ico-led" cx="68" cy="41" r="2.5"/>
+    </symbol>
+    <symbol id="i-router" viewBox="0 0 80 80">
+      <path class="ico-line" d="M24 38L18 14M56 38l6-24"/>
+      <rect class="ico-body" x="8" y="38" width="64" height="22" rx="5"/>
+      <circle class="ico-led" cx="20" cy="49" r="3"/><circle class="ico-led" cx="30" cy="49" r="3"/><circle class="ico-dark" cx="40" cy="49" r="3"/>
+      <path class="ico-line" d="M52 45v8M58 45v8M64 45v8"/>
+    </symbol>
+    <symbol id="i-cloud" viewBox="0 0 80 80">
+      <path class="ico-body" d="M22 60h38a14 14 0 0 0 1-28 20 20 0 0 0-38-4 16 16 0 0 0-1 32z"/>
+      <path class="ico-line" d="M28 46c6-8 18-8 24 0M34 51c3-3 9-3 12 0"/>
+    </symbol>
+  </defs>
+</svg>
+<header class="top">
+  <div class="top-inner">
+    <h1>Séance 3 : ajouter une station et adresser le réseau</h1>
+    <div class="sub">Technologie, 5ème – Fonctionnement d’un réseau local (LAN)</div>
+    <nav class="tabs" role="tablist" aria-label="Activités">
+      <button role="tab" id="t-station" aria-controls="p-station" aria-selected="true"><span class="num">1</span>Ajouter une station</button>
+      <button role="tab" id="t-ex1" aria-controls="p-ex1" aria-selected="false"><span class="num">2</span>Plan d’adressage</button>
+      <button role="tab" id="t-ex2" aria-controls="p-ex2" aria-selected="false"><span class="num">3</span>Masque de sous-réseau</button>
+      <button role="tab" id="t-ex3" aria-controls="p-ex3" aria-selected="false"><span class="num">4</span>Binaire</button>
+    </nav>
+  </div>
+</header>
+<main>
+<!-- ============ 1. AJOUTER UNE STATION ============ -->
+<section class="panel" id="p-station" role="tabpanel" aria-labelledby="t-station">
+  <p class="lede">Le réseau du collège fonctionne : toutes les stations communiquent avec le serveur. Ta mission : ajouter une ou plusieurs stations de travail, les câbler, définir leur adresse IP et tester la communication avec le serveur.</p>
+  <div class="mission card">
+    <strong>Comment ajouter une ou plusieurs stations de travail et les intégrer au réseau ?</strong>
+  </div>
+  <div class="seg" id="modeSeg" role="group" aria-label="Étape" style="margin-top:14px">
+    <button aria-pressed="true" data-mode="cable">1. Ajouter et câbler</button>
+    <button aria-pressed="false" data-mode="config">2. Configurer et tester</button>
+  </div>
+  <div class="sim">
+    <div class="net-wrap"><svg id="simSvg" viewBox="0 0 1300 720" role="img" aria-label="Plan du réseau du collège"></svg></div>
+    <div class="side">
+      <div class="card" id="panelCable">
+        <h3>Ajouter et câbler</h3>
+        <div class="row" style="margin-bottom:10px">
+          <select class="field" id="roomPick" style="width:auto;flex:1">
+            <option value="labo">Labo Techno</option><option value="multi">Salle multimédia</option><option value="cdi">CDI</option>
+          </select>
+          <button class="btn" id="btnAdd">Ajouter une station</button>
+        </div>
+        <p class="small">Relie ensuite la nouvelle station : clique sur elle, puis sur un commutateur. Clique sur un câble pour le retirer.</p>
+        <p class="small muted" id="cableStatus"></p>
+        <div class="feedback" id="cableFb"></div>
+      </div>
+      <div class="card" id="panelConfig" hidden>
+        <div id="noStation">
+          <h3>Configurer et tester</h3>
+          <p class="small">Clique sur une station pour modifier son nom, son adresse IP et son masque, puis teste la communication avec le serveur (<strong>192.168.1.254</strong>).</p>
+        </div>
+        <div id="stationBox" hidden>
+          <h3 id="stName"></h3>
+          <div class="form-grid" style="margin:10px 0">
+            <label for="stLabel">Nom</label><input id="stLabel" autocomplete="off" spellcheck="false" style="font-family:var(--sans)">
+            <label for="stIp">Adresse IP</label><input id="stIp" autocomplete="off" spellcheck="false">
+            <label for="stMask">Masque</label><input id="stMask" autocomplete="off" spellcheck="false">
+            <span>Adresse MAC</span><output id="stMac"></output>
+          </div>
+          <div class="row"><button class="btn" id="btnApply">Appliquer</button><button class="btn quiet" id="btnDel" hidden>Supprimer la station</button></div>
+          <p class="small" id="applyMsg" style="margin-top:6px"></p>
+          <p class="small muted" style="margin:10px 0 6px">Ligne de commande (<span class="kbd">ping</span>, <span class="kbd">ipconfig</span>, <span class="kbd">effacer</span>)</p>
+          <div class="term"><pre id="simOut"></pre><div class="prompt"><span>/&gt;</span><input id="simIn" autocomplete="off" spellcheck="false" aria-label="Commande"></div></div>
+        </div>
+        <div id="infoBox" hidden></div>
+      </div>
+      <div class="card">
+        <h3>Ma mission</h3>
+        <p class="small muted">Vérifie chaque nouvelle station.</p>
+        <button class="btn" id="btnMission">Vérifier ma mission</button>
+        <ul class="checks" id="missionChecks"></ul>
+        <div class="feedback" id="missionFb"></div>
+      </div>
+      <details class="teacher">
+        <summary>Outils du professeur</summary>
+        <div class="row">
+          <button class="btn quiet" id="btnSol">Correction (LAN-IP-cor)</button>
+          <button class="btn quiet" id="btnReset">Revenir au réseau de départ</button>
+        </div>
+        <p class="small muted" style="margin:10px 0 0">Adresses déjà utilisées : .1 (routeur), .2 à .7 (stations), .254 (serveur).</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. EXERCICE 1 ============ -->
+<section class="panel" id="p-ex1" role="tabpanel" aria-labelledby="t-ex1" hidden>
+  <p class="lede">L’administrateur réseau doit installer une machine à l’étage de gauche du collège, dans la salle 5. Il s’agit de la 15ème machine de cette salle. Le masque du réseau est <strong>255.0.0.0</strong>.</p>
+  <div class="two">
+    <div>
+      <div class="card">
+        <h3 class="h3">Le plan d’adressage</h3>
+        <p class="plan-rule"><span>Collège</span>.<span>Zone</span>.<span>Salle</span>.<span>N° du poste</span></p>
+        <p class="small muted">Exemple : le poste 7 de la salle 2 au rez-de-chaussée droit a l’adresse <span class="kbd">10.1.2.7</span></p>
+        <div class="net-wrap" style="margin-top:10px"><svg id="bldSvg" viewBox="0 0 520 330" role="img" aria-label="Plan du collège par zones" style="min-width:0"></svg></div>
+        <p class="small muted" style="margin-top:8px">Clique sur une zone pour voir son numéro. Collège : <strong>10</strong>.</p>
+        <div class="feedback info" id="zoneFb"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <h3 class="h3">1. Définir l’adresse IP de cette machine</h3>
+        <div class="ipbuild" id="ipBuild">
+          <label><span>Collège</span><input class="field mono" inputmode="numeric" data-save="e1a"></label><b>.</b>
+          <label><span>Zone</span><input class="field mono" inputmode="numeric" data-save="e1b"></label><b>.</b>
+          <label><span>Salle</span><input class="field mono" inputmode="numeric" data-save="e1c"></label><b>.</b>
+          <label><span>Poste</span><input class="field mono" inputmode="numeric" data-save="e1d"></label>
+        </div>
+        <div class="row" style="margin-top:12px"><button class="btn" id="btnE1">Vérifier</button><button class="btn ghost" data-model="c1">Voir la correction</button></div>
+        <div class="feedback" id="e1Fb"></div>
+        <div class="model" id="c1" hidden>Collège = 10 ; étage de gauche = 20 ; salle = 5 ; machine = 15.<br>L’adresse IP de la machine est <strong>10.20.5.15</strong>.</div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <h3 class="h3">Entraîne-toi encore</h3>
+        <p id="drillQ"></p>
+        <div class="row"><input class="field mono" id="drillIn" style="flex:1;min-width:140px" autocomplete="off" spellcheck="false"><button class="btn" id="btnDrill">Vérifier</button><button class="btn quiet" id="btnDrillNext">Autre question</button></div>
+        <div class="feedback" id="drillFb"></div>
+        <p class="small muted" id="drillScore" style="margin-top:8px"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. EXERCICE 2 ============ -->
+<section class="panel" id="p-ex2" role="tabpanel" aria-labelledby="t-ex2" hidden>
+  <p class="lede">Le masque de sous-réseau et l’adresse IP sont indissociables : le masque indique quelle partie de l’adresse identifie le <strong>réseau</strong> et quelle partie identifie la <strong>machine</strong>.</p>
+  <div class="card">
+    <h3 class="h3">Observe l’effet du masque</h3>
+    <div class="seg" id="maskSeg">
+      <button aria-pressed="false" data-m="255.0.0.0">255.0.0.0</button>
+      <button aria-pressed="false" data-m="255.255.0.0">255.255.0.0</button>
+      <button aria-pressed="true" data-m="255.255.255.0">255.255.255.0</button>
+    </div>
+    <div class="octets" id="octView"></div>
+    <p class="small" id="octTxt"></p>
+  </div>
+
+  <div class="two" style="margin-top:14px">
+    <div class="card">
+      <h3 class="h3">1. Masque 255.255.255.0 : combien de machines ce réseau peut-il accueillir ?</h3>
+      <div class="row"><input class="field mono" id="e2q1" data-save="e2q1" inputmode="numeric" style="max-width:160px"><span>machines</span><button class="btn" id="btnE2q1">Vérifier</button></div>
+      <div class="feedback" id="e2q1Fb"></div>
+      <button class="btn ghost" style="margin-top:8px" data-model="c21">Voir la correction</button>
+      <div class="model" id="c21" hidden>Avec le masque 255.255.255.0, seul le dernier octet est réservé aux machines. Un octet = 8 bits = 256 nombres (de 0 à 255). Les nombres 0 et 255 sont réservés, il reste les nombres de 1 à 254.<br>Ce réseau peut accueillir <strong>254 machines</strong>.</div>
+    </div>
+    <div class="card">
+      <h3 class="h3">2. Même question avec le masque 255.255.0.0</h3>
+      <div class="row"><input class="field mono" id="e2q2" data-save="e2q2" inputmode="numeric" style="max-width:160px"><span>machines</span><button class="btn" id="btnE2q2">Vérifier</button></div>
+      <div class="feedback" id="e2q2Fb"></div>
+      <button class="btn ghost" style="margin-top:8px" data-model="c22">Voir la correction</button>
+      <div class="model" id="c22" hidden>Avec le masque 255.255.0.0, les deux derniers octets sont réservés aux machines : 256 × 256 = 65 536 combinaisons (de x.x.0.0 à x.x.255.255). Seules la première (x.x.0.0) et la dernière (x.x.255.255) sont réservées.<br>Ce réseau peut accueillir <strong>65 534 machines</strong>.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 class="h3">3. Masque 255.255.255.0 : quelles machines peuvent communiquer avec <span class="kbd">10.20.6.11</span> ?</h3>
+    <p class="small muted">Clique sur les adresses qui conviennent.</p>
+    <div class="chips" id="chips3"></div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="btnE2q3">Vérifier</button><button class="btn ghost" data-model="c23">Voir la correction</button></div>
+    <div class="feedback" id="e2q3Fb"></div>
+    <div class="model" id="c23" hidden>10.20.6.1, 10.20.6.2, 10.20.6.3, 10.20.6.4 et 10.20.6.6 peuvent communiquer avec 10.20.6.11.<br>Avec le masque 255.255.255.0, les 3 premiers nombres doivent être identiques pour appartenir au même réseau.</div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3 class="h3">4. Même question avec le masque 255.255.0.0</h3>
+    <div class="chips" id="chips4"></div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="btnE2q4">Vérifier</button><button class="btn ghost" data-model="c24">Voir la correction</button></div>
+    <div class="feedback" id="e2q4Fb"></div>
+    <div class="model" id="c24" hidden>10.20.6.1, 10.20.6.2, 10.20.6.3, 10.20.6.4, 10.20.6.6, 10.20.7.5 et 10.20.5.10 peuvent communiquer avec 10.20.6.11.<br>Avec le masque 255.255.0.0, seuls les 2 premiers nombres doivent être identiques pour appartenir au même réseau.</div>
+  </div>
+</section>
+
+<!-- ============ 4. EXERCICE 3 ============ -->
+<section class="panel" id="p-ex3" role="tabpanel" aria-labelledby="t-ex3" hidden>
+  <p class="lede">Le système binaire est le langage utilisé par les ordinateurs pour coder les informations et pour calculer. Chaque bit vaut 0 ou 1, et chaque position a un poids.</p>
+  <div class="card">
+    <h3 class="h3">Le convertisseur d’octet</h3>
+    <p class="small muted">Clique sur les bits pour les passer de 0 à 1.</p>
+    <div class="bits" id="bits"></div>
+    <p class="calc" id="calc"></p>
+    <div class="row"><button class="btn quiet" id="btnEx42">Exemple : 42</button><button class="btn quiet" id="btnZero">Tout à 0</button></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 class="h3">Le codage sur 4 octets de l’adresse IP d’un ordinateur</h3>
+    <div class="bin-ip" id="binIp"></div>
+    <p class="small muted">Clique sur un octet pour le charger dans le convertisseur.</p>
+    <h3 class="h3" style="margin-top:14px">1. Quelle est l’adresse IP chiffrée complète de cet ordinateur ?</h3>
+    <div class="ipbuild" id="decIp">
+      <label><input class="field mono" inputmode="numeric" data-save="e3a"></label><b>.</b>
+      <label><input class="field mono" inputmode="numeric" data-save="e3b"></label><b>.</b>
+      <label><input class="field mono" inputmode="numeric" data-save="e3c"></label><b>.</b>
+      <label><input class="field mono" inputmode="numeric" data-save="e3d"></label>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn" id="btnE3q1">Vérifier</button><button class="btn ghost" data-model="c31">Voir la correction</button></div>
+    <div class="feedback" id="e3q1Fb"></div>
+    <div class="model mono-lines" id="c31" hidden>11000000 = 128 + 64 = 192<br>10101000 = 128 + 32 + 8 = 168<br>00000001 = 1<br>00001100 = 8 + 4 = 12<br>L’adresse IP de l’ordinateur est <strong>192.168.1.12</strong>.</div>
+  </div>
+
+  <div class="two" style="margin-top:14px">
+    <div class="card">
+      <p class="small">Le masque de sous-réseau est <span class="kbd">255.255.255.0</span></p>
+      <h3 class="h3">2. Quelle est l’identification chiffrée du réseau ?</h3>
+      <div class="row"><input class="field mono" id="e3q2" data-save="e3q2" style="max-width:180px" autocomplete="off"><button class="btn" id="btnE3q2">Vérifier</button></div>
+      <div class="feedback" id="e3q2Fb"></div>
+      <button class="btn ghost" style="margin-top:8px" data-model="c32">Voir la correction</button>
+      <div class="model" id="c32" hidden>Avec le masque 255.255.255.0, les trois premiers octets identifient le réseau : <strong>192.168.1</strong> (souvent noté 192.168.1.0).</div>
+    </div>
+    <div class="card">
+      <p class="small">&nbsp;</p>
+      <h3 class="h3">3. Quelle est l’identification chiffrée de la machine sur ce réseau ?</h3>
+      <div class="row"><input class="field mono" id="e3q3" data-save="e3q3" style="max-width:120px" inputmode="numeric" autocomplete="off"><button class="btn" id="btnE3q3">Vérifier</button></div>
+      <div class="feedback" id="e3q3Fb"></div>
+      <button class="btn ghost" style="margin-top:8px" data-model="c33">Voir la correction</button>
+      <div class="model" id="c33" hidden>Avec le masque 255.255.255.0, le dernier octet identifie la machine : <strong>12</strong>.</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3 class="h3">Défi : convertis cet octet en décimal</h3>
+    <p class="defi" id="defiQ"></p>
+    <div class="row"><input class="field mono" id="defiIn" inputmode="numeric" style="max-width:120px" autocomplete="off"><button class="btn" id="btnDefi">Vérifier</button><button class="btn quiet" id="btnDefiNext">Autre octet</button></div>
+    <div class="feedback" id="defiFb"></div>
+    <p class="small muted" id="defiScore" style="margin-top:8px"></p>
+  </div>
+</section>
+</main>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const store={get(k){try{return JSON.parse(localStorage.getItem("lan5s3:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("lan5s3:"+k,JSON.stringify(v))}catch(e){}}};
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function setFb(id,ok,txt){const fb=$("#"+id);fb.className="feedback "+(ok===null?"info":ok?"ok":"ko");fb.innerHTML=txt}
+
+/* Onglets */
+const tabs=$$('[role="tab"]');
+function openTab(id,focus){tabs.forEach(t=>{const on=t.id===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;$("#"+t.getAttribute("aria-controls")).hidden=!on;if(on&&focus)t.focus()});try{history.replaceState(null,"","#"+id.slice(2))}catch(e){}}
+tabs.forEach((t,i)=>{t.addEventListener("click",()=>openTab(t.id));t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];openTab(n.id,true)}})});
+const hh=location.hash.slice(1);if(hh&&$("#t-"+hh))openTab("t-"+hh);
+
+/* Champs sauvegardés + corrections */
+$$("[data-save]").forEach(f=>{const v=store.get("f:"+f.dataset.save);if(v!==null)f.value=v;f.addEventListener("input",()=>store.set("f:"+f.dataset.save,f.value))});
+$$("[data-model]").forEach(b=>b.onclick=()=>{const m=$("#"+b.dataset.model);m.hidden=!m.hidden;b.textContent=m.hidden?"Voir la correction":"Masquer la correction"});
+
+/* Outils IP */
+function parseIp(s){const p=String(s||"").trim().split(".");if(p.length!==4)return null;const n=p.map(x=>/^\d{1,3}$/.test(x)?+x:NaN);if(n.some(x=>isNaN(x)||x>255))return null;return n}
+function toInt(a){return ((a[0]<<24)>>>0)+(a[1]<<16)+(a[2]<<8)+a[3]}
+function validMask(s){const a=parseIp(s);if(!a)return false;const v=toInt(a);if(v===0)return false;const inv=(~v)>>>0;return ((inv+1)&inv)===0}
+function sameNet(a,b,m){const k=toInt(parseIp(m));return ((toInt(parseIp(a))&k)>>>0)===((toInt(parseIp(b))&k)>>>0)}
+function isHost(ip,m){const k=toInt(parseIp(m)),v=toInt(parseIp(ip));const h=(v&(~k>>>0))>>>0;return h!==0&&h!==((~k)>>>0)}
+function pingText(ip,ok){const L=[`PING ${ip}`];for(let i=1;i<=4;i++)L.push(ok?{t:`Réponse de ${ip} : icmp_seq=${i} ttl=64 temps=${8+Math.floor(Math.random()*30)}ms`,c:"l-ok"}:{t:`Délai d'attente dépassé pour icmp_seq=${i}`,c:"l-ko"});L.push("",`--- ${ip} Statistiques des paquets ---`,{t:ok?"4 paquets transmis, 4 paquets reçus, 0% paquets perdus":"4 paquets transmis, 0 paquets reçus, 100% paquets perdus",c:ok?"l-ok":"l-ko"});return L}
+function printLines(pre,lines,delay,done){let i=0;const step=()=>{if(i>=lines.length){done&&done();return}const L=lines[i++];const s=document.createElement("span");if(typeof L==="object"){s.className=L.c;s.textContent=L.t+"\n"}else s.textContent=L+"\n";pre.appendChild(s);pre.scrollTop=pre.scrollHeight;delay&&!reduce?setTimeout(step,delay):step()};step()}
+
+/* ================= 1. SIMULATEUR ================= */
+const M="255.255.255.0";
+const ICON={pc:"i-pc",server:"i-server",switch:"i-switch",router:"i-router",cloud:"i-cloud"};
+const BASE=[
+ {id:"L1",name:"Labo-Techno-ordi1",type:"pc",x:150,y:120,mac:"50:5E:77:37:23:62",ip:"192.168.1.2"},
+ {id:"L2",name:"Labo-Techno-Ordi2",type:"pc",x:150,y:300,mac:"AE:92:B8:E3:8F:9A",ip:"192.168.1.3"},
+ {id:"M2",name:"Salle-multimédia-Ordi2",type:"pc",x:140,y:600,mac:"1D:4B:D2:F6:C1:7D",ip:"192.168.1.4"},
+ {id:"M1",name:"Salle-multimédia-Ordi1",type:"pc",x:450,y:600,mac:"07:F4:C1:1A:79:7D",ip:"192.168.1.5"},
+ {id:"C1",name:"CDI-Ordi1",type:"pc",x:790,y:600,mac:"55:1C:BF:BE:F0:C4",ip:"192.168.1.6"},
+ {id:"C2",name:"CDI-Ordi2",type:"pc",x:1150,y:600,mac:"6B:EB:C5:EE:A6:66",ip:"192.168.1.7"},
+ {id:"SRV",name:"Serveur-Local-Technique",type:"server",x:830,y:110,mac:"D1:12:76:ED:57:6B",ip:"192.168.1.254"},
+ {id:"LS",name:"Labo-Techno-Switch",type:"switch",x:320,y:215},
+ {id:"MS",name:"Salle-multimédia-Switch",type:"switch",x:295,y:500},
+ {id:"CS",name:"CDI-Switch",type:"switch",x:970,y:500},
+ {id:"TS",name:"Switch-Local-Technique",type:"switch",x:650,y:215},
+ {id:"R",name:"Routeur",type:"router",x:860,y:265,mac:"44:2C:F8:DC:EF:B4",ifs:[{ip:"192.168.1.1",mask:M},{ip:"254.128.10.1",mask:M}]},
+ {id:"NET",name:"Internet",type:"cloud",x:1190,y:150,ip:"254.128.10.2"}];
+const BASE_CABLES=[["L1","LS"],["L2","LS"],["M2","MS"],["M1","MS"],["C1","CS"],["C2","CS"],["LS","TS"],["MS","TS"],["CS","TS"],["SRV","TS"],["R","TS"],["R","NET"]];
+const SLOTS={labo:[[335,322],[300,95]],multi:[[520,500],[300,635]],cdi:[[790,490],[1150,480]]};
+const MAXP={pc:1,server:1,cloud:1,router:2,switch:8};
+let nodes=[],N={},cables=[],mode="cable",selected=null,newCount=0;
+const svg=$("#simSvg");
+[{c:"labo",n:"Labo Techno",x:40,y:30,w:390,h:370},{c:"tech",n:"Local technique",x:540,y:30,w:420,h:370},{c:"multi",n:"Salle multimédia",x:40,y:430,w:560,h:270},{c:"cdi",n:"CDI",x:680,y:430,w:580,h:270}].forEach(r=>{const g=el("g",{class:"room "+r.c},svg);el("rect",{x:r.x,y:r.y,width:r.w,height:r.h,rx:14},g);el("text",{x:r.x+16,y:r.y+28},g).textContent=r.n});
+const cLayer=el("g",{},svg),nLayer=el("g",{},svg),pLayer=el("g",{},svg);
+const key=(a,b)=>[a,b].sort().join("-");
+const has=(a,b)=>cables.some(c=>key(c[0],c[1])===key(a,b));
+const deg=id=>cables.filter(c=>c[0]===id||c[1]===id).length;
+function randMac(){return Array.from({length:6},()=>Math.floor(Math.random()*256).toString(16).padStart(2,"0").toUpperCase()).join(":")}
+function mk(d){const n={...d};n.ifaces=d.ifs?d.ifs.map(f=>({...f})):d.ip?[{ip:d.ip,mask:M}]:d.type==="pc"?[{ip:"0.0.0.0",mask:"0.0.0.0"}]:null;n.log=[];return n}
+function load(state){nodes=BASE.map(mk);cables=BASE_CABLES.map(c=>[...c]);newCount=0;
+  if(state&&state.extra){state.extra.forEach(e=>{nodes.push(mk({id:e.id,name:e.name,type:"pc",x:e.x,y:e.y,mac:e.mac,isNew:true,room:e.room}));nodes[nodes.length-1].ifaces[0]={ip:e.ip,mask:e.mask};newCount=Math.max(newCount,+e.id.slice(1))});cables=state.cables.filter(c=>c.length===2)}
+  N=Object.fromEntries(nodes.map(n=>[n.id,n]));drawNodes();render()}
+function save(){store.set("net",{extra:nodes.filter(n=>n.isNew).map(n=>({id:n.id,name:n.name,x:n.x,y:n.y,mac:n.mac,room:n.room,ip:n.ifaces[0].ip,mask:n.ifaces[0].mask})),cables})}
+function drawNodes(){nLayer.innerHTML="";nodes.forEach(n=>{const g=el("g",{class:"node"+(n.isNew?" new":""),"data-id":n.id,tabindex:0,role:"button","aria-label":n.name},nLayer);
+  el("rect",{class:"halo",x:n.x-62,y:n.y-46,width:124,height:n.ifaces?128:106,rx:12},g);
+  el("use",{href:"#"+ICON[n.type],x:n.x-36,y:n.y-40,width:72,height:72},g);
+  n._lbl=el("text",{class:"lbl",x:n.x,y:n.y+50,"text-anchor":"middle"},g);n._lbl.textContent=n.name;
+  if(n.ifaces)n._ip=el("text",{class:"ip",x:n.x,y:n.y+70,"text-anchor":"middle"},g);
+  n._g=g;g.addEventListener("click",()=>onNode(n.id));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onNode(n.id)}})})}
+function render(){cLayer.innerHTML="";cables.forEach((c,i)=>{const a=N[c[0]],b=N[c[1]];if(!a||!b)return;
+    if(mode==="cable"){const hit=el("line",{class:"cable-hit",x1:a.x,y1:a.y,x2:b.x,y2:b.y},cLayer);el("title",{},hit).textContent="Retirer ce câble";hit.addEventListener("click",()=>{cables.splice(i,1);render()})}
+    el("line",{class:"cable",x1:a.x,y1:a.y,x2:b.x,y2:b.y},cLayer)});
+  nodes.forEach(n=>{n._g.classList.toggle("sel",n.id===selected);n._lbl.textContent=n.name;if(n._ip){const ip=n.ifaces[0].ip;n._ip.textContent=ip==="0.0.0.0"?"pas d’adresse":ip;n._ip.setAttribute("class","ip"+(ip==="0.0.0.0"?" none":""))}});
+  const nb=nodes.filter(n=>n.isNew).length;$("#cableStatus").textContent=nb?`${nb} nouvelle(s) station(s) ajoutée(s).`:"Aucune station ajoutée pour l’instant.";save()}
+function onNode(id){
+  if(mode==="cable"){if(!selected){selected=id;render();return}if(selected===id){selected=null;render();return}
+    const a=selected,b=id;selected=null;const fb=$("#cableFb");fb.textContent="";
+    if(has(a,b))setFb("cableFb",null,"Ces deux appareils sont déjà reliés.");
+    else if(deg(a)>=MAXP[N[a].type]||deg(b)>=MAXP[N[b].type]){const f=deg(a)>=MAXP[N[a].type]?N[a]:N[b];setFb("cableFb",null,`${esc(f.name)} n’a plus de prise réseau libre.`)}
+    else cables.push([a,b]);render()}
+  else{selected=id;render();showStation(id)}}
+$$("#modeSeg button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+function setMode(m){mode=m;selected=null;$$("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));$("#panelCable").hidden=m!=="cable";$("#panelConfig").hidden=m!=="config";$("#stationBox").hidden=true;$("#infoBox").hidden=true;$("#noStation").hidden=false;render()}
+$("#btnAdd").onclick=()=>{const room=$("#roomPick").value;const used=nodes.filter(n=>n.isNew&&n.room===room).length;const slot=SLOTS[room][used];
+  if(!slot){setFb("cableFb",null,"Plus de place dans cette salle : choisis une autre salle.");return}
+  newCount++;const n=mk({id:"N"+newCount,name:"Nouvelle-station-"+newCount,type:"pc",x:slot[0],y:slot[1],mac:randMac(),isNew:true,room});
+  nodes.push(n);N[n.id]=n;drawNodes();selected=n.id;setFb("cableFb",null,`${n.name} est ajoutée. Clique maintenant sur un commutateur pour la câbler.`);render()};
+function showStation(id){const n=N[id];$("#noStation").hidden=true;
+  if(n.type!=="pc"){$("#stationBox").hidden=true;const ib=$("#infoBox");ib.hidden=false;
+    ib.innerHTML=`<h3>${esc(n.name)}</h3><p class="small">${n.ifaces?n.ifaces.map(f=>`<span class="kbd">${f.ip} / ${f.mask}</span>`).join("<br>"):"Un commutateur n’a pas d’adresse IP : il transmet les informations sans les lire."}</p><p class="small muted">Clique sur une station de travail pour la configurer.</p>`;return}
+  $("#infoBox").hidden=true;$("#stationBox").hidden=false;$("#stName").textContent=n.name;$("#stLabel").value=n.name;$("#stLabel").disabled=!n.isNew;
+  $("#stIp").value=n.ifaces[0].ip;$("#stMask").value=n.ifaces[0].mask;$("#stMac").textContent=n.mac;$("#applyMsg").textContent="";$("#btnDel").hidden=!n.isNew;
+  const out=$("#simOut");out.innerHTML="";if(!n.log.length)n.log.push({t:`Ligne de commande de ${n.name}`,c:"l-dim"});printLines(out,n.log)}
+$("#btnApply").onclick=()=>{const n=N[selected];if(!n)return;const ip=$("#stIp").value.trim(),mask=$("#stMask").value.trim(),nm=$("#stLabel").value.trim(),msg=$("#applyMsg");
+  if(!parseIp(ip)){msg.innerHTML=`<span style="color:var(--ko)">Adresse IP invalide : 4 nombres de 0 à 255 séparés par des points.</span>`;return}
+  if(!parseIp(mask)){msg.innerHTML=`<span style="color:var(--ko)">Masque invalide : 4 nombres de 0 à 255 séparés par des points.</span>`;return}
+  n.ifaces[0]={ip,mask};if(n.isNew&&nm)n.name=nm;$("#stName").textContent=n.name;msg.innerHTML=`<span style="color:var(--ok)">Configuration enregistrée.</span>`;render()};
+["stIp","stMask","stLabel"].forEach(i=>$("#"+i).addEventListener("keydown",e=>{if(e.key==="Enter")$("#btnApply").click()}));
+$("#btnDel").onclick=()=>{const id=selected;nodes=nodes.filter(n=>n.id!==id);delete N[id];cables=cables.filter(c=>c[0]!==id&&c[1]!==id);selected=null;drawNodes();setMode("config")};
+function bfs(a,b){const q=[[a]],seen=new Set([a]);while(q.length){const p=q.shift(),cur=p[p.length-1];if(cur===b)return p;
+  for(const c of cables){const nx=c[0]===cur?c[1]:c[1]===cur?c[0]:null;if(!nx||seen.has(nx)||!N[nx])continue;if(nx!==b&&N[nx].type!=="switch")continue;seen.add(nx);q.push([...p,nx])}}return null}
+function ping(src,dst){const s=src.ifaces[0];
+  if(!parseIp(s.ip)||s.ip==="0.0.0.0"||!validMask(s.mask)||!isHost(s.ip,s.mask))return{ok:false};
+  if(dst===s.ip)return{ok:true};
+  if(!sameNet(s.ip,dst,s.mask))return{ok:false};
+  const owners=nodes.filter(n=>n.ifaces&&n.ifaces.some(f=>f.ip===dst));
+  const dup=nodes.some(n=>n!==src&&n.ifaces&&n.ifaces.some(f=>f.ip===s.ip));
+  if(!owners.length)return{ok:false};const d=owners[0],path=bfs(src.id,d.id);if(!path)return{ok:false};
+  const f=d.ifaces.find(f=>f.ip===dst);return{ok:validMask(f.mask)&&sameNet(f.ip,s.ip,f.mask)&&owners.length===1&&!dup,path,reached:true}}
+function animate(path,ok,done){if(reduce||!path||path.length<2){done();return}
+  const pts=path.map(id=>[N[id].x,N[id].y]),seq=ok?pts.concat(pts.slice(0,-1).reverse()):pts;
+  const c=el("circle",{class:"packet",r:9,cx:seq[0][0],cy:seq[0][1]},pLayer);let i=0,t0=null;
+  function fr(ts){if(!t0)t0=ts;const k=Math.min(1,(ts-t0)/240),a=seq[i],b=seq[i+1];c.setAttribute("cx",a[0]+(b[0]-a[0])*k);c.setAttribute("cy",a[1]+(b[1]-a[1])*k);
+    if(k<1)return requestAnimationFrame(fr);i++;t0=null;if(i<seq.length-1)return requestAnimationFrame(fr);
+    if(!ok){c.setAttribute("class","packet lost");setTimeout(()=>{c.remove();done()},450)}else{c.remove();done()}}
+  requestAnimationFrame(fr)}
+$("#simIn").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const n=N[selected];if(!n)return;const inp=e.target,cmd=inp.value.trim(),out=$("#simOut");inp.value="";
+  const add=L=>{n.log.push(...L);printLines(out,L)};add([{t:"/> "+cmd,c:"l-dim"}]);
+  if(/^(effacer|clear|cls)$/i.test(cmd)){n.log=[];out.innerHTML="";return}
+  if(/^ipconfig$/i.test(cmd)){add([`Adresse IP : ${n.ifaces[0].ip}`,`Masque de sous-réseau : ${n.ifaces[0].mask}`,`Adresse MAC : ${n.mac}`]);return}
+  const m=cmd.match(/^ping\s+(\S+)$/i);if(!m){if(cmd)add([{t:"Commande inconnue. Commandes possibles : ping <adresse IP>, ipconfig, effacer",c:"l-ko"}]);return}
+  if(!parseIp(m[1])){add([{t:"Adresse IP invalide.",c:"l-ko"}]);return}
+  const r=ping(n,m[1]);inp.disabled=true;const fin=()=>{const L=pingText(m[1],r.ok);n.log.push(...L);printLines(out,L,180,()=>{inp.disabled=false;inp.focus()})};
+  if(r.reached)animate(r.path,r.ok,fin);else{n._g.classList.add("bad");setTimeout(()=>n._g.classList.remove("bad"),900);fin()}});
+$("#btnMission").onclick=()=>{const ul=$("#missionChecks");ul.innerHTML="";const news=nodes.filter(n=>n.isNew);
+  if(!news.length){setFb("missionFb",false,"Commence par ajouter une station (étape 1).");return}
+  const srv=N.SRV;let all=true;
+  news.forEach(n=>{const f=n.ifaces[0];const nb=cables.filter(c=>c[0]===n.id||c[1]===n.id).map(c=>c[0]===n.id?c[1]:c[0]);
+    const r=[[nb.length===1&&N[nb[0]].type==="switch",nb.length?`câblée à ${N[nb[0]].name}`:"câblée à un commutateur"],
+      [f.mask===M,"masque 255.255.255.0"],
+      [!!parseIp(f.ip)&&f.ip!=="0.0.0.0"&&sameNet(f.ip,"192.168.1.254",M)&&isHost(f.ip,M),"adresse dans le réseau 192.168.1.0"],
+      [!!parseIp(f.ip)&&!nodes.some(o=>o!==n&&o.ifaces&&o.ifaces.some(x=>x.ip===f.ip)),"adresse libre (pas déjà utilisée)"],
+      [ping(n,"192.168.1.254").ok,"communication avec le serveur réussie"]];
+    r.forEach(x=>{if(!x[0])all=false;const li=document.createElement("li");li.className=x[0]?"y":"n";li.innerHTML=`<span><strong>${esc(n.name)}</strong> : ${esc(x[1])}</span>`;ul.appendChild(li)})});
+  setFb("missionFb",all,all?"Mission réussie : les nouvelles stations sont intégrées au réseau. Pense à tester le ping toi-même !":"Pas encore : corrige les points en rouge.")};
+$("#btnSol").onclick=()=>{load(null);newCount=0;const n=mk({id:"N1",name:"Labo-Techno-Ordi3",type:"pc",x:335,y:322,mac:"41:45:32:AC:39:D0",isNew:true,room:"labo"});n.ifaces[0]={ip:"192.168.1.13",mask:M};nodes.push(n);N.N1=n;newCount=1;cables.push(["N1","LS"]);drawNodes();render();$("#missionChecks").innerHTML="";$("#missionFb").textContent=""};
+$("#btnReset").onclick=()=>{load(null);$("#missionChecks").innerHTML="";$("#missionFb").textContent="";$("#cableFb").textContent="";setMode("cable")};
+load(store.get("net"));
+
+/* ================= 2. EXERCICE 1 ================= */
+const ZONES=[{k:"eg",n:"Étage gauche",c:20,x:20,y:70,ex:["Salle 7 : 10.20.7.5"]},{k:"ed",n:"Étage droite",c:10,x:270,y:70,ex:["Salle 7 : 10.10.7.3","Salle 6 : 10.10.6.1"]},
+  {k:"rg",n:"RDC gauche",c:2,x:20,y:195,ex:["Salle 1 : 10.2.1.1"]},{k:"rd",n:"RDC droite",c:1,x:270,y:195,ex:["Salle 1 : 10.1.1.1","Salle 2, poste 7 : 10.1.2.7"]}];
+const bs=$("#bldSvg");el("path",{class:"bld-roof",d:"M10 64 L260 14 L510 64 Z"},bs);el("text",{x:260,y:52,"text-anchor":"middle",fill:"#fff","font-family":"Lexend,sans-serif","font-weight":600,"font-size":15},bs).textContent="Collège : 10";
+ZONES.forEach(z=>{const g=el("g",{class:"zone",tabindex:0,role:"button","aria-label":z.n},bs);
+  el("rect",{x:z.x,y:z.y,width:230,height:115,rx:8,fill:z.k[0]==="e"?"var(--room-cdi)":"var(--room-labo)"},g);
+  el("text",{class:"zn",x:z.x+12,y:z.y+24},g).textContent=z.n;
+  const code=el("text",{class:"zc",x:z.x+218,y:z.y+28,"text-anchor":"end"},g);code.textContent="?";
+  z.ex.forEach((t,i)=>el("text",{class:"zx",x:z.x+12,y:z.y+56+i*22},g).textContent=t);
+  const rev=()=>{code.textContent=z.c;setFb("zoneFb",null,`${z.n} : zone <strong>${z.c}</strong>. ${z.ex.map(esc).join(" ; ")}.`)};
+  g.addEventListener("click",rev);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();rev()}})});
+$("#btnE1").onclick=()=>{const ins=$$("#ipBuild input"),want=[10,20,5,15],names=["le numéro du collège","le numéro de la zone (étage de gauche)","le numéro de la salle","le numéro du poste"];let err=null;
+  ins.forEach((i,k)=>{const ok=i.value.trim()===String(want[k]);i.classList.toggle("ok",ok);i.classList.toggle("ko",!ok);if(!ok&&err===null)err=k});
+  setFb("e1Fb",err===null,err===null?"Bravo ! L’adresse IP de la machine est <strong>10.20.5.15</strong>.":`Vérifie ${names[err]}. Aide-toi du plan : clique sur les zones.`)};
+let drill=null,dOk=0,dTot=0;
+function newDrill(){const z=ZONES[Math.floor(Math.random()*4)],s=1+Math.floor(Math.random()*8),p=1+Math.floor(Math.random()*25);drill={z,s,p,ans:`10.${z.c}.${s}.${p}`};
+  $("#drillQ").innerHTML=`Quelle est l’adresse IP du <strong>poste ${p}</strong> de la <strong>salle ${s}</strong> située <strong>${z.k[0]==="e"?"à l’étage "+(z.k[1]==="g"?"gauche":"droit"):"au rez-de-chaussée "+(z.k[1]==="g"?"gauche":"droit")}</strong> ?`;$("#drillIn").value="";$("#drillFb").textContent="";$("#drillFb").className="feedback"}
+$("#btnDrill").onclick=()=>{const v=$("#drillIn").value.trim();if(!v)return;dTot++;const ok=v===drill.ans;if(ok)dOk++;
+  setFb("drillFb",ok,ok?"Exact !":`Non : c’est <strong>${drill.ans}</strong> (collège 10, zone ${drill.z.c}, salle ${drill.s}, poste ${drill.p}).`);$("#drillScore").textContent=`Score : ${dOk} / ${dTot}`};
+$("#drillIn").addEventListener("keydown",e=>{if(e.key==="Enter")$("#btnDrill").click()});
+$("#btnDrillNext").onclick=newDrill;newDrill();
+
+/* ================= 3. EXERCICE 2 ================= */
+function showMask(m){const ip=[10,20,6,11],k=m.split(".").filter(x=>x==="255").length;
+  $("#octView").innerHTML=ip.map((o,i)=>`<span class="o ${i<k?"net":"host"}">${o}</span>`).join("<span>.</span>")+`<div class="legend" style="flex-basis:100%"><span><i style="background:var(--blue)"></i>Réseau</span><span><i style="background:var(--amber)"></i>Machine</span></div>`;
+  $("#octTxt").innerHTML=`Masque <span class="kbd">${m}</span> : les ${k===1?"premier nombre identifie":k+" premiers nombres identifient"} le réseau <strong>${ip.slice(0,k).join(".")}</strong>, ${4-k===1?"le dernier identifie":"les "+(4-k)+" derniers identifient"} la machine <strong>${ip.slice(k).join(".")}</strong>.`}
+$$("#maskSeg button").forEach(b=>b.onclick=()=>{$$("#maskSeg button").forEach(x=>x.setAttribute("aria-pressed",x===b));showMask(b.dataset.m)});showMask("255.255.255.0");
+const num=v=>+String(v).replace(/[\s.]/g,"");
+$("#btnE2q1").onclick=()=>{const v=num($("#e2q1").value);setFb("e2q1Fb",v===254,v===254?"Exact : 254 machines (les nombres 0 et 255 sont réservés).":v===256?"Presque : un octet donne 256 nombres, mais 0 et 255 sont réservés.":v===255?"Presque : le 0 et le 255 sont tous les deux réservés.":"Pas tout à fait. Combien de nombres différents peut-on écrire avec un octet (8 bits) ?")};
+$("#btnE2q2").onclick=()=>{const v=num($("#e2q2").value);
+  setFb("e2q2Fb",v===65534,v===65534?"Exact : 256 × 256 − 2 = 65 534 machines.":v===64516?"Presque ! 254 × 254 oublie des adresses valables comme 10.20.0.5 ou 10.20.255.8. Seules la toute première et la toute dernière adresse sont réservées : 256 × 256 − 2.":v===65536?"Presque : il faut retirer les 2 adresses réservées (la première et la dernière).":"Pas tout à fait. Cette fois, deux octets sont réservés aux machines.")};
+const IPS=["10.20.6.1","10.20.6.2","10.20.6.3","10.20.6.4","10.20.7.5","10.20.6.6","10.10.6.7","10.1.6.8","10.1.6.9","10.20.5.10"];
+function chipQ(box,btn,fb,mask){const wrap=$(box);IPS.forEach(ip=>{const b=document.createElement("button");b.className="chip";b.textContent=ip;b.setAttribute("aria-pressed","false");b.onclick=()=>{b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");b.classList.remove("good","bad","miss")};wrap.appendChild(b)});
+  $(btn).onclick=()=>{let good=0,bad=0,miss=0;wrap.querySelectorAll(".chip").forEach(c=>{const should=sameNet(c.textContent,"10.20.6.11",mask),sel=c.getAttribute("aria-pressed")==="true";c.classList.remove("good","bad","miss");
+      if(sel&&should){c.classList.add("good");good++}else if(sel&&!should){c.classList.add("bad");bad++}else if(!sel&&should){c.classList.add("miss");miss++}});
+    const k=mask==="255.255.0.0"?2:3;
+    setFb(fb.slice(1),!bad&&!miss,!bad&&!miss?`Exact ! Avec ce masque, les ${k} premiers nombres doivent être identiques : ${k===3?"10.20.6":"10.20"}.`:`${good} bonne(s) réponse(s)${bad?`, ${bad} en trop (en rouge)`:""}${miss?`, ${miss} oubliée(s) (en pointillés)`:""}. Avec ce masque, compare les ${k} premiers nombres.`)}}
+chipQ("#chips3","#btnE2q3","#e2q3Fb","255.255.255.0");chipQ("#chips4","#btnE2q4","#e2q4Fb","255.255.0.0");
+
+/* ================= 4. EXERCICE 3 ================= */
+const W=[128,64,32,16,8,4,2,1];let bits=[0,0,1,0,1,0,1,0];
+const bw=$("#bits");W.forEach((w,i)=>{const c=document.createElement("div");c.className="bitcol";c.innerHTML=`<span class="w">${w}</span>`;const b=document.createElement("button");b.className="bit";b.setAttribute("aria-label","Bit de poids "+w);b.onclick=()=>{bits[i]^=1;drawBits()};c.appendChild(b);bw.appendChild(c)});
+function drawBits(){$$(".bit").forEach((b,i)=>{b.textContent=bits[i];b.setAttribute("aria-pressed",bits[i]===1)});
+  const on=W.filter((w,i)=>bits[i]),sum=on.reduce((a,b)=>a+b,0);
+  $("#calc").innerHTML=`${bits.join("")} = ${on.length?on.join(" + "):"0"} = <strong>${sum}</strong>`}
+drawBits();
+$("#btnEx42").onclick=()=>{bits=[0,0,1,0,1,0,1,0];drawBits()};$("#btnZero").onclick=()=>{bits=[0,0,0,0,0,0,0,0];drawBits()};
+const BIN=["11000000","10101000","00000001","00001100"];
+$("#binIp").innerHTML="<span>IP</span>"+BIN.map(b=>`<button title="Charger dans le convertisseur">${b}</button>`).join("");
+$$("#binIp button").forEach((b,i)=>b.onclick=()=>{bits=BIN[i].split("").map(Number);drawBits();$("#bits").scrollIntoView({behavior:reduce?"auto":"smooth",block:"center"})});
+$("#btnE3q1").onclick=()=>{const ins=$$("#decIp input"),want=[192,168,1,12];let n=0;ins.forEach((i,k)=>{const ok=i.value.trim()===String(want[k]);if(ok)n++;i.classList.toggle("ok",ok);i.classList.toggle("ko",!ok)});
+  setFb("e3q1Fb",n===4,n===4?"Bravo ! L’adresse IP est <strong>192.168.1.12</strong>.":`${n} octet(s) sur 4 corrects. Charge les octets faux dans le convertisseur pour les vérifier.`)};
+$("#btnE3q2").onclick=()=>{const v=$("#e3q2").value.trim().replace(/\.0$/,"");setFb("e3q2Fb",v==="192.168.1",v==="192.168.1"?"Exact : le réseau est 192.168.1 (noté aussi 192.168.1.0).":"Avec le masque 255.255.255.0, combien de nombres identifient le réseau ?")};
+$("#btnE3q3").onclick=()=>{const v=$("#e3q3").value.trim();setFb("e3q3Fb",v==="12",v==="12"?"Exact : la machine est identifiée par 12.":"Avec le masque 255.255.255.0, c’est le dernier nombre qui identifie la machine.")};
+let defi=0,fOk=0,fTot=0;
+function newDefi(){defi=1+Math.floor(Math.random()*255);$("#defiQ").textContent=defi.toString(2).padStart(8,"0");$("#defiIn").value="";$("#defiFb").textContent="";$("#defiFb").className="feedback"}
+$("#btnDefi").onclick=()=>{const v=$("#defiIn").value.trim();if(!v)return;fTot++;const ok=+v===defi;if(ok)fOk++;
+  const on=W.filter((w,i)=>defi.toString(2).padStart(8,"0")[i]==="1");setFb("defiFb",ok,ok?"Exact !":`Non : ${on.join(" + ")} = <strong>${defi}</strong>.`);$("#defiScore").textContent=`Score : ${fOk} / ${fTot}`};
+$("#defiIn").addEventListener("keydown",e=>{if(e.key==="Enter")$("#btnDefi").click()});
+$("#btnDefiNext").onclick=newDefi;newDefi();
+})();
+</script>
+
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Synthèse — Séance 3 : le phishing (hameçonnage)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fdfdfb; --ink:#1b2a4a; --ink-soft:#4d5b78; --blue:#1f4fb8;
+    --rule:#d7e2f4; --margin:#d64545; --marker:#ffe98a; --ok:#1d8a5a; --ok-soft:#e3f5ec;
+    --no:#c43d3d; --no-soft:#fbe8e8; --box:#f1f5fc; --card:#ffffff; --water:#d9ecfb;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#141a26; --ink:#e6ecf7; --ink-soft:#a6b3cc; --blue:#7fa6ff;
+      --rule:#243049; --margin:#e06a6a; --marker:#6b5a12; --ok:#5fd19c; --ok-soft:#16322a;
+      --no:#ff8f8f; --no-soft:#3a1d1f; --box:#1b2335; --card:#1a2231; --water:#16304a;
+    }
+  }
+  :root[data-theme="dark"]{
+      --paper:#141a26; --ink:#e6ecf7; --ink-soft:#a6b3cc; --blue:#7fa6ff;
+      --rule:#243049; --margin:#e06a6a; --marker:#6b5a12; --ok:#5fd19c; --ok-soft:#16322a;
+      --no:#ff8f8f; --no-soft:#3a1d1f; --box:#1b2335; --card:#1a2231; --water:#16304a;
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px)}
+  body{margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:1.05rem; line-height:1.65;
+    background-image:linear-gradient(var(--rule) 1px, transparent 1px); background-size:100% 1.65rem;}
+  .page{max-width:860px; margin:0 auto; padding:1.5rem 1.25rem 3rem 3.25rem; position:relative}
+  .page::before{content:""; position:absolute; top:0; bottom:0; left:2rem; width:2px; background:var(--margin); opacity:.75}
+  @media (max-width:560px){ .page{padding-left:2.4rem; padding-right:.9rem} .page::before{left:1.3rem} }
+  h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif; line-height:1.2; color:var(--blue)}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem); font-weight:800; margin:.2rem 0 .3rem}
+  .meta{font-size:.9rem; color:var(--ink-soft); margin:0}
+  .question{color:var(--ink-soft); font-style:italic; margin:0 0 1rem}
+  h2{font-size:1.4rem; font-weight:800; margin:2.8rem 0 .7rem; display:flex; gap:.6rem; align-items:baseline}
+  h2 .num{color:var(--margin); font-size:1.1rem}
+  h3{font-size:1.1rem; margin:1.4rem 0 .4rem}
+  p{margin:.5rem 0}
+  mark{background:var(--marker); color:inherit; padding:0 .15em; border-radius:2px}
+  .hint{font-size:.9rem; color:var(--ink-soft)}
+  button{font:inherit; cursor:pointer}
+  button:focus-visible, a:focus-visible, [tabindex]:focus-visible{outline:3px solid var(--marker); outline-offset:2px}
+
+  /* Barre de navigation collante + score */
+  .bar{position:sticky; top:0; z-index:5; background:var(--paper); border-bottom:2px solid var(--rule);
+    padding:calc(env(safe-area-inset-top,0px) + .5rem) 0 .5rem; margin-bottom:1rem}
+  .nav{display:flex; gap:.4rem; overflow-x:auto; padding-bottom:.2rem}
+  .nav a{flex:none; text-decoration:none; color:var(--blue); border:2px solid var(--blue); border-radius:999px; padding:.1rem .75rem; font-size:.88rem; background:var(--paper)}
+  .nav a:hover{background:var(--box)}
+  .stars{display:flex; align-items:center; gap:.6rem; margin-top:.45rem; font-size:.9rem; color:var(--ink-soft)}
+  .stars .track{flex:1; height:10px; background:var(--rule); border-radius:5px; overflow:hidden}
+  .stars .track i{display:block; height:100%; width:0; background:var(--ok); border-radius:5px; transition:width .5s cubic-bezier(.3,1.3,.5,1)}
+
+  /* Définition + dessin */
+  .def{display:grid; grid-template-columns:150px 1fr; gap:1rem; align-items:center; background:var(--box);
+    border-left:4px solid var(--blue); border-radius:0 10px 10px 0; padding:1rem}
+  @media (max-width:560px){ .def{grid-template-columns:1fr} .def svg{max-width:150px; margin:0 auto} }
+  .def svg{width:100%; height:auto}
+  .hook{transform-origin:75px 0; animation:swing 3s ease-in-out infinite}
+  @keyframes swing{0%,100%{transform:rotate(-6deg)} 50%{transform:rotate(6deg)}}
+  .def strong{color:var(--blue)}
+
+  /* Les 7 signes : cartes retournables */
+  .signs{display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:.7rem; margin:.8rem 0}
+  .flip{perspective:900px; height:185px; border:0; background:none; padding:0; text-align:left; color:inherit}
+  .flip{display:block; width:100%}
+  .flip .inner{display:block; position:relative; width:100%; height:100%; transition:transform .6s cubic-bezier(.4,1.4,.5,1); transform-style:preserve-3d}
+  .flip[aria-pressed="true"] .inner{transform:rotateY(180deg)}
+  .face{position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; padding:.8rem; border:2px solid var(--rule);
+    background:var(--card); display:flex; flex-direction:column; justify-content:center}
+  .face.back{transform:rotateY(180deg); background:var(--no-soft); border-color:var(--no); font-size:.9rem}
+  .face .ico{font-size:1.8rem; line-height:1}
+  .face .n{font-family:"Bricolage Grotesque",sans-serif; font-weight:800; color:var(--margin)}
+  .face b{display:block; margin-top:.2rem}
+  .face .ex{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem; background:var(--card); border-radius:5px; padding:.1rem .3rem; word-break:break-all}
+
+  /* Démo lien */
+  .mail{background:var(--card); border:2px solid var(--rule); border-radius:12px; overflow:hidden; margin:.8rem 0}
+  .mail-top{background:var(--box); padding:.5rem .9rem; font-size:.88rem; border-bottom:1px solid var(--rule)}
+  .mail-top span{color:var(--ink-soft)}
+  .mail-body{padding:.9rem}
+  .fake-btn{display:inline-block; background:#2e7d32; color:#fff; border:0; border-radius:8px; padding:.5rem 1.1rem; font-weight:700}
+  .status{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.85rem; background:var(--box); border-top:1px solid var(--rule);
+    padding:.4rem .9rem; min-height:2.1rem; color:var(--ink-soft); transition:background .3s}
+  .status.show{background:var(--no-soft); color:var(--no)}
+  .status.show b{color:var(--no)}
+
+  .trap{display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin:.4rem 0 1rem; animation:pop .45s cubic-bezier(.2,1.6,.5,1)}
+  .trap[hidden]{display:none}
+  @media (max-width:600px){ .trap{grid-template-columns:1fr} }
+  .browser{border:2px solid var(--no); border-radius:12px; overflow:hidden; background:var(--card)}
+  .addr{background:var(--no-soft); color:var(--no); font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem; padding:.4rem .7rem; word-break:break-all; font-weight:700}
+  .fake-page{padding:.9rem; display:flex; flex-direction:column; gap:.45rem}
+  .fake-logo{margin:0; font-weight:800; color:var(--ink-soft)}
+  .fake-title{margin:0; font-size:.92rem}
+  .fake-page input{font:inherit; font-size:.9rem; padding:.35rem .6rem; border:1px solid var(--rule); border-radius:6px; background:var(--paper)}
+  .fake-go{align-self:flex-start; background:#2e7d32; color:#fff; border-radius:6px; padding:.25rem .9rem; font-size:.9rem; font-weight:700; opacity:.6}
+  .trap-msg{background:var(--no-soft); border-radius:12px; padding:.9rem 1rem}
+  .trap-msg p{margin:.3rem 0}
+  .trap-msg b{color:var(--no)}
+
+  /* Jeu : vrai ou arnaque */
+  .game{position:relative}
+  .msg{background:var(--card); border:2px solid var(--rule); border-radius:14px; padding:1rem; min-height:12rem}
+  .msg .kind{font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft)}
+  .msg .from{font-size:.9rem; color:var(--ink-soft); margin:.2rem 0 .5rem; word-break:break-all}
+  .msg .from b{color:var(--ink)}
+  .msg .txt{margin:0}
+  .msg .lnk{color:var(--blue); text-decoration:underline; word-break:break-all}
+  .msg.sms{border-radius:18px 18px 18px 4px; background:var(--box)}
+  .choices{display:flex; gap:.6rem; margin:.8rem 0; flex-wrap:wrap}
+  .choices button{flex:1; min-width:150px; border-radius:10px; padding:.6rem 1rem; font-weight:700; border:2px solid}
+  .b-scam{background:var(--no-soft); color:var(--no); border-color:var(--no)}
+  .b-safe{background:var(--ok-soft); color:var(--ok); border-color:var(--ok)}
+  .choices button:disabled{opacity:.45; cursor:default}
+  .verdict{display:none; border-radius:10px; padding:.7rem 1rem; margin-top:.4rem}
+  .verdict.show{display:block; animation:pop .45s cubic-bezier(.2,1.6,.5,1)}
+  .verdict.good{background:var(--ok-soft)} .verdict.bad{background:var(--no-soft)}
+  .verdict ul{margin:.3rem 0; padding-left:1.2rem}
+  .gnav{display:flex; justify-content:space-between; align-items:center; margin-top:.6rem; font-size:.9rem; color:var(--ink-soft)}
+  .next{border:2px solid var(--blue); color:var(--blue); background:var(--paper); border-radius:8px; padding:.3rem 1rem; font-weight:700}
+  .shake{animation:shake .4s}
+  @keyframes shake{20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)}}
+  @keyframes pop{from{transform:scale(.85); opacity:0} to{transform:none; opacity:1}}
+
+  /* Que faire */
+  .two{display:grid; grid-template-columns:1fr 1fr; gap:.8rem}
+  @media (max-width:600px){ .two{grid-template-columns:1fr} }
+  .col{border-radius:12px; padding:.9rem 1rem}
+  .col.a{background:var(--ok-soft)} .col.b{background:var(--no-soft)}
+  .col h3{margin-top:0} .col.a h3{color:var(--ok)} .col.b h3{color:var(--no)}
+  .col ol{margin:.3rem 0; padding-left:1.3rem} .col li{margin:.25rem 0}
+
+  /* Flashcards vocabulaire */
+  .deck{display:flex; flex-direction:column; align-items:center; gap:.6rem}
+  .card-v{width:min(100%,420px); height:190px}
+  .face > span{display:block}
+  .card-v .face{align-items:center; text-align:center; font-size:1.05rem}
+  .card-v .face.front b{font-family:"Bricolage Grotesque",sans-serif; font-size:1.6rem; color:var(--blue)}
+  .card-v .face.back{background:var(--box); border-color:var(--blue)}
+  .deck-nav{display:flex; gap:.6rem; align-items:center}
+  .deck-nav button{border:2px solid var(--blue); background:var(--paper); color:var(--blue); border-radius:8px; padding:.25rem .9rem; font-weight:700}
+
+  /* Quiz */
+  .q{background:var(--card); border:2px solid var(--rule); border-radius:12px; padding:.9rem 1rem; margin:.7rem 0}
+  .q p{margin:0 0 .5rem; font-weight:700}
+  .opt{display:block; width:100%; text-align:left; background:var(--paper); color:var(--ink); border:2px solid var(--rule); border-radius:8px; padding:.45rem .7rem; margin:.3rem 0}
+  .opt:hover:not(:disabled){border-color:var(--blue)}
+  .opt.right{background:var(--ok-soft); border-color:var(--ok)}
+  .opt.wrong{background:var(--no-soft); border-color:var(--no)}
+  .opt:disabled{cursor:default}
+  .q .why{display:none; font-size:.92rem; margin-top:.4rem; color:var(--ink-soft)}
+  .q.done .why{display:block}
+  .score{font-weight:700; padding:.7rem 1rem; border-radius:10px; background:var(--box); margin-top:.6rem}
+  .redo{border:2px solid var(--ink-soft); background:transparent; color:var(--ink-soft); border-radius:8px; padding:.3rem .9rem; margin-top:.6rem}
+
+  /* Je sais */
+  .ready{list-style:none; padding:0; margin:.5rem 0}
+  .ready label{display:flex; gap:.6rem; align-items:flex-start; padding:.35rem .5rem; border-radius:8px; cursor:pointer}
+  .ready label:hover{background:var(--box)}
+  .ready input{width:20px; height:20px; margin-top:.2rem; accent-color:var(--ok); flex:none}
+  .retenir{border:2px dashed var(--margin); border-radius:12px; padding:1rem 1.2rem; margin:2.4rem 0 1rem; background:var(--paper)}
+  .retenir h2{margin-top:0; color:var(--margin)}
+  .retenir ul{margin:.3rem 0; padding-left:1.2rem}
+
+  footer{margin-top:2.5rem; font-size:.85rem; color:var(--ink-soft)}
+  .print{margin-top:.8rem; border:2px solid var(--blue); color:var(--blue); background:var(--paper); border-radius:8px; padding:.4rem 1rem}
+
+  .js .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
+  .js .reveal.in{opacity:1; transform:none}
+  @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation:none !important; transition:none !important} }
+  @media print{
+    body{background:#fff; color:#000; font-size:10.5pt}
+    .bar,.choices,.gnav,.deck-nav,.print,.redo{display:none !important}
+    .js .reveal{opacity:1 !important; transform:none !important}
+    .flip .inner{transform:none !important} .face.back{position:static; transform:none; margin-top:.3rem}
+    .flip{height:auto} .face{position:static}
+    h2{break-after:avoid} .q,.col,.def,.retenir{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="meta">Technologie · 5e · Cybersécurité · Séance 3 · Synthèse pour réviser</p>
+  <h1>Le phishing : ne pas mordre à l'hameçon</h1>
+  <p class="question">Phishing et hameçonnage : comment passer à travers les filets ?</p>
+
+  <div class="bar">
+    <nav class="nav" aria-label="Sommaire">
+      <a href="#def">1. C'est quoi ?</a><a href="#signes">2. Les 7 signes</a><a href="#lien">3. Le lien piège</a>
+      <a href="#jeu">4. Jeu</a><a href="#faire">5. Que faire ?</a><a href="#mots">6. Les mots</a><a href="#quiz">7. Quiz</a><a href="#pret">8. Je suis prêt</a>
+    </nav>
+    <div class="stars"><span>Mes révisions</span><span class="track"><i id="gbar"></i></span><span id="gtxt">0 %</span></div>
+  </div>
+
+  <!-- 1 -->
+  <h2 id="def"><span class="num">1</span> C'est quoi, le phishing ?</h2>
+  <div class="def reveal">
+    <svg viewBox="0 0 150 140" role="img" aria-label="Un hameçon accroche une enveloppe, comme un appât">
+      <rect x="0" y="95" width="150" height="45" rx="6" fill="var(--water)"/>
+      <line x1="75" y1="0" x2="75" y2="60" stroke="var(--ink-soft)" stroke-width="2"/>
+      <g class="hook">
+        <line x1="75" y1="0" x2="75" y2="60" stroke="var(--ink-soft)" stroke-width="2"/>
+        <rect x="47" y="60" width="56" height="38" rx="4" fill="var(--card)" stroke="var(--blue)" stroke-width="3"/>
+        <path d="M47 62 L75 82 L103 62" fill="none" stroke="var(--blue)" stroke-width="3"/>
+        <path d="M75 98 v14 a8 8 0 1 1 -14 -5" fill="none" stroke="var(--margin)" stroke-width="3.5" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <div>
+      <p>Le <strong>phishing</strong> (en français : <strong>hameçonnage</strong>) est une <mark>arnaque par message</mark> (mail, SMS, réseau social).</p>
+      <p>Le pirate <mark>se fait passer pour quelqu'un de confiance</mark> (une banque, un service de livraison, l'ENT…) pour te pousser à donner <strong>tes mots de passe</strong>, <strong>tes informations personnelles</strong> ou <strong>de l'argent</strong>.</p>
+      <p class="hint">Comme à la pêche : le message est l'appât, et c'est toi le poisson !</p>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <h2 id="signes"><span class="num">2</span> Les 7 signes qui doivent t'alerter</h2>
+  <p class="hint">Clique sur chaque carte pour voir un exemple. Retourne les 7 !</p>
+  <div class="signs" id="signs"></div>
+
+  <!-- 3 -->
+  <h2 id="lien"><span class="num">3</span> Le lien piège : regarde avant de cliquer</h2>
+  <p>Le texte d'un lien peut <strong>mentir</strong>. Pour connaître la vraie adresse, <mark>passe la souris dessus sans cliquer</mark> : elle s'affiche en bas de l'écran. Sur téléphone, <strong>appuie longtemps</strong> sur le lien.</p>
+  <div class="mail reveal">
+    <div class="mail-top"><span>De :</span> Service Sécurité &lt;securite@securiconpte.biz&gt;<br><span>Objet :</span> Mise à jour importante de sécurité de votre compte</div>
+    <div class="mail-body">
+      <p>Cher utilisateur, une activité inhabituelle a été détectée sur votre compte. Cliquez ci-dessous dès que possible :</p>
+      <button class="fake-btn" id="fakeBtn" type="button">Accéder à mon compte</button>
+      <p class="hint" style="margin-top:.6rem">Essaie : survole d’abord le bouton vert, puis clique dessus pour voir ce qui arrive. Rien de grave ne se passera.</p>
+    </div>
+    <div class="status" id="status" aria-live="polite">La vraie adresse du lien apparaîtra ici…</div>
+  </div>
+  <div class="trap" id="trap" hidden>
+    <div class="browser">
+      <div class="addr"><span aria-hidden="true">⚠️</span> http://www.securiconte.biz/connexion</div>
+      <div class="fake-page">
+        <p class="fake-logo">🔒 SECURICONPTE</p>
+        <p class="fake-title">Connectez-vous pour sécuriser votre compte</p>
+        <input type="text" placeholder="Identifiant" disabled aria-label="Faux champ identifiant">
+        <input type="text" placeholder="Mot de passe" disabled aria-label="Faux champ mot de passe">
+        <span class="fake-go">Valider</span>
+      </div>
+    </div>
+    <div class="trap-msg">
+      <p><b>🎣 Tu as mordu à l'hameçon !</b></p>
+      <p>En cliquant, tu arrives sur une <b>fausse page</b> qui imite un vrai site. Si tu tapes ton identifiant et ton mot de passe ici, <b>le pirate les récupère</b>.</p>
+      <p><b>Le bon réflexe :</b> survoler le lien sans cliquer, vérifier l'adresse, et en parler à un adulte.</p>
+      <button type="button" class="next" id="trapOk">J'ai compris</button>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <h2 id="jeu"><span class="num">4</span> Jeu : vrai message ou arnaque ?</h2>
+  <p class="hint">Lis chaque message et décide. Attention : certains messages sont vrais !</p>
+  <div class="game reveal" id="game">
+    <div class="msg" id="gmsg"></div>
+    <div class="choices">
+      <button class="b-scam" id="bScam" type="button">🎣 C'est une arnaque</button>
+      <button class="b-safe" id="bSafe" type="button">✅ Ça a l'air fiable</button>
+    </div>
+    <div class="verdict" id="gverdict" aria-live="polite"></div>
+    <div class="gnav"><span id="gcount"></span><button class="next" id="gnext" type="button" hidden>Message suivant →</button></div>
+  </div>
+
+  <!-- 5 -->
+  <h2 id="faire"><span class="num">5</span> Que faire ?</h2>
+  <div class="two reveal">
+    <div class="col a">
+      <h3>J'ai un doute sur un message</h3>
+      <ol>
+        <li><strong>Je ne clique pas</strong> sur le lien et je n'ouvre pas la pièce jointe.</li>
+        <li><strong>Je ne réponds pas</strong> et je ne donne jamais mon mot de passe.</li>
+        <li><strong>Je vérifie</strong> en allant moi-même sur le vrai site (pas par le lien).</li>
+        <li><strong>J'en parle à un adulte</strong> (parent, professeur).</li>
+        <li><strong>Je signale</strong> le message (Signal Spam, 33700 pour un SMS) puis je le supprime.</li>
+      </ol>
+    </div>
+    <div class="col b">
+      <h3>Oups, j'ai cliqué ou donné mon mot de passe</h3>
+      <ol>
+        <li><strong>Je préviens tout de suite un adulte.</strong></li>
+        <li><strong>Je change mon mot de passe</strong> sur ce compte, et partout où j'utilisais le même.</li>
+        <li><strong>J'active la double authentification</strong> si c'est possible.</li>
+        <li><strong>Je préviens mes contacts</strong> : le pirate pourrait leur écrire en se faisant passer pour moi.</li>
+      </ol>
+    </div>
+  </div>
+  <p class="hint">Rappel : <strong>aucun organisme sérieux</strong> (banque, ENT, collège, administration) ne te demandera jamais ton mot de passe par message.</p>
+
+  <!-- 6 -->
+  <h2 id="mots"><span class="num">6</span> Les mots à connaître</h2>
+  <p class="hint">Lis le mot, essaie de donner la définition dans ta tête, puis retourne la carte.</p>
+  <div class="deck reveal">
+    <button class="flip card-v" id="vcard" type="button" aria-pressed="false">
+      <span class="inner"><span class="face front" id="vfront"></span><span class="face back" id="vback"></span></span>
+    </button>
+    <div class="deck-nav"><button id="vprev" type="button" aria-label="Mot précédent">←</button><span id="vpos"></span><button id="vnext" type="button" aria-label="Mot suivant">→</button></div>
+  </div>
+
+  <!-- 7 -->
+  <h2 id="quiz"><span class="num">7</span> Quiz d'entraînement</h2>
+  <p class="hint">Une seule bonne réponse par question. La correction s'affiche tout de suite.</p>
+  <div id="quizbox"></div>
+  <div class="score" id="qscore">0 / 8</div>
+  <button class="redo" id="qredo" type="button">↺ Recommencer le quiz</button>
+
+  <!-- 8 -->
+  <h2 id="pret"><span class="num">8</span> Je suis prêt pour l'évaluation si…</h2>
+  <ul class="ready" id="ready">
+    <li><label><input type="checkbox">Je sais expliquer avec mes mots ce qu'est le phishing (hameçonnage).</label></li>
+    <li><label><input type="checkbox">Je connais au moins 5 des 7 signes d'un message piège.</label></li>
+    <li><label><input type="checkbox">Je sais vérifier la vraie adresse d'un lien sans cliquer.</label></li>
+    <li><label><input type="checkbox">Je sais reconnaître un vrai message d'une arnaque.</label></li>
+    <li><label><input type="checkbox">Je sais quoi faire si j'ai un doute, et si je me suis fait piéger.</label></li>
+    <li><label><input type="checkbox">Je connais les mots : expéditeur, lien, pièce jointe, usurpation d'identité.</label></li>
+  </ul>
+
+  <section class="retenir reveal">
+    <h2>Je retiens</h2>
+    <ul>
+      <li>Le phishing est une arnaque : le pirate se fait passer pour quelqu'un de confiance pour voler mes informations.</li>
+      <li>Je me méfie si le message est <strong>urgent</strong>, <strong>menaçant</strong>, <strong>trop beau</strong>, plein de <strong>fautes</strong>, ou s'il me demande mon <strong>mot de passe</strong>.</li>
+      <li>Je vérifie l'<strong>expéditeur</strong> et la <strong>vraie adresse du lien</strong> avant de cliquer.</li>
+      <li>En cas de doute : je ne clique pas, j'en parle à un adulte, je signale.</li>
+    </ul>
+  </section>
+
+  <footer>
+    La technologie au collège · Cybersécurité · Séance 3 · Cycle 4 · 5e
+    <br><button class="print" type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button>
+  </footer>
+</main>
+
+<script>
+(function(){
+  /* ---------- Progression globale ---------- */
+  const prog = { signs:new Set(), link:false, game:new Set(), vocab:new Set(), quiz:0, ready:0 };
+  const TOT = { signs:7, link:1, game:6, vocab:8, quiz:8, ready:6 };
+  function refresh(){
+    const parts = [prog.signs.size/TOT.signs, prog.link?1:0, prog.game.size/TOT.game, prog.vocab.size/TOT.vocab, prog.quiz/TOT.quiz, prog.ready/TOT.ready];
+    const pct = Math.round(parts.reduce((a,b)=>a+b,0)/parts.length*100);
+    document.getElementById('gbar').style.width = pct + '%';
+    document.getElementById('gtxt').textContent = pct + ' %';
+  }
+
+  /* ---------- 2. Les 7 signes ---------- */
+  const SIGNS = [
+    ['📧','L\'adresse de l\'expéditeur est bizarre','Le nom dit « La Poste » mais l\'adresse est :','laposte-colis@livr4ison-rapide.info'],
+    ['🔑','On te demande des informations personnelles','« Confirmez votre mot de passe et votre date de naissance pour continuer. »',''],
+    ['🔗','Le lien est suspect','Le texte dit « mon compte » mais l\'adresse réelle est :','http://www.securiconte.biz'],
+    ['⏰','C\'est urgent ou menaçant','« Votre compte sera supprimé dans 24 h si vous ne cliquez pas ! »',''],
+    ['✏️','Il y a des fautes ou des phrases bizarres','« Votre compte à été bloquer, veuillez clicker ici. »',''],
+    ['📎','Une pièce jointe inattendue','Un fichier que tu n\'attendais pas, surtout s\'il finit par :','facture_impayee.exe'],
+    ['🎭','L\'identité ne colle pas','Signé « L\'équipe de SECURICONPTE » : un nom vague, sans logo ni vraies coordonnées.','']
+  ];
+  const signsEl = document.getElementById('signs');
+  SIGNS.forEach((s,i) => {
+    const b = document.createElement('button');
+    b.className = 'flip reveal'; b.type = 'button'; b.setAttribute('aria-pressed','false');
+    b.innerHTML = '<span class="inner"><span class="face"><span class="ico" aria-hidden="true">'+s[0]+'</span><span class="n">Signe '+(i+1)+'</span><b>'+s[1]+'</b></span>'+
+      '<span class="face back"><span>'+s[2]+(s[3]?' <span class="ex">'+s[3]+'</span>':'')+'</span></span></span>';
+    b.addEventListener('click', () => {
+      const on = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', on);
+      prog.signs.add(i); refresh();
+    });
+    signsEl.appendChild(b);
+  });
+
+  /* ---------- 3. Le lien piège ---------- */
+  const fakeBtn = document.getElementById('fakeBtn'), status = document.getElementById('status');
+  function showLink(){
+    status.classList.add('show');
+    status.innerHTML = 'Vraie adresse : <b>http://www.securiconte.biz/connexion</b> → ce n\'est pas le site officiel !';
+    prog.link = true; refresh();
+  }
+  fakeBtn.addEventListener('mouseenter', showLink);
+  fakeBtn.addEventListener('focus', showLink);
+  const trap = document.getElementById('trap');
+  fakeBtn.addEventListener('click', e => {
+    e.preventDefault(); showLink();
+    trap.hidden = false;
+    trap.style.animation = 'none'; void trap.offsetWidth; trap.style.animation = '';
+    trap.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'nearest'});
+  });
+  document.getElementById('trapOk').addEventListener('click', () => { trap.hidden = true; fakeBtn.focus(); });
+  fakeBtn.addEventListener('mouseleave', () => { if (!document.getElementById('trap').hidden) return; status.classList.remove('show'); status.textContent = 'La vraie adresse du lien apparaîtra ici…'; });
+
+  /* ---------- 4. Jeu ---------- */
+  const GAME = [
+    {kind:'SMS', sms:true, from:'+33 7 52 •• •• ••', txt:'Votre colis n\'a pas pu être livré. Payez 1,99 € de frais pour une nouvelle livraison : <span class="lnk">http://colis-livr4ison.info</span>', scam:true,
+      why:['Tu n\'attendais peut-être aucun colis','On te demande de payer, même une petite somme','Le lien ne mène pas au site officiel du transporteur']},
+    {kind:'Mail', from:'De : <b>ENT Collège</b> &lt;support@ent-college-verif.com&gt;', txt:'Votre mot de passe expire dans 24 h. Confirmez votre identifiant et votre mot de passe ici pour ne pas perdre votre compte.', scam:true,
+      why:['On te demande ton mot de passe : jamais un vrai service ne le fait','Message urgent (24 h)','L\'adresse de l\'expéditeur n\'est pas celle du collège']},
+    {kind:'Messagerie de l\'ENT', from:'De : <b>M. le professeur de Technologie</b> (messagerie de l\'ENT)', txt:'Bonjour à tous, n\'oubliez pas de ranger votre activité « act 3 » dans votre dossier Séance 1 avant jeudi. Bonne journée.', scam:false,
+      why:['Il vient de la messagerie de l\'ENT, depuis un expéditeur que tu connais','Il ne demande ni mot de passe, ni argent, ni clic sur un lien','Le contenu correspond à ce que tu fais en classe']},
+    {kind:'Mail', from:'De : <b>Grand Jeu</b> &lt;gagnant@cadeaux-gratuits.win&gt;', txt:'🎉 FÉLICITATIONS !!! Vous avez gagné un smartphone ! Cliquez avant minuit et entrez vos coordonnées pour le recevoir.', scam:true,
+      why:['C\'est trop beau pour être vrai : tu n\'as participé à aucun jeu','Urgence : « avant minuit »','On te demande tes coordonnées personnelles']},
+    {kind:'Mail', from:'De : <b>Service Facturation</b> &lt;compta@factures-urgent.net&gt;', txt:'Vous avez une facture impayée. Ouvrez la pièce jointe pour régler votre dette : 📎 facture_impayee.exe', scam:true,
+      why:['Pièce jointe inattendue','Un fichier « .exe » est un programme : il peut installer un virus','Ton menaçant (dette impayée)']},
+    {kind:'Messagerie de l\'ENT', from:'De : <b>CDI du collège</b> (messagerie de l\'ENT)', txt:'Bonjour, le livre que tu as réservé est arrivé. Tu peux passer le chercher au CDI cette semaine.', scam:false,
+      why:['Expéditeur connu, dans la messagerie du collège','Aucune demande d\'information, d\'argent ou de clic','Le message est cohérent : tu avais réservé un livre']}
+  ];
+  let gi = 0, gscore = 0;
+  const gmsg = document.getElementById('gmsg'), gv = document.getElementById('gverdict'), gnext = document.getElementById('gnext');
+  const bScam = document.getElementById('bScam'), bSafe = document.getElementById('bSafe'), gcount = document.getElementById('gcount');
+  function showMsg(){
+    if (gi >= GAME.length){
+      gmsg.className = 'msg';
+      gmsg.innerHTML = '<p class="kind">Fin du jeu</p><p class="txt" style="font-size:1.2rem"><b>'+gscore+' / '+GAME.length+'</b> bonnes réponses. '+(gscore===GAME.length?'🏆 Parfait, tu ne mords pas à l\'hameçon !':'Relis les signes de la partie 2 et rejoue.')+'</p>';
+      bScam.disabled = bSafe.disabled = true; gv.className = 'verdict';
+      gnext.hidden = false; gnext.textContent = '↺ Rejouer'; gcount.textContent = '';
+      return;
+    }
+    const m = GAME[gi];
+    gmsg.className = 'msg' + (m.sms ? ' sms' : '');
+    gmsg.innerHTML = '<p class="kind">'+m.kind+'</p><p class="from">'+m.from+'</p><p class="txt">'+m.txt+'</p>';
+    bScam.disabled = bSafe.disabled = false; gv.className = 'verdict'; gnext.hidden = true;
+    gcount.textContent = 'Message ' + (gi+1) + ' / ' + GAME.length + ' · Score : ' + gscore;
+  }
+  function answer(saysScam){
+    const m = GAME[gi], ok = saysScam === m.scam;
+    if (ok) gscore++; else { gmsg.classList.remove('shake'); void gmsg.offsetWidth; gmsg.classList.add('shake'); }
+    gv.className = 'verdict show ' + (ok ? 'good' : 'bad');
+    gv.innerHTML = '<b>'+(ok?'✔ Bien vu ! ':'✘ Raté. ')+(m.scam?'C\'est une arnaque.':'Ce message est fiable.')+'</b><ul>'+m.why.map(w=>'<li>'+w+'</li>').join('')+'</ul>';
+    bScam.disabled = bSafe.disabled = true; gnext.hidden = false; gnext.textContent = 'Message suivant →';
+    gcount.textContent = 'Message ' + (gi+1) + ' / ' + GAME.length + ' · Score : ' + gscore;
+    prog.game.add(gi); refresh();
+  }
+  bScam.addEventListener('click', () => answer(true));
+  bSafe.addEventListener('click', () => answer(false));
+  gnext.addEventListener('click', () => { if (gi >= GAME.length){ gi = 0; gscore = 0; } else gi++; showMsg(); });
+  showMsg();
+
+  /* ---------- 6. Vocabulaire ---------- */
+  const VOC = [
+    ['Phishing','Mot anglais pour « hameçonnage » : une arnaque par message pour voler des informations.'],
+    ['Hameçonnage','Arnaque où le pirate se fait passer pour quelqu\'un de confiance pour obtenir tes informations.'],
+    ['Expéditeur','La personne ou l\'adresse qui a envoyé le message.'],
+    ['Lien','Texte ou bouton sur lequel on clique pour aller sur une page internet.'],
+    ['Pièce jointe','Fichier ajouté à un mail (image, document, programme…).'],
+    ['Usurpation d\'identité','Quand quelqu\'un se fait passer pour une autre personne ou une entreprise.'],
+    ['Double authentification','Une 2e vérification (code par SMS, application) en plus du mot de passe.'],
+    ['Signal Spam','Site officiel pour signaler un mail d\'arnaque. Pour un SMS : on le transfère au 33700.']
+  ];
+  let vi = 0;
+  const vcard = document.getElementById('vcard');
+  function showVoc(){
+    vcard.setAttribute('aria-pressed','false');
+    setTimeout(() => {
+      document.getElementById('vfront').innerHTML = '<b>'+VOC[vi][0]+'</b><span class="hint">Clique pour retourner</span>';
+      document.getElementById('vback').innerHTML = '<span><b style="color:var(--blue)">'+VOC[vi][0]+'</b><br>'+VOC[vi][1]+'</span>';
+      document.getElementById('vpos').textContent = (vi+1) + ' / ' + VOC.length;
+    }, 150);
+  }
+  vcard.addEventListener('click', () => {
+    vcard.setAttribute('aria-pressed', vcard.getAttribute('aria-pressed') !== 'true');
+    prog.vocab.add(vi); refresh();
+  });
+  document.getElementById('vnext').addEventListener('click', () => { vi = (vi+1) % VOC.length; showVoc(); });
+  document.getElementById('vprev').addEventListener('click', () => { vi = (vi-1+VOC.length) % VOC.length; showVoc(); });
+  showVoc();
+
+  /* ---------- 7. Quiz ---------- */
+  const QUIZ = [
+    ['Le phishing, c\'est…',['un virus qui efface les fichiers','une arnaque où le pirate se fait passer pour quelqu\'un de confiance','un antivirus'],1,'Le pirate imite une banque, l\'ENT, un livreur… pour voler tes informations.'],
+    ['Un message te dit : « Votre compte sera supprimé dans 1 heure ! ». C\'est…',['un signe de phishing : il veut te faire paniquer','normal, les sites préviennent toujours ainsi','sans importance'],0,'L\'urgence pousse à agir vite, sans réfléchir. C\'est un piège classique.'],
+    ['Comment voir la vraie adresse d\'un lien sans danger ?',['Je clique dessus pour voir','Je passe la souris dessus sans cliquer','Je réponds au mail'],1,'L\'adresse réelle s\'affiche en bas de l\'écran. Sur téléphone : appui long.'],
+    ['Quel service sérieux peut te demander ton mot de passe par mail ?',['Ta banque','L\'ENT du collège','Aucun'],2,'Aucun organisme sérieux ne demande un mot de passe par message.'],
+    ['Tu reçois une pièce jointe « photo.exe » d\'un inconnu. Tu…',['l\'ouvres pour voir la photo','ne l\'ouvres pas : un .exe est un programme qui peut être dangereux','la transfères à tes amis'],1,'Une pièce jointe inattendue, surtout en .exe, peut contenir un virus.'],
+    ['Tu as donné ton mot de passe sur un faux site. Que fais-tu en premier ?',['Rien','Je change mon mot de passe et je préviens un adulte','J\'attends de voir'],1,'Il faut agir vite : changer le mot de passe partout où il était utilisé.'],
+    ['Lequel de ces messages est le plus probablement FIABLE ?',['Un message de ton professeur sur l\'ENT, sans lien ni demande','« Vous avez gagné un smartphone ! Cliquez vite »','« Payez 1,99 € pour votre colis » d\'un numéro inconnu'],0,'Expéditeur connu, aucune demande, contenu cohérent : pas de signe d\'alerte.'],
+    ['Où signaler un SMS d\'arnaque ?',['Au 33700','Au 112','Nulle part'],0,'On transfère le SMS au 33700. Pour un mail, on utilise Signal Spam.']
+  ];
+  const qb = document.getElementById('quizbox');
+  let qdone = 0, qok = 0;
+  function buildQuiz(){
+    qb.innerHTML = ''; qdone = 0; qok = 0; updQ();
+    QUIZ.forEach((q,qi) => {
+      const d = document.createElement('div'); d.className = 'q reveal in';
+      d.innerHTML = '<p>'+(qi+1)+'. '+q[0]+'</p>';
+      q[1].forEach((o,oi) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'opt'; b.textContent = o;
+        b.addEventListener('click', () => {
+          d.querySelectorAll('.opt').forEach((x,xi) => { x.disabled = true; if (xi === q[2]) x.classList.add('right'); });
+          if (oi === q[2]) qok++; else b.classList.add('wrong');
+          d.classList.add('done'); qdone++; updQ();
+        });
+        d.appendChild(b);
+      });
+      const w = document.createElement('div'); w.className = 'why'; w.textContent = '💡 ' + q[3]; d.appendChild(w);
+      qb.appendChild(d);
+    });
+  }
+  function updQ(){
+    let t = qok + ' / ' + QUIZ.length + ' bonnes réponses';
+    if (qdone === QUIZ.length) t += qok === QUIZ.length ? ' · 🎉 Excellent, tu es prêt !' : qok >= 6 ? ' · 👍 Bien ! Relis les explications.' : ' · 💡 Relis la synthèse et recommence.';
+    document.getElementById('qscore').textContent = t;
+    prog.quiz = qok; refresh();
+  }
+  document.getElementById('qredo').addEventListener('click', buildQuiz);
+  buildQuiz();
+
+  /* ---------- 8. Je suis prêt ---------- */
+  const rb = document.querySelectorAll('#ready input');
+  rb.forEach(c => c.addEventListener('change', () => { prog.ready = Array.from(rb).filter(x=>x.checked).length; refresh(); }));
+
+  /* ---------- Apparitions ---------- */
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    document.documentElement.classList.add('js');
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }), {threshold:.15});
+    document.querySelectorAll('.reveal:not(.in)').forEach((el,i) => { el.style.transitionDelay = (el.classList.contains('flip') ? (i%7)*70 : 0) + 'ms'; io.observe(el); });
+    addEventListener('beforeprint', () => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
+  }
+  refresh();
+})();
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

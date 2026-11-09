@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Technologie 5e — Ressources interactives</title>
+<style>
+:root{--vert:#0f5c4d;--vert2:#1a8a72;--clair:#e8f5f1;--fond:#f4f7f6;--txt:#1d2a28;--gris:#66746f;--ligne:#dbe6e2;--accent:#f2a33a;
+ --ACTIVITE:#1f4f8f;--ACTIVITEb:#e2ecfa;--JEU:#7c3aed;--JEUb:#efe7fd;--DOC:#475569;--DOCb:#e8edf3;--VIDEO:#b42318;--VIDEOb:#fde7e4;
+ --TUTO:#a65411;--TUTOb:#fdeedd;--SYNTHESE:#5f2f9a;--SYNTHESEb:#efe6fa;--CORRIGE:#1f7a3d;--CORRIGEb:#e5f5ea;--EVAL:#9d174d;--EVALb:#fce7f3;
+ --LOGICIEL:#334155;--LOGICIELb:#e2e8f0;--FICHIER:#0e7490;--FICHIERb:#dff3f7}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--fond);color:var(--txt);line-height:1.5}
+a{color:inherit}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--vert);color:#fff;padding:18px 12px 24px;scrollbar-width:thin}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px 14px;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:12px;text-decoration:none}
+.brand .logo{width:40px;height:40px;border-radius:11px;background:var(--accent);display:grid;place-items:center;font-size:1.3rem;flex:none}
+.brand b{display:block;font-size:1.02rem}.brand span{font-size:.78rem;opacity:.75}
+.search{width:100%;padding:8px 11px;border-radius:9px;border:0;font:inherit;font-size:.9rem;margin-bottom:10px}
+.grp{font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;opacity:.6;font-weight:800;margin:14px 8px 6px}
+.side nav a{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:9px;text-decoration:none;font-size:.9rem;color:#e6f2ee;margin-bottom:2px;cursor:pointer}
+.side nav a i{font-style:normal;flex:none;min-width:34px;padding:0 4px;height:26px;border-radius:7px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:.78rem;font-weight:800}
+.side nav a .t{flex:1;line-height:1.25}
+.side nav a .c{font-size:.72rem;font-weight:700;background:var(--accent);color:#fff;border-radius:99px;padding:1px 7px}
+.side nav a:hover{background:rgba(255,255,255,.1)}
+.side nav a.on{background:#fff;color:var(--vert)}.side nav a.on i{background:var(--accent);color:#fff}
+.side nav a.sub{padding-left:22px;font-size:.84rem;opacity:.9}
+.menubtn{display:none}
+main{padding:28px 36px 60px;max-width:1100px;width:100%}
+.hero{background:linear-gradient(135deg,var(--vert),var(--vert2));color:#fff;border-radius:18px;padding:26px 28px;margin-bottom:22px}
+.hero .k{font-size:.78rem;letter-spacing:1.3px;text-transform:uppercase;opacity:.8;font-weight:700}
+.hero h1{margin:4px 0 6px;font-size:clamp(1.5rem,3.5vw,2.1rem);line-height:1.2}
+.hero p{margin:0;opacity:.92;max-width:720px}
+.hero .num{display:inline-grid;place-items:center;min-width:54px;height:54px;border-radius:14px;background:var(--accent);font-weight:800;font-size:1.3rem;margin-bottom:10px;padding:0 10px}
+h2{font-size:1.15rem;color:var(--vert);margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+.box{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:16px 18px}
+.obj ul{margin:6px 0 0;padding-left:20px}.obj li{margin:3px 0}
+.how{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.how div{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:14px;position:relative}
+.how div b{display:block;margin:6px 0 2px}.how div p{margin:0;font-size:.88rem;color:var(--gris)}
+.how .ico{font-size:1.5rem}
+.how div:not(:last-child)::after{content:"→";position:absolute;right:-12px;top:42%;color:var(--accent);font-weight:800;font-size:1.1rem}
+.seance{background:#fff;border:1px solid var(--ligne);border-radius:16px;padding:16px 18px;margin:0 0 16px;scroll-margin-top:16px}
+.seance h3{margin:0 0 10px;font-size:1.08rem;color:var(--vert);display:flex;gap:10px;align-items:center}
+.seance h3 .sn{flex:none;min-width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:.9rem}
+.note{background:#fff8ec;border-left:5px solid var(--accent);border-radius:10px;padding:9px 13px;margin:0 0 12px;font-size:.93rem}
+.note p{margin:2px 0}
+.pics{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
+.pics img{max-width:100%;max-height:340px;border-radius:10px;border:1px solid var(--ligne)}
+.list{display:grid;gap:8px}
+.card{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--ligne);border-left:6px solid var(--c);border-radius:12px;padding:10px 14px;text-decoration:none;transition:.15s;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.card:hover{transform:translateX(3px);box-shadow:0 6px 16px rgba(15,92,77,.12)}
+.card .ic{font-size:1.5rem;flex:none}
+.card .bd{flex:1;min-width:0}
+.card b{display:block;font-size:1rem}
+.card .s{color:var(--gris);font-size:.86rem}
+.card .go{flex:none;font-weight:700;color:var(--vert2);font-size:.86rem;white-space:nowrap}
+.tag{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.05em;padding:2px 8px;border-radius:10px;margin-right:6px;color:var(--c);background:var(--cb)}
+.legend{display:flex;flex-wrap:wrap;gap:8px}.legend span{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--ligne);border-radius:99px;padding:5px 12px;font-size:.86rem}
+.seqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.seqgrid a{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--ligne);border-radius:12px;padding:12px;text-decoration:none}
+.seqgrid a:hover{border-color:var(--vert2)}
+.seqgrid a i{font-style:normal;flex:none;min-width:40px;height:40px;border-radius:10px;background:var(--clair);color:var(--vert);display:grid;place-items:center;font-weight:800}
+.seqgrid a small{display:block;color:var(--gris)}
+.pn{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
+.pn a{background:#fff;border:1px solid var(--ligne);border-radius:10px;padding:9px 14px;text-decoration:none;font-weight:600;color:var(--vert);font-size:.9rem}
+.pn a:hover{border-color:var(--vert2)}
+footer{text-align:center;color:var(--gris);font-size:.8rem;padding:24px}
+/* fenêtre d'aperçu */
+.modal{position:fixed;inset:0;background:rgba(10,30,26,.72);display:none;z-index:100;padding:18px}
+.modal.open{display:flex;flex-direction:column}
+.modal .bar{display:flex;gap:10px;align-items:center;background:#fff;border-radius:12px 12px 0 0;padding:10px 14px}
+.modal .bar b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal .bar a,.modal .bar button{border:0;border-radius:9px;padding:7px 12px;font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;text-decoration:none}
+.modal .bar a{background:var(--clair);color:var(--vert)}
+.modal .bar button{background:var(--vert);color:#fff}
+.modal iframe{flex:1;width:100%;border:0;background:#fff;border-radius:0 0 12px 12px}
+@media(max-width:900px){
+ .layout{grid-template-columns:minmax(0,1fr)}
+ .side{position:sticky;top:0;height:auto;z-index:20;padding:10px 12px}
+ .brand{border:0;margin:0;padding:0 4px}
+ .menubtn{display:block;width:100%;margin-top:8px;border:0;border-radius:9px;padding:8px;font:inherit;font-weight:700;background:var(--accent);color:#fff;cursor:pointer}
+ .side .inner{display:none;max-height:65vh;overflow-y:auto;margin-top:8px}
+ .side.open .inner{display:block}
+ main{padding:18px 14px 40px}
+ .how{grid-template-columns:1fr 1fr}.how div::after{display:none}
+ .card .go{display:none}
+ .modal{padding:6px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="side" id="side">
+ <a class="brand" href="#accueil"><div class="logo">🛠️</div><div><b>Technologie 5e</b><span>Collège — Ressources interactives</span></div></a>
+ <button class="menubtn" id="menubtn">☰ Séquences</button>
+ <div class="inner">
+  <input class="search" id="q" type="search" placeholder="🔍 Chercher une ressource…">
+  <nav id="nav"></nav>
+ </div>
+</aside>
+<main id="main"></main>
+</div>
+<div class="modal" id="modal">
+ <div class="bar"><b id="mt"></b><a id="mo" href="#" target="_blank" rel="noopener">Ouvrir dans un nouvel onglet ↗</a><button id="mc">✕ Fermer</button></div>
+ <iframe id="mf" allow="autoplay; fullscreen" allowfullscreen></iframe>
+</div>
+<script>
+/* ===== Types de ressources ===== */
+const T={
+ ACTIVITE:{l:"ACTIVITÉ",i:"🎯",d:"Je fais l'activité de la séance"},
+ JEU:{l:"JEU",i:"🎮",d:"Je m'entraîne en jouant"},
+ DOC:{l:"DOCUMENT",i:"📄",d:"Je lis le document"},
+ VIDEO:{l:"VIDÉO",i:"🎬",d:"Je regarde la vidéo"},
+ TUTO:{l:"TUTO",i:"🛠️",d:"Je suis les étapes"},
+ FICHIER:{l:"FICHIER",i:"📁",d:"Je télécharge le fichier"},
+ LOGICIEL:{l:"LOGICIEL",i:"💾",d:"J'installe le logiciel"},
+ SYNTHESE:{l:"SYNTHÈSE",i:"🧠",d:"Je retiens l'essentiel"},
+ EVAL:{l:"ÉVALUATION",i:"📝",d:"Je montre ce que je sais"},
+ CORRIGE:{l:"CORRECTION",i:"✅",d:"Je vérifie mon travail"}
+};
+
+/* ===== Séquences ===== */
+const S=/*DATA*/[];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const count=s=>s.seances.reduce((n,x)=>n+x.items.length,0);
+const all=[];S.forEach(s=>s.seances.forEach((x,j)=>x.items.forEach(r=>all.push([s,j,r]))));
+
+function card(r){const ty=T[r.k];const st=`style="--c:var(--${r.k});--cb:var(--${r.k}b)"`;
+ const inner=`<span class="ic">${ty.i}</span><span class="bd"><span class="tag">${ty.l}</span><b>${esc(r.t)}</b><span class="s">${esc(r.s)}</span></span>`;
+ if(r.h) return `<a class="card" href="${r.h}" ${st}>${inner}<span class="go">Ouvrir →</span></a>`;
+ if(r.drive&&r.mode==='dl') return `<a class="card" href="https://drive.google.com/file/d/${r.drive}/view" target="_blank" rel="noopener" ${st}>${inner}<span class="go">Télécharger ↗</span></a>`;
+ const src=r.yt?`https://www.youtube-nocookie.com/embed/${r.yt}`:`https://drive.google.com/file/d/${r.drive}/preview`;
+ const ext=r.yt?`https://www.youtube.com/watch?v=${r.yt}`:`https://drive.google.com/file/d/${r.drive}/view`;
+ return `<button class="card" ${st} data-src="${src}" data-ext="${ext}" data-t="${esc(r.t)}">${inner}<span class="go">${r.k==='VIDEO'?'Regarder ▶':'Voir 👁'}</span></button>`}
+
+/* ===== menu ===== */
+function buildNav(filter){
+ const f=(filter||"").trim().toLowerCase();
+ if(f){const hits=all.filter(([s,j,r])=>(r.t+" "+r.s+" "+s.t+" "+s.seances[j].t).toLowerCase().includes(f));
+  $('#nav').innerHTML=`<div class="grp">Résultats (${hits.length})</div>`+(hits.length?hits.map(([s,j,r])=>`<a href="#${s.id}-${j}"><i>S${s.n}</i><span class="t">${T[r.k].i} ${esc(r.t)}</span></a>`).join(''):'<div style="padding:6px 8px;opacity:.7;font-size:.88rem">Aucune ressource trouvée.</div>');return}
+ $('#nav').innerHTML=`<a href="#accueil" data-id="accueil"><i>⌂</i><span class="t">Accueil</span></a><div class="grp">Séquences</div>`+
+  S.map(s=>`<a href="#${s.id}" data-id="${s.id}"><i>S${s.n}</i><span class="t">${esc(s.t)}</span><span class="c">${count(s)}</span></a>`).join('');
+ markNav()}
+function markNav(){const id=(location.hash||'#accueil').slice(1).split('-')[0];document.querySelectorAll('#nav a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===id))}
+
+/* ===== vues ===== */
+function home(){
+ return `<div class="hero"><div class="k">Collège · Classe de 5e</div><h1>Technologie 5e</h1><p>${all.length} ressources rangées par séquence et par séance. Choisis une séquence dans le menu, puis suis les séances dans l'ordre.</p></div>
+ <h2>🧭 Comment travailler une séance ?</h2>
+ <div class="how">${["ACTIVITE","DOC","VIDEO","SYNTHESE"].map(k=>`<div><span class="ico">${T[k].i}</span><b>${T[k].l}</b><p>${T[k].d}</p></div>`).join('')}</div>
+ <p style="color:var(--gris);font-size:.9rem;margin:10px 2px 0">N'oublie pas : range toujours ton travail dans ton <b>Drive</b>, dans le bon dossier.</p>
+ <h2>📚 Les séquences</h2>
+ <div class="seqgrid">${S.map(s=>`<a href="#${s.id}"><i>S${s.n}</i><span><b>${esc(s.t)}</b><small>${s.seances.length} séances · ${count(s)} ressources</small></span></a>`).join('')}</div>
+ <h2>🏷️ Légende</h2>
+ <div class="legend">${Object.keys(T).map(k=>`<span>${T[k].i} <b style="color:var(--${k})">${T[k].l}</b> ${T[k].d.toLowerCase()}</span>`).join('')}</div>`}
+
+function seqView(s){
+ const i=S.indexOf(s),prev=S[i-1],next=S[i+1];let n=0;
+ return `<div class="hero"><div class="num">S${s.n}</div><div class="k">Séquence ${s.n}</div><h1>${esc(s.t)}</h1></div>
+ <div class="box obj"><b>🎯 Ce que tu vas apprendre</b><ul>${s.o.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+ <h2>🗺️ Les séances</h2>
+ ${s.seances.map((x,j)=>{const num=/^[^\wÀ-ÿ]/.test(x.t)?'':++n;return `<section class="seance" id="${s.id}-${j}"><h3>${num?`<span class="sn">${num}</span>`:''}${esc(x.t)}</h3>
+  ${x.note?`<div class="note">${x.note.map(t=>`<p>👉 ${esc(t)}</p>`).join('')}</div>`:''}
+  ${x.img&&x.img.length?`<div class="pics">${x.img.map(u=>`<img src="${u}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`).join('')}</div>`:''}
+  <div class="list">${x.items.map(card).join('')}</div></section>`}).join('')}
+ <div class="pn">${prev?`<a href="#${prev.id}">← Séquence ${prev.n} — ${esc(prev.t)}</a>`:'<span></span>'}${next?`<a href="#${next.id}">Séquence ${next.n} — ${esc(next.t)} →</a>`:'<span></span>'}</div>`}
+
+function route(){const h=(location.hash||'#accueil').slice(1),[id,j]=h.split('-'),s=S.find(x=>x.id===id);
+ $('#main').innerHTML=(s?seqView(s):home())+'<footer>Technologie 5e — M\'RASSI</footer>';
+ markNav();$('#side').classList.remove('open');
+ const el=j!==undefined&&document.getElementById(h);if(el)el.scrollIntoView();else window.scrollTo(0,0)}
+
+/* ===== fenêtre d'aperçu (PDF, vidéos) ===== */
+document.addEventListener('click',e=>{const b=e.target.closest('button.card');if(!b)return;
+ $('#mt').textContent=b.dataset.t;$('#mo').href=b.dataset.ext;$('#mf').src=b.dataset.src;$('#modal').classList.add('open')});
+function closeM(){$('#modal').classList.remove('open');$('#mf').src='about:blank'}
+$('#mc').addEventListener('click',closeM);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+
+$('#q').addEventListener('input',e=>buildNav(e.target.value));
+$('#menubtn').addEventListener('click',()=>$('#side').classList.toggle('open'));
+window.addEventListener('hashchange',route);
+buildNav();route();
+</script>
+</body>
+</html>

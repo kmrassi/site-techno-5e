@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Réseau informatique du collège</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2F5F8; --surface:#FFFFFF; --surface-2:#E8F0F7; --ink:#15314D; --ink-soft:#4A6178;
+  --blue:#0B6BB8; --blue-2:#0A4F8A; --on-blue:#FFFFFF; --line:#C9D6E3;
+  --cable:#D7263D; --ok:#1F7A45; --ok-bg:#E1F2E7; --ko:#B3261E; --ko-bg:#FBE6E3;
+  --amber:#9A5B00; --amber-bg:#FFF0D1;
+  --term-bg:#0E1B2A; --term-ink:#DCE7F2; --term-ok:#7BE0A0; --term-ko:#FF8F8F; --term-dim:#8BA0B6;
+  --room-labo:#FFF7D6; --room-tech:#E7ECF1; --room-multi:#E4F2EA; --room-cdi:#E8EEFB;
+  --icon-fill:#FFFFFF; --icon-screen:#CFE6F8; --icon-dark:#2B3E52;
+  --radius:10px;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Lexend",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1822; --surface:#152433; --surface-2:#1C3044; --ink:#E4EDF5; --ink-soft:#A3B6C8;
+    --blue:#4FA3E8; --blue-2:#7DBBEE; --on-blue:#07131E; --line:#2B4258;
+    --cable:#FF5C70; --ok:#6FD39A; --ok-bg:#15372A; --ko:#FF8A80; --ko-bg:#3D1B1A;
+    --amber:#F2B45A; --amber-bg:#3A2A10;
+    --room-labo:#2C2A18; --room-tech:#1E2B38; --room-multi:#172D24; --room-cdi:#1A2440;
+    --icon-fill:#22384D; --icon-screen:#2D5B80; --icon-dark:#CFDDEA;
+  }
+}
+:root[data-theme="dark"]{
+    --bg:#0D1822; --surface:#152433; --surface-2:#1C3044; --ink:#E4EDF5; --ink-soft:#A3B6C8;
+    --blue:#4FA3E8; --blue-2:#7DBBEE; --on-blue:#07131E; --line:#2B4258;
+    --cable:#FF5C70; --ok:#6FD39A; --ok-bg:#15372A; --ko:#FF8A80; --ko-bg:#3D1B1A;
+    --amber:#F2B45A; --amber-bg:#3A2A10;
+    --room-labo:#2C2A18; --room-tech:#1E2B38; --room-multi:#172D24; --room-cdi:#1A2440;
+    --icon-fill:#22384D; --icon-screen:#2D5B80; --icon-dark:#CFDDEA;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+img,svg{max-width:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:4px}
+h1,h2,h3{line-height:1.2;margin:0}
+p{margin:0 0 .6em}
+
+/* En-tête */
+.top{background:var(--blue-2);color:#fff;padding:18px 20px 0}
+:root:not([data-theme="light"]) .top{background:#0A3F6E}
+@media (prefers-color-scheme: light){ .top{background:#0A4F8A} }
+.top-inner{max-width:1180px;margin:0 auto}
+.top h1{font-size:clamp(1.35rem,2.6vw,1.9rem);font-weight:700;letter-spacing:-.01em}
+.top .sub{opacity:.85;font-size:.95rem;margin-top:2px}
+.tabs{display:flex;gap:4px;margin-top:16px;overflow-x:auto;scrollbar-width:none}
+.tabs button{border:0;background:transparent;color:#fff;opacity:.8;padding:10px 16px 12px;border-radius:10px 10px 0 0;cursor:pointer;white-space:nowrap;font-weight:500}
+.tabs button:hover{opacity:1;background:rgba(255,255,255,.08)}
+.tabs button[aria-selected="true"]{background:var(--bg);color:var(--ink);opacity:1}
+.tabs .num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);font-size:.8rem;margin-right:8px}
+.tabs button[aria-selected="true"] .num{background:var(--blue);color:var(--on-blue)}
+
+main{max-width:1180px;margin:0 auto;padding:24px 20px 60px}
+section.panel[hidden]{display:none}
+.lede{font-size:1.05rem;color:var(--ink-soft);max-width:70ch;margin-bottom:22px}
+.block{margin:30px 0 0}
+.block > h2{font-size:1.25rem;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.block > h2::before{content:"";width:6px;height:1.1em;border-radius:3px;background:var(--blue)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.muted{color:var(--ink-soft)}
+.small{font-size:.88rem}
+
+.btn{border:1px solid var(--blue);background:var(--blue);color:var(--on-blue);padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;color:var(--blue)}
+.btn.quiet{border-color:var(--line);background:var(--surface);color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+.feedback{border-radius:8px;padding:10px 12px;margin-top:10px;font-size:.95rem}
+.feedback.ok{background:var(--ok-bg);color:var(--ok)}
+.feedback.ko{background:var(--ko-bg);color:var(--ko)}
+.feedback.info{background:var(--amber-bg);color:var(--amber)}
+.feedback:empty{display:none}
+
+/* Terminal */
+.term{background:var(--term-bg);color:var(--term-ink);font-family:var(--mono);font-size:.86rem;border-radius:8px;padding:12px;line-height:1.5}
+.term pre{margin:0;white-space:pre-wrap;word-break:break-word;min-height:1.5em;max-height:260px;overflow:auto}
+.term .l-ok{color:var(--term-ok)} .term .l-ko{color:var(--term-ko)} .term .l-dim{color:var(--term-dim)}
+.term .prompt{display:flex;gap:8px;align-items:center;margin-top:6px}
+.term .prompt span{color:var(--term-ok)}
+.term input{flex:1;min-width:0;background:transparent;border:0;color:var(--term-ink);font-family:var(--mono);font-size:.9rem;outline:none;padding:4px 0}
+.term input:focus-visible{outline:none;border-bottom:1px solid var(--term-ok)}
+
+/* ---------- Onglet 1 : fiche ressource ---------- */
+.elements{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.flip{position:relative;border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:14px;text-align:left;cursor:pointer;min-height:190px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s}
+.flip:hover{border-color:var(--blue)}
+.flip svg{width:74px;height:74px}
+.flip .name{font-weight:600}
+.flip .role{display:none;font-size:.9rem;color:var(--ink-soft)}
+.flip .hint{font-size:.8rem;color:var(--blue);margin-top:auto}
+.flip[aria-pressed="true"]{border-color:var(--blue);background:var(--surface-2)}
+.flip[aria-pressed="true"] svg{width:40px;height:40px}
+.flip[aria-pressed="true"] .role{display:block}
+.flip[aria-pressed="true"] .hint{display:none}
+.cable-card{display:flex;gap:18px;align-items:center}
+.cable-card svg{flex:0 0 90px;height:60px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:6px}
+.steps li{counter-increment:s;display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.steps li::before{content:counter(s);flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);color:var(--blue);font-weight:600;font-size:.9rem}
+.steps li.done{opacity:.65}
+.steps li.done::before{content:"✓";background:var(--ok);color:#fff}
+.kbd{font-family:var(--mono);font-size:.85em;background:var(--term-bg);color:var(--term-ok);padding:1px 6px;border-radius:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.two{grid-template-columns:1fr}}
+.interp{display:grid;gap:12px}
+.interp .choice{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.choice button{border:1px solid var(--line);background:var(--surface);padding:7px 12px;border-radius:8px;cursor:pointer}
+.choice button.sel-ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.choice button.sel-ko{background:var(--ko-bg);border-color:var(--ko);color:var(--ko)}
+
+/* ---------- Réseau SVG (partagé) ---------- */
+.net-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+.net-wrap svg{display:block;width:100%;min-width:720px;height:auto;user-select:none}
+.room rect{stroke:var(--line);stroke-width:1.5}
+.room text{fill:var(--ink);font-family:var(--sans);font-weight:600;font-size:21px}
+.room.labo rect{fill:var(--room-labo)} .room.tech rect{fill:var(--room-tech)}
+.room.multi rect{fill:var(--room-multi)} .room.cdi rect{fill:var(--room-cdi)}
+.cable{stroke:var(--ink);stroke-width:4;stroke-linecap:round}
+.cable-hit{stroke:transparent;stroke-width:18;cursor:pointer}
+.cable-hit:hover + .cable, .cable.hover{stroke:var(--cable)}
+.cable.ghost{stroke:var(--cable);stroke-dasharray:8 7;opacity:.55}
+.node{cursor:pointer}
+.node .halo{fill:transparent;stroke:transparent;stroke-width:3}
+.node:hover .halo{stroke:var(--line);fill:var(--surface-2)}
+.node.sel .halo{stroke:var(--blue);fill:var(--surface-2);stroke-width:3}
+.node.pulse .halo{stroke:var(--cable);stroke-width:4;fill:transparent}
+.node.bad .halo{stroke:var(--ko);stroke-width:3}
+.node:focus-visible{outline:none}
+.node:focus-visible .halo{stroke:var(--blue);stroke-dasharray:4 3}
+.node .lbl,.node .ip{paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+.node .lbl{fill:var(--ink);font-family:var(--sans);font-size:17px;font-weight:500}
+.node .ip{fill:var(--blue);font-family:var(--mono);font-size:16px;font-weight:500}
+.node .ip.none{fill:var(--ink-soft)}
+.packet{fill:var(--blue);stroke:#fff;stroke-width:2}
+.packet.lost{fill:var(--ko)}
+.ico-body{fill:var(--icon-fill);stroke:var(--icon-dark);stroke-width:2.2}
+.ico-screen{fill:var(--icon-screen);stroke:var(--icon-dark);stroke-width:1.6}
+.ico-dark{fill:var(--icon-dark)}
+.ico-line{stroke:var(--icon-dark);stroke-width:2.2;fill:none;stroke-linecap:round}
+.ico-led{fill:#2FB36B}
+.ico-cable{stroke:var(--cable);fill:none;stroke-width:5;stroke-linecap:round}
+
+/* ---------- Onglet 2 : simulateur ---------- */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:10px 16px;cursor:pointer;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--blue);color:var(--on-blue)}
+.sim{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;margin-top:14px;align-items:start}
+@media (max-width:980px){.sim{grid-template-columns:1fr}}
+.side{display:grid;gap:12px}
+.side h3{font-size:1.05rem;font-weight:600;margin-bottom:6px}
+.checks{list-style:none;padding:0;margin:10px 0 0;display:grid;gap:6px;font-size:.92rem}
+.checks li{display:flex;gap:8px;align-items:flex-start}
+.checks li::before{flex:0 0 20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700;margin-top:2px}
+.checks li.y::before{content:"✓";background:var(--ok);color:#fff}
+.checks li.n::before{content:"✕";background:var(--ko);color:#fff}
+.form-grid{display:grid;grid-template-columns:auto 1fr;gap:8px 10px;align-items:center;font-size:.92rem}
+.form-grid input{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:7px 9px;font-family:var(--mono);font-size:.9rem;width:100%}
+.form-grid output{font-family:var(--mono);font-size:.88rem;color:var(--ink-soft)}
+details.teacher{border:1px dashed var(--line);border-radius:var(--radius);padding:10px 14px;background:var(--surface)}
+details.teacher summary{cursor:pointer;font-weight:600}
+details.teacher .row{margin-top:10px}
+
+/* ---------- Onglet 3 : fiche de travail ---------- */
+.idline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.idline{grid-template-columns:1fr 1fr}}
+.idline label{display:grid;gap:4px;font-size:.85rem;color:var(--ink-soft)}
+.field{border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:8px 10px;width:100%}
+.field.mono{font-family:var(--mono)}
+.field.ok{border-color:var(--ok);background:var(--ok-bg)}
+.field.ko{border-color:var(--ko);background:var(--ko-bg)}
+.descs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:820px){.descs{grid-template-columns:1fr}}
+.desc{background:var(--surface-2);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px}
+.desc ul{margin:0;padding-left:18px}
+.desc select{margin-top:auto}
+.pingpick{display:grid;gap:10px}
+.pingpick label{display:grid;grid-template-columns:auto minmax(0,1fr) 190px;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px;cursor:pointer}
+@media (max-width:760px){.pingpick label{grid-template-columns:auto 1fr}.pingpick label .term{grid-column:1/-1}}
+.pingpick input{width:20px;height:20px;accent-color:var(--blue)}
+.pingpick .term{font-size:.8rem;padding:8px 10px}
+.cfg{width:100%;border-collapse:separate;border-spacing:0;font-size:.95rem}
+.cfg th,.cfg td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}
+.cfg th{font-weight:600;background:var(--surface-2)}
+.cfg td.mono{font-family:var(--mono)}
+.cfg-wrap{overflow-x:auto}
+textarea.field{min-height:74px;resize:vertical}
+.model{margin-top:8px;border-left:4px solid var(--ok);background:var(--ok-bg);padding:10px 12px;border-radius:0 8px 8px 0;color:var(--ink)}
+.model[hidden]{display:none}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;font-weight:600;font-size:.88rem}
+.badge.ok{background:var(--ok-bg);color:var(--ok)} .badge.ko{background:var(--ko-bg);color:var(--ko)} .badge.wait{background:var(--surface-2);color:var(--ink-soft)}
+.used{font-size:.88rem;color:var(--ink-soft);margin:8px 0 0}
+.used code{font-family:var(--mono)}
+
+/* ---------- Onglet 4 : QCM ---------- */
+.qcm{max-width:860px}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.dots{display:flex;gap:6px}
+.dots span{width:30px;height:8px;border-radius:4px;background:var(--line)}
+.dots span.cur{background:var(--blue)}
+.dots span.ok{background:var(--ok)} .dots span.ko{background:var(--ko)}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px}
+.qcard .qn{color:var(--blue);font-weight:600;margin-bottom:6px}
+.qcard .qt{font-size:1.15rem;margin-bottom:16px}
+.projection .qcard .qt{font-size:clamp(1.3rem,2.6vw,1.8rem)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.opts{grid-template-columns:1fr}}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:10px;padding:12px;cursor:pointer;font-size:1rem}
+.projection .opt{font-size:1.2rem;padding:16px}
+.opt .L{flex:0 0 36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--surface-2);color:var(--blue);font-weight:700}
+.opt:hover:not(:disabled){border-color:var(--blue)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)} .opt.right .L{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--ko);background:var(--ko-bg)} .opt.wrong .L{background:var(--ko);color:#fff}
+.explain{margin-top:14px}
+.score{font-size:2.4rem;font-weight:700;color:var(--blue)}
+.recap{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px}
+.recap li{padding:8px 12px;border-radius:8px}
+.recap li.ok{background:var(--ok-bg)} .recap li.ko{background:var(--ko-bg)}
+
+
+/* Bouton plein écran */
+.top-inner{position:relative}
+.fs-btn{position:absolute;top:0;right:0;display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.12);color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:500;font-size:.92rem}
+.fs-btn:hover{background:rgba(255,255,255,.22)}
+.fs-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.top h1,.top .sub{padding-right:190px}
+@media (max-width:640px){.fs-btn{position:static;margin-top:10px}.top h1,.top .sub{padding-right:0}}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- Icônes réutilisées -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-pc" viewBox="0 0 80 80">
+      <rect class="ico-body" x="8" y="10" width="64" height="44" rx="5"/>
+      <rect class="ico-screen" x="14" y="16" width="52" height="32" rx="2"/>
+      <path class="ico-line" d="M40 54v10M26 68h28"/>
+    </symbol>
+    <symbol id="i-laptop" viewBox="0 0 80 80">
+      <rect class="ico-body" x="16" y="16" width="48" height="34" rx="4"/>
+      <rect class="ico-screen" x="21" y="21" width="38" height="24" rx="2"/>
+      <path class="ico-body" d="M8 58h64l-6 8H14z"/>
+    </symbol>
+    <symbol id="i-server" viewBox="0 0 80 80">
+      <rect class="ico-body" x="22" y="4" width="36" height="72" rx="5"/>
+      <path class="ico-line" d="M29 18h22M29 28h22M29 38h22"/>
+      <circle class="ico-led" cx="30" cy="62" r="3"/><circle class="ico-dark" cx="40" cy="62" r="3"/>
+    </symbol>
+    <symbol id="i-switch" viewBox="0 0 80 80">
+      <path class="ico-body" d="M4 34l8-8h56l8 8v18H4z"/>
+      <g class="ico-dark"><rect x="10" y="38" width="7" height="6" rx="1"/><rect x="21" y="38" width="7" height="6" rx="1"/><rect x="32" y="38" width="7" height="6" rx="1"/><rect x="43" y="38" width="7" height="6" rx="1"/><rect x="54" y="38" width="7" height="6" rx="1"/></g>
+      <circle class="ico-led" cx="68" cy="41" r="2.5"/>
+    </symbol>
+    <symbol id="i-router" viewBox="0 0 80 80">
+      <path class="ico-line" d="M24 38L18 14M56 38l6-24"/>
+      <rect class="ico-body" x="8" y="38" width="64" height="22" rx="5"/>
+      <circle class="ico-led" cx="20" cy="49" r="3"/><circle class="ico-led" cx="30" cy="49" r="3"/><circle class="ico-dark" cx="40" cy="49" r="3"/>
+      <path class="ico-line" d="M52 45v8M58 45v8M64 45v8"/>
+    </symbol>
+    <symbol id="i-cloud" viewBox="0 0 80 80">
+      <path class="ico-body" d="M22 60h38a14 14 0 0 0 1-28 20 20 0 0 0-38-4 16 16 0 0 0-1 32z"/>
+      <path class="ico-line" d="M28 46c6-8 18-8 24 0M34 51c3-3 9-3 12 0"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="top-inner">
+    <button class="fs-btn" id="btnFs" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path id="fsIco" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span id="fsTxt">Plein écran</span></button>
+    <h1>Le réseau informatique du collège</h1>
+    <div class="sub">Technologie, 5ème – Fonctionnement d’un réseau local (LAN)</div>
+    <nav class="tabs" role="tablist" aria-label="Documents">
+      <button role="tab" id="t-fiche" aria-controls="p-fiche" aria-selected="true"><span class="num">1</span>Fiche ressource</button>
+      <button role="tab" id="t-sim" aria-controls="p-sim" aria-selected="false"><span class="num">2</span>Simulateur</button>
+      <button role="tab" id="t-travail" aria-controls="p-travail" aria-selected="false"><span class="num">3</span>Fiche de travail</button>
+      <button role="tab" id="t-qcm" aria-controls="p-qcm" aria-selected="false"><span class="num">4</span>QCM</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ================= 1. FICHE RESSOURCE ================= -->
+<section class="panel" id="p-fiche" role="tabpanel" aria-labelledby="t-fiche">
+  <p class="lede">Cette fiche t’aide à identifier le matériel du réseau informatique du collège et les éléments qui le relient. Elle explique aussi comment vérifier que les informations circulent en testant la communication.</p>
+
+  <div class="block">
+    <h2>Les éléments qui composent le réseau</h2>
+    <p class="muted small">Clique sur un élément pour découvrir son rôle.</p>
+    <div class="elements" id="elements"></div>
+  </div>
+
+  <div class="block">
+    <h2>Les connexions du réseau</h2>
+    <div class="card cable-card">
+      <svg viewBox="0 0 90 60" aria-hidden="true"><path class="ico-cable" d="M8 44c10-30 22-30 30-10s22 20 30-6"/><rect x="2" y="40" width="12" height="12" rx="2" fill="var(--icon-dark)"/><rect x="66" y="16" width="12" height="12" rx="2" fill="var(--icon-dark)"/></svg>
+      <p style="margin:0">Le logiciel de simulation réseau <strong>Filius</strong> propose un seul type de câble, représenté en rouge. Dans le collège, les équipements sont reliés par des câbles réseau branchés sur leur carte réseau, ou sans fil (WiFi).</p>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>Lancer un test de communication entre une station et le serveur</h2>
+    <div class="two">
+      <div>
+        <p class="muted small">Dans Filius. Clique sur chaque étape quand elle est faite.</p>
+        <ol class="steps" id="steps">
+          <li>Cliquer sur le mode simulation (bouton ▶ vert).</li>
+          <li>Cliquer sur la station de travail à tester.</li>
+          <li>Cliquer sur <strong>Installation des logiciels</strong>.</li>
+          <li>Sélectionner <strong>Ligne de commande</strong> dans les logiciels disponibles.</li>
+          <li>Cliquer sur la flèche ◀ puis sur <strong>Appliquer les modifications</strong>.</li>
+          <li>Ouvrir le logiciel <strong>Ligne de commande</strong>.</li>
+          <li>Après l’invite de commande <span class="kbd">/&gt;</span>, saisir <span class="kbd">ping 192.168.1.254</span></li>
+          <li>Valider en appuyant sur la touche <strong>Entrée</strong>.</li>
+        </ol>
+      </div>
+      <div>
+        <p class="muted small">Entraîne-toi ici : choisis une station puis tape la commande.</p>
+        <div class="seg" id="demoPick" style="margin-bottom:10px">
+          <button aria-pressed="true" data-v="ok">Station bien configurée</button>
+          <button aria-pressed="false" data-v="ko">Station mal configurée</button>
+        </div>
+        <div class="term" id="demoTerm">
+          <pre id="demoOut"><span class="l-dim">Ligne de commande – tape « ping 192.168.1.254 »</span></pre>
+          <div class="prompt"><span>/&gt;</span><input id="demoIn" autocomplete="off" spellcheck="false" aria-label="Commande"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h2>Interpréter le résultat du test</h2>
+    <p class="muted small">Regarde la dernière ligne : combien de paquets sont perdus ? Dis si la communication a réussi.</p>
+    <div class="interp" id="interp"></div>
+  </div>
+</section>
+
+<!-- ================= 2. SIMULATEUR ================= -->
+<section class="panel" id="p-sim" role="tabpanel" aria-labelledby="t-sim" hidden>
+  <p class="lede">Le réseau du collège, reconstruit d’après les fichiers Filius <em>LAN-Materiel</em> et <em>LAN-Masque</em>. Câble le réseau, puis configure les stations et teste la communication avec le serveur.</p>
+  <div class="seg" id="modeSeg" role="group" aria-label="Étape">
+    <button aria-pressed="true" data-mode="cable">1. Câbler le réseau</button>
+    <button aria-pressed="false" data-mode="config">2. Configurer et tester</button>
+  </div>
+  <div class="sim">
+    <div class="net-wrap"><svg id="simSvg" viewBox="0 0 1300 700" role="img" aria-label="Plan du réseau du collège"></svg></div>
+    <div class="side">
+      <div class="card" id="panelCable">
+        <h3>Câbler le réseau</h3>
+        <p class="small">Clique sur un appareil, puis sur un second pour les relier par un câble. Clique sur un câble pour le retirer.</p>
+        <p class="small muted" id="cableStatus"></p>
+        <div class="row">
+          <button class="btn" id="btnCheckCables">Vérifier le câblage</button>
+          <button class="btn quiet" id="btnClearCables">Tout débrancher</button>
+        </div>
+        <ul class="checks" id="cableChecks"></ul>
+        <div class="feedback" id="cableFb"></div>
+      </div>
+      <div class="card" id="panelConfig" hidden>
+        <div id="noStation">
+          <h3>Configurer et tester</h3>
+          <p class="small">Clique sur une station de travail pour modifier son adresse IP et son masque, puis ouvre sa ligne de commande pour tester la communication.</p>
+          <p class="small muted">Le serveur a l’adresse <strong>192.168.1.254</strong>.</p>
+        </div>
+        <div id="stationBox" hidden>
+          <h3 id="stName"></h3>
+          <div class="form-grid" style="margin:10px 0">
+            <label for="stIp">Adresse IP</label><input id="stIp" autocomplete="off" spellcheck="false">
+            <label for="stMask">Masque</label><input id="stMask" autocomplete="off" spellcheck="false">
+            <span>Adresse MAC</span><output id="stMac"></output>
+          </div>
+          <div class="row"><button class="btn" id="btnApply">Appliquer</button><span class="small" id="applyMsg"></span></div>
+          <p class="small muted" style="margin:14px 0 6px">Ligne de commande (<span class="kbd">ping</span>, <span class="kbd">ipconfig</span>, <span class="kbd">effacer</span>)</p>
+          <div class="term">
+            <pre id="simOut"></pre>
+            <div class="prompt"><span>/&gt;</span><input id="simIn" autocomplete="off" spellcheck="false" aria-label="Commande de la station"></div>
+          </div>
+        </div>
+        <div id="infoBox" hidden></div>
+      </div>
+      <details class="teacher">
+        <summary>Outils du professeur</summary>
+        <div class="row">
+          <button class="btn quiet" id="btnSolCables">Câblage corrigé</button>
+          <button class="btn quiet" id="btnSolIp">Adresses corrigées</button>
+          <button class="btn quiet" id="btnResetIp">Stations non configurées</button>
+        </div>
+        <p class="small muted" style="margin:12px 0 0">Créer une panne différente pour chaque équipe (câblage et adresses corrects, sauf une erreur) :</p>
+        <div class="row">
+          <button class="btn quiet" id="btnFault">Créer une panne</button>
+          <button class="btn ghost" id="btnReveal">Révéler la panne</button>
+        </div>
+        <div class="feedback info" id="faultFb"></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 3. FICHE DE TRAVAIL ================= -->
+<section class="panel" id="p-travail" role="tabpanel" aria-labelledby="t-travail" hidden>
+  <p class="lede" style="font-size:1.3rem;color:var(--ink);font-weight:600">Comment faire circuler les informations dans un réseau local (LAN) ?</p>
+  <div class="idline">
+    <label>Nom<input class="field" data-save="nom"></label>
+    <label>Prénom<input class="field" data-save="prenom"></label>
+    <label>Classe<input class="field" data-save="classe"></label>
+    <label>Équipe<input class="field" data-save="equipe"></label>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <button class="btn ghost" id="btnCorrige">Afficher le corrigé</button>
+    <button class="btn quiet" id="btnResetSheet">Effacer mes réponses</button>
+  </div>
+
+  <div class="block">
+    <h2>Structure du réseau local (LAN) du collège</h2>
+    <div class="net-wrap"><svg id="wsSvg" viewBox="0 0 860 360" role="img" aria-label="Structure du réseau : Labo Techno et Local technique"></svg></div>
+    <p class="small muted" style="margin-top:10px">Pour chaque description, choisis l’élément du réseau correspondant.</p>
+    <div class="descs">
+      <div class="desc"><p>Ce boîtier permet de relier plusieurs équipements au sein du réseau local.</p>
+        <select class="field" data-save="d1" data-ans="switch"><option value="">Choisir…</option></select></div>
+      <div class="desc"><p>Cet élément permet de relier plusieurs réseaux entre eux.</p>
+        <select class="field" data-save="d2" data-ans="router"><option value="">Choisir…</option></select></div>
+      <div class="desc"><p>Cet élément :</p><ul><li>gère les droits d’accès des utilisateurs ;</li><li>stocke les données des utilisateurs ;</li><li>assure la sécurité des données qui transitent avec Internet ou au sein du réseau.</li></ul>
+        <select class="field" data-save="d3" data-ans="server"><option value="">Choisir…</option></select></div>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn" id="btnCheckDesc">Vérifier</button></div>
+    <div class="feedback" id="descFb"></div>
+  </div>
+
+  <div class="block">
+    <h2>Test de communication après déballage et câblage</h2>
+    <p>Les stations ont été déballées et câblées. Quel résultat obtiens-tu en testant la communication avec le serveur ?</p>
+    <div class="pingpick">
+      <label><input type="radio" name="pingres" value="ok" data-save="pingres"><div class="term"><div>--- 192.168.1.254 Statistiques des paquets ---</div><div>4 paquets transmis, 4 paquets reçus, 0% paquets perdus</div></div><strong>Communication possible</strong></label>
+      <label><input type="radio" name="pingres" value="ko" data-save="pingres"><div class="term"><div>--- 192.168.1.254 Statistiques des paquets ---</div><div>4 paquets transmis, 0 paquets reçus, 100% paquets perdus</div></div><strong>Communication non possible</strong></label>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn" id="btnCheckPing">Vérifier</button></div>
+    <div class="feedback" id="pingFb"></div>
+  </div>
+
+  <div class="block">
+    <h2>Communication dans un réseau : masque de sous-réseau et adresse IP</h2>
+    <div class="card">
+      <h3 style="font-size:1.05rem;margin-bottom:10px">Station en panne : Techno-PC2</h3>
+      <div class="cfg-wrap"><table class="cfg">
+        <tr><th></th><th>Configuration actuelle</th><th>Configuration proposée</th></tr>
+        <tr><td>Adresse IP</td><td class="mono">192.168.2.3</td><td><input class="field mono" id="pc2ip" data-save="pc2ip" placeholder="ex. 192.168.x.x" autocomplete="off" spellcheck="false"></td></tr>
+        <tr><td>Masque de sous-réseau</td><td class="mono">255.255.255.0</td><td><input class="field mono" id="pc2mask" data-save="pc2mask" placeholder="255.x.x.x" autocomplete="off" spellcheck="false"></td></tr>
+      </table></div>
+      <p class="used">Adresses déjà utilisées : <code>192.168.1.1</code> (routeur), <code>192.168.1.2</code> à <code>192.168.1.7</code> (autres stations), <code>192.168.1.254</code> (serveur).</p>
+      <div class="row" style="margin-top:10px"><button class="btn" id="btnCheckPc2">Vérifier ma proposition</button></div>
+      <div class="feedback" id="pc2Fb"></div>
+      <label class="small muted" for="pc2just" style="display:block;margin-top:14px">Justification de la solution proposée</label>
+      <textarea class="field" id="pc2just" data-save="pc2just"></textarea>
+      <button class="btn ghost" style="margin-top:8px" data-model="m2">Voir une justification possible</button>
+      <div class="model" id="m2" hidden>L’adresse IP de la station est incorrecte. Pour communiquer, elle doit appartenir au même réseau, qui est 192.168.1.0 d’après le masque de sous-réseau, et non 192.168.2.0.</div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h3 style="font-size:1.05rem;margin-bottom:10px">Nouvelle station : Techno-PC3</h3>
+      <div class="cfg-wrap"><table class="cfg">
+        <tr><th></th><th>Configuration proposée</th><th>Test de communication</th></tr>
+        <tr><td>Adresse IP</td><td><input class="field mono" id="pc3ip" data-save="pc3ip" placeholder="ex. 192.168.x.x" autocomplete="off" spellcheck="false"></td><td rowspan="2"><span class="badge wait" id="pc3badge">Pas encore testé</span></td></tr>
+        <tr><td>Masque de sous-réseau</td><td><input class="field mono" id="pc3mask" data-save="pc3mask" placeholder="255.x.x.x" autocomplete="off" spellcheck="false"></td></tr>
+      </table></div>
+      <div class="row" style="margin-top:10px"><button class="btn" id="btnTestPc3">Tester la communication avec le serveur</button></div>
+      <div class="term" id="pc3term" style="margin-top:10px" hidden><pre id="pc3out"></pre></div>
+      <div class="feedback" id="pc3Fb"></div>
+      <label class="small muted" for="pc3just" style="display:block;margin-top:14px">Justification de la solution proposée</label>
+      <textarea class="field" id="pc3just" data-save="pc3just"></textarea>
+      <button class="btn ghost" style="margin-top:8px" data-model="m3">Voir une justification possible</button>
+      <div class="model" id="m3" hidden>Le masque de sous-réseau est 255.255.255.0, ce qui signifie que le réseau de la station est 192.168.1.0. Je choisis ensuite une adresse disponible dans ce réseau, par exemple 192.168.1.13.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. QCM ================= -->
+<section class="panel" id="p-qcm" role="tabpanel" aria-labelledby="t-qcm" hidden>
+  <div class="qcm" id="qcm">
+    <p class="lede">Réseau local (LAN) : masque et adressage. Cinq questions pour vérifier ce que tu as retenu.</p>
+    <div class="qhead">
+      <div class="seg" id="qMode">
+        <button aria-pressed="true" data-m="train">Entraînement</button>
+        <button aria-pressed="false" data-m="proj">Projection en classe</button>
+      </div>
+      <div class="dots" id="qDots"></div>
+    </div>
+    <div id="qBody"></div>
+  </div>
+</section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const store={get(k){try{return JSON.parse(localStorage.getItem("lan5:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("lan5:"+k,JSON.stringify(v))}catch(e){}}};
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+/* ---------- Onglets ---------- */
+const tabs=$$('[role="tab"]');
+function openTab(id,focus){tabs.forEach(t=>{const on=t.id===id;t.setAttribute("aria-selected",on);t.tabIndex=on?0:-1;$("#"+t.getAttribute("aria-controls")).hidden=!on;if(on&&focus)t.focus()});try{history.replaceState(null,"","#"+id.slice(2))}catch(e){}}
+tabs.forEach((t,i)=>{t.addEventListener("click",()=>openTab(t.id));t.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=tabs[(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length];openTab(n.id,true)}})});
+const h=location.hash.slice(1); if(h&&$("#t-"+h))openTab("t-"+h);
+
+
+/* ---------- Plein écran ---------- */
+(function(){const b=$("#btnFs");if(!b)return;const d=document,root=d.documentElement;
+  const req=root.requestFullscreen||root.webkitRequestFullscreen,exit=d.exitFullscreen||d.webkitExitFullscreen;
+  const enabled=d.fullscreenEnabled||d.webkitFullscreenEnabled;if(!req||!enabled)return;b.hidden=false;
+  const cur=()=>d.fullscreenElement||d.webkitFullscreenElement;
+  const sync=()=>{const on=!!cur();$("#fsTxt").textContent=on?"Quitter le plein écran":"Plein écran";$("#fsIco").setAttribute("d",on?"M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5":"M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5")};
+  b.addEventListener("click",()=>{try{const p=cur()?exit.call(d):req.call(root);if(p&&p.catch)p.catch(()=>{b.hidden=true})}catch(e){b.hidden=true}});
+  d.addEventListener("fullscreenchange",sync);d.addEventListener("webkitfullscreenchange",sync)})();
+
+/* ---------- Outils IP ---------- */
+function parseIp(s){s=String(s||"").trim();const p=s.split(".");if(p.length!==4)return null;const n=p.map(x=>/^\d{1,3}$/.test(x)?+x:NaN);if(n.some(x=>isNaN(x)||x>255))return null;return n}
+function toInt(a){return ((a[0]<<24)>>>0)+(a[1]<<16)+(a[2]<<8)+a[3]}
+function validMask(s){const a=parseIp(s);if(!a)return false;const v=toInt(a);if(v===0)return false;const inv=(~v)>>>0;return ((inv+1)&inv)===0}
+function sameNet(ip1,ip2,mask){const m=toInt(parseIp(mask));return ((toInt(parseIp(ip1))&m)>>>0)===((toInt(parseIp(ip2))&m)>>>0)}
+function isHostAddr(ip,mask){const m=toInt(parseIp(mask)),v=toInt(parseIp(ip));const host=(v&(~m>>>0))>>>0,all=(~m)>>>0;return host!==0&&host!==all}
+function pingText(ip,ok){const L=[`PING ${ip}`];for(let i=1;i<=4;i++)L.push(ok?{t:`Réponse de ${ip} : icmp_seq=${i} ttl=64 temps=${8+Math.floor(Math.random()*30)}ms`,c:"l-ok"}:{t:`Délai d'attente dépassé pour icmp_seq=${i}`,c:"l-ko"});L.push("");L.push(`--- ${ip} Statistiques des paquets ---`);L.push({t:ok?"4 paquets transmis, 4 paquets reçus, 0% paquets perdus":"4 paquets transmis, 0 paquets reçus, 100% paquets perdus",c:ok?"l-ok":"l-ko"});return L}
+function printLines(pre,lines,delay,done){let i=0;const step=()=>{if(i>=lines.length){done&&done();return}const L=lines[i++];const span=document.createElement("span");if(typeof L==="object"){span.className=L.c;span.textContent=L.t+"\n"}else span.textContent=L+"\n";pre.appendChild(span);pre.scrollTop=pre.scrollHeight;delay&&!reduce?setTimeout(step,delay):step()};step()}
+
+/* ---------- Dessin de réseau (partagé) ---------- */
+const ICON={pc:"i-pc",server:"i-server",switch:"i-switch",router:"i-router",cloud:"i-cloud",laptop:"i-laptop"};
+function drawRooms(svg,rooms){const g=el("g",{},svg);rooms.forEach(r=>{const rg=el("g",{class:"room "+r.cls},g);el("rect",{x:r.x,y:r.y,width:r.w,height:r.h,rx:14},rg);const t=el("text",{x:r.x+16,y:r.y+28},rg);t.textContent=r.name})}
+function drawNode(layer,n,opts){const g=el("g",{class:"node","data-id":n.id,tabindex:opts&&opts.focusable?0:-1,role:opts&&opts.focusable?"button":"img","aria-label":n.name},layer);
+  el("rect",{class:"halo",x:n.x-58,y:n.y-46,width:116,height:opts&&opts.showIp?128:106,rx:12},g);
+  el("use",{href:"#"+ICON[n.type],x:n.x-36,y:n.y-40,width:72,height:72},g);
+  const t=el("text",{class:"lbl",x:n.x,y:n.y+50,"text-anchor":"middle"},g);t.textContent=n.name;
+  if(opts&&opts.showIp&&n.ifaces){const ip=el("text",{class:"ip",x:n.x,y:n.y+70,"text-anchor":"middle"},g);n._ipEl=ip}
+  n._g=g;return g}
+
+/* ================= 1. FICHE RESSOURCE ================= */
+const ELEMS=[
+ {n:"Ordinateur portable",i:"laptop",r:"Un terminal : l’utilisateur s’en sert pour envoyer et recevoir des informations. Il se connecte au réseau grâce à sa carte réseau, avec un câble ou sans fil (WiFi)."},
+ {n:"Station de travail",i:"pc",r:"Un terminal fixe : l’ordinateur de bureau de la salle. Il est relié au réseau par un câble branché sur sa carte réseau."},
+ {n:"Serveur",i:"server",r:"Il gère les droits d’accès des utilisateurs, stocke leurs données et assure la sécurité des données qui circulent dans le réseau ou avec Internet."},
+ {n:"Commutateur (switch)",i:"switch",r:"Ce boîtier relie plusieurs équipements au sein du réseau local. Il envoie chaque information uniquement vers l’appareil destinataire."},
+ {n:"Routeur",i:"router",r:"Il relie plusieurs réseaux entre eux, par exemple le réseau local du collège et Internet."},
+ {n:"Internet",i:"cloud",r:"Le réseau mondial : un immense ensemble de réseaux reliés entre eux par des routeurs."}];
+const elWrap=$("#elements");
+ELEMS.forEach(e=>{const b=document.createElement("button");b.className="flip";b.setAttribute("aria-pressed","false");
+  b.innerHTML=`<svg aria-hidden="true"><use href="#${ICON[e.i]}"/></svg><span class="name">${e.n}</span><span class="role">${e.r}</span><span class="hint">Voir son rôle</span>`;
+  b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")==="true"?"false":"true");elWrap.appendChild(b)});
+$$("#steps li").forEach(li=>{li.tabIndex=0;li.setAttribute("role","checkbox");li.setAttribute("aria-checked","false");const tg=()=>{li.classList.toggle("done");li.setAttribute("aria-checked",li.classList.contains("done"))};li.onclick=tg;li.onkeydown=e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();tg()}}});
+
+let demoMode="ok";
+$$("#demoPick button").forEach(b=>b.onclick=()=>{demoMode=b.dataset.v;$$("#demoPick button").forEach(x=>x.setAttribute("aria-pressed",x===b));$("#demoOut").innerHTML=`<span class="l-dim">${demoMode==="ok"?"Station configurée : 192.168.1.10 / 255.255.255.0":"Station configurée : 192.168.2.10 / 255.255.255.0"}</span>\n`});
+$("#demoIn").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const inp=e.target,cmd=inp.value.trim(),out=$("#demoOut");inp.value="";
+  const s=document.createElement("span");s.className="l-dim";s.textContent="/> "+cmd+"\n";out.appendChild(s);
+  const m=cmd.match(/^ping\s+(\S+)$/i);
+  if(!m){printLines(out,[{t:cmd?"Commande inconnue. Essaie : ping 192.168.1.254":"",c:"l-ko"}]);return}
+  const ip=m[1];if(!parseIp(ip)){printLines(out,[{t:"Adresse IP invalide.",c:"l-ko"}]);return}
+  const ok=demoMode==="ok"&&ip==="192.168.1.254";inp.disabled=true;printLines(out,pingText(ip,ok),260,()=>{inp.disabled=false;inp.focus()})});
+
+const INTERP=[{txt:["--- 192.168.1.254 Statistiques des paquets ---","4 paquets transmis, 4 paquets reçus, 0% paquets perdus"],ok:true},{txt:["--- 192.168.1.254 Statistiques des paquets ---","4 paquets transmis, 0 paquets reçus, 100% paquets perdus"],ok:false}];
+INTERP.forEach(it=>{const c=document.createElement("div");c.className="card";
+  c.innerHTML=`<div class="term"><div>${it.txt[0]}</div><div>${it.txt[1]}</div></div><div class="choice"><button data-v="1">Communication réussie</button><button data-v="0">Communication échouée</button></div><div class="feedback"></div>`;
+  c.querySelectorAll("button").forEach(b=>b.onclick=()=>{const good=(b.dataset.v==="1")===it.ok;c.querySelectorAll("button").forEach(x=>x.className="");b.className=good?"sel-ok":"sel-ko";const fb=c.querySelector(".feedback");fb.className="feedback "+(good?"ok":"ko");
+    fb.textContent=good?(it.ok?"Exact : les 4 paquets sont revenus, aucun n’est perdu.":"Exact : aucun paquet n’est revenu, 100 % sont perdus."):"Regarde le nombre de paquets reçus et le pourcentage de paquets perdus."});
+  $("#interp").appendChild(c)});
+
+/* ================= 2. SIMULATEUR ================= */
+const M="255.255.255.0";
+const NODES=[
+ {id:"L1",name:"Labo-Techno-ordi1",type:"pc",x:150,y:120,mac:"50:5E:77:37:23:62",sol:"192.168.1.2",room:"LS"},
+ {id:"L2",name:"Labo-Techno-Ordi2",type:"pc",x:150,y:300,mac:"AE:92:B8:E3:8F:9A",sol:"192.168.1.3",room:"LS"},
+ {id:"M2",name:"Salle-multimédia-Ordi2",type:"pc",x:140,y:600,mac:"1D:4B:D2:F6:C1:7D",sol:"192.168.1.4",room:"MS"},
+ {id:"M1",name:"Salle-multimédia-Ordi1",x:450,y:600,type:"pc",mac:"07:F4:C1:1A:79:7D",sol:"192.168.1.5",room:"MS"},
+ {id:"C1",name:"CDI-Ordi1",type:"pc",x:790,y:600,mac:"55:1C:BF:BE:F0:C4",sol:"192.168.1.6",room:"CS"},
+ {id:"C2",name:"CDI-Ordi2",type:"pc",x:1150,y:600,mac:"6B:EB:C5:EE:A6:66",sol:"192.168.1.7",room:"CS"},
+ {id:"SRV",name:"Serveur-Local-Technique",type:"server",x:830,y:110,mac:"D1:12:76:ED:57:6B",fixed:[{ip:"192.168.1.254",mask:M}]},
+ {id:"LS",name:"Labo-Techno-Switch",type:"switch",x:320,y:215},
+ {id:"MS",name:"Salle-multimédia-Switch",type:"switch",x:295,y:500},
+ {id:"CS",name:"CDI-Switch",type:"switch",x:970,y:500},
+ {id:"TS",name:"Switch-Local-Technique",type:"switch",x:650,y:215},
+ {id:"R",name:"Routeur",type:"router",x:860,y:265,mac:"44:2C:F8:DC:EF:B4",fixed:[{ip:"192.168.1.1",mask:M},{ip:"254.128.10.1",mask:M}]},
+ {id:"NET",name:"Internet",type:"cloud",x:1190,y:150,fixed:[{ip:"254.128.10.2",mask:M}]}];
+const N=Object.fromEntries(NODES.map(n=>[n.id,n]));
+const STATIONS=NODES.filter(n=>n.type==="pc");
+const SOL_CABLES=[["L1","LS"],["L2","LS"],["M2","MS"],["M1","MS"],["C1","CS"],["C2","CS"],["LS","TS"],["MS","TS"],["CS","TS"],["SRV","TS"],["R","TS"],["R","NET"]];
+const MAXPORTS={pc:1,server:1,cloud:1,router:2,switch:8};
+NODES.forEach(n=>{if(n.fixed)n.ifaces=n.fixed.map(f=>({...f}));else if(n.type==="pc")n.ifaces=[{ip:"0.0.0.0",mask:"0.0.0.0"}];n.log=[]});
+
+const simSvg=$("#simSvg");
+drawRooms(simSvg,[{cls:"labo",name:"Labo Techno",x:40,y:30,w:390,h:370},{cls:"tech",name:"Local technique",x:540,y:30,w:420,h:370},{cls:"multi",name:"Salle multimédia",x:40,y:430,w:560,h:250},{cls:"cdi",name:"CDI",x:680,y:430,w:580,h:250}]);
+const cableLayer=el("g",{},simSvg), nodeLayer=el("g",{},simSvg), pktLayer=el("g",{},simSvg);
+let cables=[], mode="cable", selected=null, faultText="";
+const key=(a,b)=>[a,b].sort().join("-");
+const hasCable=(a,b)=>cables.some(c=>key(c[0],c[1])===key(a,b));
+const degree=id=>cables.filter(c=>c[0]===id||c[1]===id).length;
+
+NODES.forEach(n=>{const g=drawNode(nodeLayer,n,{focusable:true,showIp:true});g.addEventListener("click",()=>onNode(n.id));g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();onNode(n.id)}})});
+
+function renderCables(){cableLayer.innerHTML="";cables.forEach((c,i)=>{const a=N[c[0]],b=N[c[1]];
+  if(mode==="cable"){const hit=el("line",{class:"cable-hit",x1:a.x,y1:a.y,x2:b.x,y2:b.y},cableLayer);const t=el("title",{},hit);t.textContent="Retirer ce câble";hit.addEventListener("click",()=>{cables.splice(i,1);renderAll()})}
+  el("line",{class:"cable",x1:a.x,y1:a.y,x2:b.x,y2:b.y},cableLayer)});
+  $("#cableStatus").textContent=cables.length+(cables.length>1?" câbles branchés.":" câble branché.");store.set("cables",cables)}
+function renderIps(){NODES.forEach(n=>{if(!n._ipEl)return;const ip=n.ifaces[0].ip;n._ipEl.textContent=ip==="0.0.0.0"?"pas d’adresse":ip;n._ipEl.setAttribute("class","ip"+(ip==="0.0.0.0"?" none":""))});store.set("ips",STATIONS.map(s=>s.ifaces[0]))}
+function renderSel(){NODES.forEach(n=>n._g.classList.toggle("sel",selected===n.id))}
+function renderAll(){renderCables();renderIps();renderSel()}
+
+function onNode(id){
+  if(mode==="cable"){
+    if(!selected){selected=id;renderSel();return}
+    if(selected===id){selected=null;renderSel();return}
+    const a=selected,b=id;selected=null;const fb=$("#cableFb");fb.className="feedback";fb.textContent="";
+    if(hasCable(a,b)){fb.className="feedback info";fb.textContent="Ces deux appareils sont déjà reliés."}
+    else if(degree(a)>=MAXPORTS[N[a].type]||degree(b)>=MAXPORTS[N[b].type]){const full=degree(a)>=MAXPORTS[N[a].type]?N[a]:N[b];fb.className="feedback info";fb.textContent=`${full.name} n’a plus de prise réseau libre (${MAXPORTS[full.type]} au maximum).`}
+    else cables.push([a,b]);
+    renderAll();
+  } else {selected=id;renderSel();showStation(id)}
+}
+
+/* Mode */
+$$("#modeSeg button").forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+function setMode(m){mode=m;selected=null;$$("#modeSeg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));$("#panelCable").hidden=m!=="cable";$("#panelConfig").hidden=m!=="config";$("#stationBox").hidden=true;$("#infoBox").hidden=true;$("#noStation").hidden=false;renderAll()}
+
+/* Vérification du câblage */
+$("#btnCheckCables").onclick=()=>{
+  const ul=$("#cableChecks");ul.innerHTML="";const res=[];
+  const roomNames={LS:"Labo Techno",MS:"salle multimédia",CS:"CDI"};
+  STATIONS.forEach(s=>res.push([hasCable(s.id,s.room),`${s.name} est relié au commutateur de la ${s.room==="LS"?"salle Labo Techno":roomNames[s.room]}`]));
+  ["LS","MS","CS"].forEach(sw=>res.push([hasCable(sw,"TS"),`${N[sw].name} est relié au commutateur du local technique`]));
+  res.push([hasCable("SRV","TS"),"Le serveur est relié au commutateur du local technique"]);
+  res.push([hasCable("R","TS")&&hasCable("R","NET"),"Le routeur relie le commutateur du local technique et Internet"]);
+  const extra=cables.filter(c=>!SOL_CABLES.some(s=>key(s[0],s[1])===key(c[0],c[1])));
+  res.push([extra.length===0,extra.length?`Câble(s) en trop ou mal placé(s) : ${extra.map(c=>N[c[0]].name+" ↔ "+N[c[1]].name).join(", ")}`:"Aucun câble inutile"]);
+  res.forEach(r=>{const li=document.createElement("li");li.className=r[0]?"y":"n";li.textContent=r[1];ul.appendChild(li)});
+  const all=res.every(r=>r[0]);const fb=$("#cableFb");fb.className="feedback "+(all?"ok":"ko");
+  fb.textContent=all?"Câblage correct ! Passe à l’étape 2 et teste la communication d’une station avec le serveur.":"Le câblage n’est pas encore complet. Corrige les points en rouge.";
+};
+$("#btnClearCables").onclick=()=>{cables=[];$("#cableChecks").innerHTML="";$("#cableFb").textContent="";renderAll()};
+
+/* Station */
+function showStation(id){const n=N[id];$("#noStation").hidden=true;
+  if(n.type!=="pc"){$("#stationBox").hidden=true;const ib=$("#infoBox");ib.hidden=false;
+    const ips=n.ifaces?n.ifaces.map(f=>`<div class="kbd" style="display:inline-block;margin:2px 0">${f.ip} / ${f.mask}</div>`).join("<br>"):"<span class='muted'>Pas d’adresse IP : un commutateur transmet les informations sans les lire.</span>";
+    ib.innerHTML=`<h3>${esc(n.name)}</h3><p class="small">${ELEMS.find(e=>ICON[e.i]===ICON[n.type])?.r||""}</p><p class="small" style="margin:0">${ips}</p><p class="small muted" style="margin-top:10px">Clique sur une station de travail pour la configurer.</p>`;return}
+  $("#infoBox").hidden=true;$("#stationBox").hidden=false;$("#stName").textContent=n.name;
+  $("#stIp").value=n.ifaces[0].ip;$("#stMask").value=n.ifaces[0].mask;$("#stMac").textContent=n.mac;$("#applyMsg").textContent="";
+  const out=$("#simOut");out.innerHTML="";if(!n.log.length)n.log.push({t:`Ligne de commande de ${n.name}`,c:"l-dim"});printLines(out,n.log)}
+$("#btnApply").onclick=()=>{const n=N[selected];if(!n)return;const ip=$("#stIp").value.trim(),mask=$("#stMask").value.trim(),msg=$("#applyMsg");
+  if(!parseIp(ip)){msg.innerHTML=`<span style="color:var(--ko)">Adresse IP invalide : 4 nombres de 0 à 255 séparés par des points.</span>`;return}
+  if(!parseIp(mask)){msg.innerHTML=`<span style="color:var(--ko)">Masque invalide : 4 nombres de 0 à 255 séparés par des points.</span>`;return}
+  n.ifaces[0]={ip,mask};msg.innerHTML=`<span style="color:var(--ok)">Configuration enregistrée.</span>`;renderIps()};
+["stIp","stMask"].forEach(i=>$("#"+i).addEventListener("keydown",e=>{if(e.key==="Enter")$("#btnApply").click()}));
+
+function bfsPath(a,b){const q=[[a]],seen=new Set([a]);while(q.length){const p=q.shift(),cur=p[p.length-1];if(cur===b)return p;
+  for(const c of cables){const nx=c[0]===cur?c[1]:c[1]===cur?c[0]:null;if(!nx||seen.has(nx))continue;if(nx!==b&&N[nx].type!=="switch")continue;seen.add(nx);q.push([...p,nx])}}return null}
+function simPing(src,dstIp){const s=src.ifaces[0];
+  if(!parseIp(s.ip)||s.ip==="0.0.0.0"||!validMask(s.mask)||!isHostAddr(s.ip,s.mask))return{ok:false};
+  if(dstIp===s.ip)return{ok:true,path:[src.id]};
+  if(!sameNet(s.ip,dstIp,s.mask))return{ok:false};
+  const owners=NODES.filter(n=>n.ifaces&&n.ifaces.some(f=>f.ip===dstIp));
+  const dupSrc=NODES.filter(n=>n!==src&&n.ifaces&&n.ifaces.some(f=>f.ip===s.ip)).length>0;
+  if(!owners.length)return{ok:false};
+  const dst=owners[0],path=bfsPath(src.id,dst.id);if(!path)return{ok:false};
+  const f=dst.ifaces.find(f=>f.ip===dstIp);
+  const back=validMask(f.mask)&&sameNet(f.ip,s.ip,f.mask);
+  return{ok:back&&owners.length===1&&!dupSrc,path,reached:true}}
+function animate(path,ok,done){if(reduce||!path||path.length<2){done();return}
+  const pts=path.map(id=>[N[id].x,N[id].y]);const seq=ok?pts.concat(pts.slice(0,-1).reverse()):pts;
+  const c=el("circle",{class:"packet",r:9,cx:seq[0][0],cy:seq[0][1]},pktLayer);let i=0,t0=null;const dur=240;
+  function fr(ts){if(!t0)t0=ts;const k=Math.min(1,(ts-t0)/dur);const a=seq[i],b=seq[i+1];c.setAttribute("cx",a[0]+(b[0]-a[0])*k);c.setAttribute("cy",a[1]+(b[1]-a[1])*k);
+    if(k<1)return requestAnimationFrame(fr);i++;t0=null;if(i<seq.length-1)return requestAnimationFrame(fr);
+    if(!ok){c.setAttribute("class","packet lost");setTimeout(()=>{c.remove();done()},450)}else{c.remove();done()}}
+  requestAnimationFrame(fr)}
+function flash(id){const g=N[id]._g;g.classList.add("bad");setTimeout(()=>g.classList.remove("bad"),900)}
+$("#simIn").addEventListener("keydown",e=>{if(e.key!=="Enter")return;const n=N[selected];if(!n)return;const inp=e.target,cmd=inp.value.trim(),out=$("#simOut");inp.value="";
+  const add=(L)=>{n.log.push(...L);printLines(out,L)};add([{t:"/> "+cmd,c:"l-dim"}]);
+  if(/^(effacer|clear|cls)$/i.test(cmd)){n.log=[];out.innerHTML="";return}
+  if(/^ipconfig$/i.test(cmd)){add([`Adresse IP : ${n.ifaces[0].ip}`,`Masque de sous-réseau : ${n.ifaces[0].mask}`,`Adresse MAC : ${n.mac}`]);return}
+  const m=cmd.match(/^ping\s+(\S+)$/i);
+  if(!m){if(cmd)add([{t:"Commande inconnue. Commandes possibles : ping <adresse IP>, ipconfig, effacer",c:"l-ko"}]);return}
+  if(!parseIp(m[1])){add([{t:"Adresse IP invalide.",c:"l-ko"}]);return}
+  const r=simPing(n,m[1]);inp.disabled=true;
+  const finish=()=>{const L=pingText(m[1],r.ok);n.log.push(...L);printLines(out,L,180,()=>{inp.disabled=false;inp.focus()})};
+  if(r.reached)animate(r.path,r.ok,finish);else{flash(n.id);finish()}});
+
+/* Outils prof */
+$("#btnSolCables").onclick=()=>{cables=SOL_CABLES.map(c=>[...c]);renderAll()};
+$("#btnSolIp").onclick=()=>{STATIONS.forEach(s=>s.ifaces[0]={ip:s.sol,mask:M});renderIps();if(selected&&N[selected].type==="pc")showStation(selected)};
+$("#btnResetIp").onclick=()=>{STATIONS.forEach(s=>s.ifaces[0]={ip:"0.0.0.0",mask:"0.0.0.0"});renderIps();if(selected&&N[selected].type==="pc")showStation(selected)};
+$("#btnFault").onclick=()=>{cables=SOL_CABLES.map(c=>[...c]);STATIONS.forEach(s=>s.ifaces[0]={ip:s.sol,mask:M});
+  const s=STATIONS[Math.floor(Math.random()*STATIONS.length)],o=STATIONS.filter(x=>x!==s)[Math.floor(Math.random()*5)],last=s.sol.split(".")[3];
+  const faults=[
+    ()=>{s.ifaces[0].ip="192.168.2."+last;return `${s.name} a une adresse IP dans un autre réseau (192.168.2.${last}).`},
+    ()=>{s.ifaces[0].ip=o.sol;return `${s.name} a la même adresse IP que ${o.name} (${o.sol}).`},
+    ()=>{s.ifaces[0].mask="255.255.225.0";return `${s.name} a une faute de frappe dans son masque (255.255.225.0).`},
+    ()=>{s.ifaces[0]={ip:"0.0.0.0",mask:"0.0.0.0"};return `${s.name} n’a pas d’adresse IP.`},
+    ()=>{cables=cables.filter(c=>c[0]!==s.id&&c[1]!==s.id);return `Le câble de ${s.name} est débranché.`}];
+  faultText=faults[Math.floor(Math.random()*faults.length)]();
+  $("#faultFb").textContent="Une panne a été créée. Les élèves doivent la trouver avec la commande ping.";
+  setMode("config");renderAll()};
+$("#btnReveal").onclick=()=>{$("#faultFb").textContent=faultText?"Panne : "+faultText:"Aucune panne n’a été créée."};
+
+/* État sauvegardé */
+const sc=store.get("cables");if(Array.isArray(sc))cables=sc.filter(c=>N[c[0]]&&N[c[1]]);
+const si=store.get("ips");if(Array.isArray(si))si.forEach((f,i)=>{if(STATIONS[i]&&f&&f.ip)STATIONS[i].ifaces[0]={ip:f.ip,mask:f.mask}});
+renderAll();
+
+/* ================= 3. FICHE DE TRAVAIL ================= */
+const wsSvg=$("#wsSvg");
+drawRooms(wsSvg,[{cls:"labo",name:"Labo Techno",x:14,y:14,w:330,h:330},{cls:"tech",name:"Local technique",x:384,y:14,w:320,h:330}]);
+const WN=[{id:"l1",name:"Labo-Techno-ordi1",type:"pc",x:95,y:100},{id:"l2",name:"Labo-Techno-Ordi2",type:"pc",x:95,y:270},{id:"ls",name:"Labo-Techno-Switch",type:"switch",x:245,y:185,k:"switch"},
+  {id:"srv",name:"Serveur-Local-Technique",type:"server",x:490,y:100,k:"server"},{id:"ts",name:"Switch-Local-Technique",type:"switch",x:480,y:275,k:"switch"},{id:"r",name:"Routeur",type:"router",x:630,y:190,k:"router"},{id:"net",name:"Internet",type:"cloud",x:785,y:110}];
+const WNm=Object.fromEntries(WN.map(n=>[n.id,n]));
+const wc=el("g",{},wsSvg),wn=el("g",{},wsSvg);
+[["l1","ls"],["l2","ls"],["ls","ts"],["srv","ts"],["r","ts"],["r","net"]].forEach(c=>{const a=WNm[c[0]],b=WNm[c[1]];el("line",{class:"cable",x1:a.x,y1:a.y,x2:b.x,y2:b.y},wc)});
+WN.forEach(n=>drawNode(wn,n,{}));
+const OPTS=[["pc","Station de travail"],["switch","Commutateur (switch)"],["router","Routeur"],["server","Serveur"]];
+$$(".desc select").forEach(s=>OPTS.forEach(o=>{const op=document.createElement("option");op.value=o[0];op.textContent=o[1];s.appendChild(op)}));
+
+// sauvegarde des champs
+$$("[data-save]").forEach(f=>{const v=store.get("ws:"+f.dataset.save);if(v!==null){if(f.type==="radio")f.checked=f.value===v;else f.value=v}
+  f.addEventListener(f.tagName==="SELECT"||f.type==="radio"?"change":"input",()=>store.set("ws:"+f.dataset.save,f.value))});
+
+function setFb(id,ok,txt){const fb=$("#"+id);fb.className="feedback "+(ok===null?"info":ok?"ok":"ko");fb.textContent=txt}
+$("#btnCheckDesc").onclick=()=>{let good=0;WN.forEach(n=>n._g.classList.remove("pulse"));
+  $$(".desc select").forEach(s=>{const ok=s.value===s.dataset.ans;s.classList.toggle("ok",ok);s.classList.toggle("ko",!!s.value&&!ok);if(ok){good++;WN.filter(n=>n.k===s.dataset.ans).forEach(n=>n._g.classList.add("pulse"))}});
+  setFb("descFb",good===3,good===3?"Bravo, les trois éléments sont bien identifiés (entourés en rouge sur le schéma).":`${good} bonne(s) réponse(s) sur 3. Relis la fiche ressource.`)};
+$("#btnCheckPing").onclick=()=>{const v=($$('input[name="pingres"]').find(r=>r.checked)||{}).value;
+  if(!v)return setFb("pingFb",null,"Choisis un des deux résultats.");
+  setFb("pingFb",v==="ko",v==="ko"?"Exact : 100 % des paquets sont perdus. Les stations sont bien câblées mais n’ont pas encore d’adresse IP : un câblage correct est nécessaire, mais pas suffisant pour communiquer.":"Non : juste après le câblage, les stations n’ont pas encore d’adresse IP. Refais le test dans le simulateur.")};
+
+const USED=["192.168.1.1","192.168.1.2","192.168.1.3","192.168.1.4","192.168.1.5","192.168.1.6","192.168.1.7","192.168.1.254"];
+function checkProposal(ip,mask,extraUsed){
+  if(!parseIp(mask))return[false,"Le masque n’est pas écrit correctement : 4 nombres séparés par des points."];
+  if(mask!==M)return[false,"Le masque doit être le même que celui du réseau du collège : 255.255.255.0."];
+  if(!parseIp(ip))return[false,"L’adresse IP n’est pas écrite correctement : 4 nombres de 0 à 255 séparés par des points."];
+  if(!sameNet(ip,"192.168.1.254",mask))return[false,"Cette adresse n’appartient pas au réseau du serveur. Avec le masque 255.255.255.0, les trois premiers nombres doivent être les mêmes que ceux du serveur : 192.168.1."];
+  if(!isHostAddr(ip,mask))return[false,"Les adresses qui se terminent par 0 ou 255 sont réservées au réseau : choisis un nombre entre 1 et 254."];
+  if(USED.includes(ip)||extraUsed.includes(ip))return[false,`L’adresse ${ip} est déjà utilisée par un autre appareil. Deux appareils ne peuvent pas avoir la même adresse.`];
+  return[true,"Configuration correcte : la station appartient au réseau 192.168.1.0 et son adresse est libre."]}
+$("#btnCheckPc2").onclick=()=>{const ip=$("#pc2ip").value.trim(),mask=$("#pc2mask").value.trim();const r=checkProposal(ip,mask,[]);
+  $("#pc2ip").classList.toggle("ok",r[0]);$("#pc2ip").classList.toggle("ko",!r[0]);$("#pc2mask").classList.toggle("ok",mask===M);$("#pc2mask").classList.toggle("ko",mask!==M);setFb("pc2Fb",r[0],r[1])};
+$("#btnTestPc3").onclick=()=>{const ip=$("#pc3ip").value.trim(),mask=$("#pc3mask").value.trim();const pc2=$("#pc2ip").value.trim();
+  const r=checkProposal(ip,mask,pc2&&checkProposal(pc2,$("#pc2mask").value.trim(),[])[0]?[pc2]:[]);
+  const b=$("#pc3badge"),out=$("#pc3out");$("#pc3term").hidden=false;out.innerHTML="";b.className="badge wait";b.textContent="Test en cours…";$("#btnTestPc3").disabled=true;
+  if(pc2&&ip===pc2)r[1]="Cette adresse est déjà celle que tu as proposée pour Techno-PC2.";
+  printLines(out,[{t:"/> ping 192.168.1.254",c:"l-dim"},...pingText("192.168.1.254",r[0])],150,()=>{b.className="badge "+(r[0]?"ok":"ko");b.textContent=r[0]?"Ok":"Non ok";$("#btnTestPc3").disabled=false;setFb("pc3Fb",r[0],r[1])})};
+$$("[data-model]").forEach(b=>b.onclick=()=>{const m=$("#"+b.dataset.model);m.hidden=!m.hidden;b.textContent=m.hidden?"Voir une justification possible":"Masquer la justification"});
+let corr=false;
+$("#btnCorrige").onclick=()=>{corr=!corr;$("#btnCorrige").textContent=corr?"Masquer le corrigé":"Afficher le corrigé";
+  if(corr){$$(".desc select").forEach(s=>s.value=s.dataset.ans);$$('input[name="pingres"]').forEach(r=>r.checked=r.value==="ko");$("#pc2ip").value="192.168.1.12";$("#pc2mask").value=M;$("#pc3ip").value="192.168.1.13";$("#pc3mask").value=M;
+    $("#btnCheckDesc").click();$("#btnCheckPing").click();$("#btnCheckPc2").click();$("#btnTestPc3").click();$$(".model").forEach(m=>m.hidden=false);$$("[data-model]").forEach(b=>b.textContent="Masquer la justification")}
+  else{$$(".model").forEach(m=>m.hidden=true);$$("[data-model]").forEach(b=>b.textContent="Voir une justification possible")}};
+$("#btnResetSheet").onclick=()=>{$$("[data-save]").forEach(f=>{if(f.type==="radio")f.checked=false;else f.value="";f.classList.remove("ok","ko");store.set("ws:"+f.dataset.save,f.type==="radio"?null:"")});
+  $$("#p-travail .feedback").forEach(f=>f.textContent="");WN.forEach(n=>n._g.classList.remove("pulse"));$("#pc3term").hidden=true;$("#pc3badge").className="badge wait";$("#pc3badge").textContent="Pas encore testé";$$(".model").forEach(m=>m.hidden=true)};
+
+/* ================= 4. QCM ================= */
+const Q=[
+ {q:"Quelle est la fonction d’un routeur dans un réseau informatique ?",o:["Relier plusieurs équipements entre eux.","Gérer les droits des utilisateurs du réseau.","Relier plusieurs réseaux entre eux.","Assurer la sécurité du réseau."],a:2,e:"Le routeur relie plusieurs réseaux entre eux, par exemple le réseau du collège et Internet. Relier des équipements, c’est le rôle du commutateur ; gérer les droits et la sécurité, celui du serveur."},
+ {q:"Le système binaire permet de calculer et de coder les adresses IP sur un réseau informatique. Combien d’états une information binaire comporte-t-elle ?",o:["1","2","8","32"],a:1,e:"Une information binaire (un bit) n’a que deux états : 0 ou 1."},
+ {q:"L’adressage IP est la solution internationale d’identification sur un réseau informatique. L’adresse IP d’une machine est 192.168.10.12. Cette adresse IP est composée de :",o:["10 bits","10 octets","32 bits","4 bits"],a:2,e:"Une adresse IP est formée de 4 nombres, chacun codé sur 1 octet (8 bits) : 4 × 8 = 32 bits."},
+ {q:"Le masque de sous-réseau d’un collège est 255.255.0.0. Sur ce réseau, l’adresse d’une machine est 10.20.6.3. L’identifiant de ce réseau est :",o:["10.20.6.3","10.20.6","10.20","10"],a:2,e:"Avec le masque 255.255.0.0, les deux premiers nombres (là où il y a 255) identifient le réseau : 10.20. Les deux derniers (6.3) identifient la machine."},
+ {q:"Le masque de sous-réseau d’un collège est 255.255.255.0. Sur ce réseau, l’adresse d’une machine est 10.20.6.3. Avec quel autre équipement du réseau cette machine peut-elle communiquer ?",o:["10.20.7.4","10.10.6.7","20.10.4.1","10.20.6.14"],a:3,e:"Avec le masque 255.255.255.0, les trois premiers nombres identifient le réseau : 10.20.6. Seule l’adresse 10.20.6.14 appartient au même réseau."}];
+let qi=0,answers=[],qmode="train",revealed=false;
+const L="ABCD";
+function qRender(){const body=$("#qBody"),dots=$("#qDots");$("#qcm").classList.toggle("projection",qmode==="proj");
+  dots.innerHTML=Q.map((_,i)=>`<span class="${qmode==="train"&&answers[i]!==undefined?(answers[i]===Q[i].a?"ok":"ko"):i===qi?"cur":""}"></span>`).join("");
+  if(qmode==="train"&&qi>=Q.length){const sc=answers.filter((a,i)=>a===Q[i].a).length;
+    body.innerHTML=`<div class="qcard"><div class="qn">Résultat</div><div class="score">${sc} / ${Q.length}</div><p>${sc===5?"Parfait, tout est juste !":sc>=3?"Bien ! Relis les explications des questions ratées.":"Relis la fiche ressource et le bilan, puis recommence."}</p>
+      <ul class="recap">${Q.map((q,i)=>`<li class="${answers[i]===q.a?"ok":"ko"}"><strong>Question ${i+1}</strong> – bonne réponse : ${L[q.a]}. ${esc(q.o[q.a])}</li>`).join("")}</ul>
+      <div class="row" style="margin-top:14px"><button class="btn" id="qRestart">Recommencer</button></div></div>`;
+    $("#qRestart").onclick=()=>{qi=0;answers=[];qRender()};return}
+  const q=Q[qi],ans=answers[qi],show=qmode==="train"?ans!==undefined:revealed;
+  body.innerHTML=`<div class="qcard"><div class="qn">Question ${qi+1} sur ${Q.length}</div><div class="qt">${esc(q.q)}</div>
+    <div class="opts">${q.o.map((o,i)=>`<button class="opt${show&&i===q.a?" right":""}${qmode==="train"&&show&&i===ans&&i!==q.a?" wrong":""}" data-i="${i}" ${show||qmode==="proj"?"disabled":""}><span class="L">${L[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
+    <div class="feedback ${qmode==="train"&&show?(ans===q.a?"ok":"ko"):"ok"} explain">${show?(qmode==="train"?(ans===q.a?"Bonne réponse. ":"Pas tout à fait. La bonne réponse est "+L[q.a]+". "):"Réponse "+L[q.a]+". ")+esc(q.e):""}</div>
+    <div class="row" style="margin-top:14px;justify-content:space-between">
+      <button class="btn quiet" id="qPrev" ${qi===0?"disabled":""}>Question précédente</button>
+      ${qmode==="proj"?`<button class="btn ghost" id="qReveal">${revealed?"Masquer la réponse":"Révéler la réponse"}</button>`:""}
+      <button class="btn" id="qNext" ${qmode==="train"&&!show?"disabled":""} ${qmode==="proj"&&qi===Q.length-1?"disabled":""}>${qmode==="train"&&qi===Q.length-1?"Voir mon score":"Question suivante"}</button></div></div>`;
+  body.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{answers[qi]=+b.dataset.i;qRender()});
+  $("#qPrev").onclick=()=>{qi--;revealed=false;qRender()};$("#qNext").onclick=()=>{qi++;revealed=false;qRender()};
+  if($("#qReveal"))$("#qReveal").onclick=()=>{revealed=!revealed;qRender()}}
+$$("#qMode button").forEach(b=>b.onclick=()=>{qmode=b.dataset.m;$$("#qMode button").forEach(x=>x.setAttribute("aria-pressed",x===b));qi=0;revealed=false;if(qmode==="train")answers=[];qRender()});
+qRender();
+})();
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

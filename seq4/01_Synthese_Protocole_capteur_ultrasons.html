@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocole — Capteur Ultrasonique Mbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2230;
+    --border: #2a3244;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #a8ff78;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 0 36px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,229,255,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    padding: 4px 12px;
+    margin-bottom: 20px;
+    animation: fadeDown .6s ease both;
+  }
+  h1 {
+    font-family: var(--mono);
+    font-size: clamp(22px, 4vw, 38px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: #fff;
+    animation: fadeDown .7s ease .1s both;
+  }
+  h1 span { color: var(--accent); }
+  .subtitle {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 14px;
+    animation: fadeDown .7s ease .2s both;
+  }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 920px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── SECTIONS ── */
+  section { margin-top: 56px; animation: fadeUp .6s ease both; }
+  section:nth-child(1) { animation-delay: .1s; }
+  section:nth-child(2) { animation-delay: .2s; }
+  section:nth-child(3) { animation-delay: .3s; }
+  section:nth-child(4) { animation-delay: .4s; }
+  section:nth-child(5) { animation-delay: .5s; }
+  section:nth-child(6) { animation-delay: .6s; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  h2 {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 24px 0 10px;
+    font-family: var(--mono);
+  }
+  p { color: #c9d1d9; margin-bottom: 12px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card-icon {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .card h4 {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .card p { font-size: 13.5px; margin: 0; }
+
+  /* ── STEPS ── */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color .2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step-num {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 36px;
+    line-height: 1;
+    padding-top: 2px;
+  }
+  .step-content h4 {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+  .step-content p { font-size: 13.5px; margin: 0; }
+
+  /* ── TABLE ── */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  thead {
+    background: var(--surface2);
+  }
+  th {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    color: #c9d1d9;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,229,255,.03); }
+  .col-accent { color: var(--accent); font-family: var(--mono); font-size: 12px; }
+  .col-orange { color: var(--accent2); font-family: var(--mono); font-size: 12px; }
+  .col-green  { color: var(--accent3); font-family: var(--mono); font-size: 12px; }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #0a0e14;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-x: auto;
+    position: relative;
+  }
+  .code-block .line-comment { color: #556070; }
+  .code-block .line-keyword { color: var(--accent2); }
+  .code-block .line-var    { color: var(--accent); }
+  .code-block .line-string { color: var(--accent3); }
+  .code-block .line-num    { color: #d29922; }
+  .code-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 6px 14px;
+    display: inline-block;
+    margin-bottom: -1px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── FORMULA BOX ── */
+  .formula-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 18px 22px;
+    margin: 12px 0;
+  }
+  .formula-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+  .formula {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: #fff;
+    background: rgba(0,0,0,.3);
+    padding: 8px 14px;
+    border-radius: 4px;
+    margin: 6px 0;
+    display: block;
+  }
+  .formula-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    margin-top: 8px;
+    margin-bottom: 0;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    display: flex;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+  .callout-info  { background: rgba(0,229,255,.06); border: 1px solid rgba(0,229,255,.2); }
+  .callout-warn  { background: rgba(255,107,53,.06); border: 1px solid rgba(255,107,53,.2); }
+  .callout-ok    { background: rgba(168,255,120,.06); border: 1px solid rgba(168,255,120,.2); }
+  .callout-icon  { font-size: 18px; flex-shrink: 0; padding-top: 1px; }
+  .callout p     { margin: 0; color: #c9d1d9; }
+
+  /* ── SHEET SECTION ── */
+  .sheet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .sheet-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 20px;
+  }
+  .sheet-card.excel { border-top-color: var(--accent3); }
+  .sheet-card h4 {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sheet-card .logo { font-size: 18px; }
+  .sheet-card code {
+    display: block;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent3);
+    background: rgba(0,0,0,.3);
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin: 6px 0;
+  }
+  .sheet-card p { font-size: 13px; margin: 0 0 4px; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 80px;
+    border-top: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+  footer span { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    body { background: #fff; color: #000; }
+    header { background: #f0f4f8; }
+    .card, .step, .code-block, .formula-box { background: #f9fafb; border-color: #ddd; }
+    .table-wrap { border-color: #ddd; }
+    thead { background: #eee; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════ HEADER ═══════════════════════════════════ -->
+<header>
+  <div class="badge">Protocole Expérimental · Robotique Éducative</div>
+  <h1>Mesure de Distance — <span>Capteur Ultrasonique</span><br>Robot Mbot</h1>
+  <p class="subtitle">Comparaison valeurs programmées vs valeurs mesurées · Analyse des écarts</p>
+</header>
+
+<div class="page">
+
+<!-- ═══════════════════════════════════ OBJECTIFS ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">01 — Présentation</div>
+  <h2>Objectifs de l'expérimentation</h2>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🎯</div>
+      <h4>Objectif principal</h4>
+      <p>Évaluer la précision du capteur ultrasonique du robot Mbot en comparant les distances programmées (consigne) aux distances réellement mesurées par le capteur.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📐</div>
+      <h4>Compétences visées</h4>
+      <p>Programmer le capteur Mbot, relever des mesures expérimentales, calculer des écarts, interpréter des résultats dans un tableur (Excel / Google Sheets).</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔬</div>
+      <h4>Domaine</h4>
+      <p>Sciences & Technologie — Robotique éducative. Niveau : Collège / Lycée. Durée estimée : 1 h à 1 h 30.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ PRINCIPE ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">02 — Principe physique</div>
+  <h2>Fonctionnement du capteur ultrasonique</h2>
+
+  <p>Le capteur ultrasonique du Mbot (modèle HC-SR04) mesure une distance par temps de vol : il émet une impulsion ultrasonore (40 kHz) et mesure le temps écoulé jusqu'à la réception de l'écho sur un obstacle.</p>
+
+  <div class="formula-box">
+    <div class="formula-title">Formule physique fondamentale</div>
+    <code class="formula">d = (v × t) / 2</code>
+    <p class="formula-desc">
+      <strong>d</strong> = distance à l'obstacle (cm) &nbsp;|&nbsp;
+      <strong>v</strong> = vitesse du son ≈ 340 m/s (à 20 °C) &nbsp;|&nbsp;
+      <strong>t</strong> = durée aller-retour de l'impulsion (μs)<br>
+      La division par 2 est due au trajet aller-retour.
+    </p>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">ℹ️</span>
+    <p><strong>Plage de mesure HC-SR04 :</strong> 2 cm à 400 cm. Angle de détection : ±15°. Résolution théorique : ~3 mm. La bibliothèque MakeBlock intègre automatiquement le calcul de la distance en centimètres.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ MATÉRIEL ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">03 — Matériel</div>
+  <h2>Matériel nécessaire</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Élément</th>
+          <th>Qté</th>
+          <th>Remarque</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Robot Mbot (Makeblock)</td><td>1</td><td>Version 1 ou 2, capteur ultrasonique branché sur port 3 ou 4</td></tr>
+        <tr><td>Câble USB ou connexion Bluetooth/Wi-Fi</td><td>1</td><td>Pour téléverser le programme</td></tr>
+        <tr><td>Logiciel mBlock 5 (ou Scratch 3 + extension Mbot)</td><td>—</td><td>Gratuit sur mblock.cc</td></tr>
+        <tr><td>Règle ou mètre ruban (précision ≥ 1 mm)</td><td>1</td><td>Instrument de référence</td></tr>
+        <tr><td>Surface plane + obstacle plat et perpendiculaire</td><td>1</td><td>Feuille A4 contre un mur, boîte, etc.</td></tr>
+        <tr><td>PC / tablette avec Google Sheets ou Microsoft Excel</td><td>1</td><td>Pour saisir et analyser les mesures</td></tr>
+        <tr><td>Ruban adhésif de marquage (scotch de couleur)</td><td>—</td><td>Marquer les positions au sol</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ PROGRAMMATION ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">04 — Programmation</div>
+  <h2>Rappel : programmation du capteur ultrasonique sur Mbot</h2>
+
+  <h3>A. Avec mBlock 5 (blocs Scratch)</h3>
+  <p>Dans mBlock 5, sélectionner l'appareil <strong>Mbot</strong>, puis dans la palette <em>Capteurs</em>, utiliser le bloc :</p>
+  <div class="callout callout-ok">
+    <span class="callout-icon">🟢</span>
+    <p><code>[ distance de l'obstacle sur le port 3 ]</code> — Retourne la distance en centimètres (valeur entière).</p>
+  </div>
+  <p>Programme de test basique pour afficher la distance en continu sur l'écran ou l'envoyer au PC :</p>
+
+  <div class="code-label">mBlock 5 — Blocs (pseudo-code)</div>
+  <div class="code-block">
+<span class="line-comment">// ── Programme principal ──────────────────────────────</span>
+<span class="line-keyword">quand</span> 🚩 cliqué
+<span class="line-keyword">répéter indéfiniment</span>
+  <span class="line-var">distance</span> ← <span class="line-string">distance de l'obstacle (port 3)</span>  <span class="line-comment">// cm</span>
+  <span class="line-keyword">envoyer au moniteur série :</span> <span class="line-var">distance</span>
+  <span class="line-keyword">afficher :</span> <span class="line-var">distance</span> <span class="line-string">"cm"</span>
+  <span class="line-keyword">attendre</span> <span class="line-num">0.5</span> <span class="line-string">secondes</span>
+<span class="line-keyword">fin répéter</span>
+  </div>
+
+  <h3>B. Avec Arduino C++ (pour aller plus loin)</h3>
+  <div class="code-label">Arduino C++ — Mbot</div>
+  <div class="code-block">
+<span class="line-comment">// Inclure la bibliothèque Makeblock</span>
+<span class="line-keyword">#include</span> <span class="line-string">&lt;MeUltrasonicSensor.h&gt;</span>
+
+<span class="line-comment">// Capteur branché sur port 3</span>
+<span class="line-var">MeUltrasonicSensor</span> capteurUS(<span class="line-num">PORT_3</span>);
+
+<span class="line-keyword">void</span> setup() {
+  Serial.begin(<span class="line-num">9600</span>);
+}
+
+<span class="line-keyword">void</span> loop() {
+  <span class="line-keyword">float</span> <span class="line-var">distance</span> = capteurUS.distanceCm();  <span class="line-comment">// lecture en cm</span>
+  Serial.print(<span class="line-string">"Distance : "</span>);
+  Serial.print(<span class="line-var">distance</span>);
+  Serial.println(<span class="line-string">" cm"</span>);
+  delay(<span class="line-num">500</span>);  <span class="line-comment">// pause 500 ms</span>
+}
+  </div>
+
+  <div class="callout callout-warn">
+    <span class="callout-icon">⚠️</span>
+    <p><strong>Attention :</strong> Le capteur peut renvoyer <code>0</code> ou une valeur aberrante si l'obstacle est trop proche (< 2 cm), trop loin (> 4 m) ou si la surface est inclinée. Prévoir un filtre dans le programme si nécessaire.</p>
+  </div>
+
+  <h3>C. Programme de collecte automatique (protocole)</h3>
+  <p>Pour ce protocole, on programme le robot pour qu'il se déplace à des distances prédéfinies et affiche la valeur du capteur. Les distances <strong>programmées</strong> sont les consignes de déplacement ; les distances <strong>mesurées</strong> sont les valeurs retournées par le capteur.</p>
+
+  <div class="code-label">mBlock 5 — Programme de mesure par étapes</div>
+  <div class="code-block">
+<span class="line-comment">// ── Mesure à 10 positions fixes ───────────────────────</span>
+<span class="line-keyword">quand</span> 🚩 cliqué
+<span class="line-comment">// Le robot est positionné manuellement à chaque distance</span>
+<span class="line-comment">// On note la valeur affichée = valeur mesurée</span>
+
+<span class="line-keyword">répéter</span> <span class="line-num">10</span> <span class="line-keyword">fois</span>
+  <span class="line-var">d_mesuree</span> ← <span class="line-string">distance de l'obstacle (port 3)</span>
+  <span class="line-keyword">envoyer au moniteur série :</span> <span class="line-var">d_mesuree</span>
+  <span class="line-keyword">attendre</span> <span class="line-num">2</span> <span class="line-string">secondes</span>   <span class="line-comment">// temps pour noter la valeur</span>
+<span class="line-keyword">fin répéter</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ PROTOCOLE ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">05 — Protocole expérimental</div>
+  <h2>Déroulement du protocole pas à pas</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h4>Préparation de la zone d'expérimentation</h4>
+        <p>Positionner le robot Mbot face à un obstacle plat et vertical (ex. : boîte de céréales, livre épais). Tracer sur le sol, à l'aide du ruban, des repères aux distances : <strong>5, 10, 15, 20, 25, 30, 40, 50, 75, 100 cm</strong> depuis la face avant du capteur ultrasonique. Vérifier avec la règle que chaque repère est précis à ±2 mm.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h4>Chargement du programme sur le Mbot</h4>
+        <p>Téléverser le programme de lecture (voir section 04-C) sur le robot via USB. Vérifier que le moniteur série ou l'afficheur retourne bien des valeurs cohérentes lors du test.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h4>Réalisation des mesures</h4>
+        <p>Pour chaque distance programmée (repère au sol) : placer le capteur exactement sur le repère, lancer la lecture, attendre la stabilisation (1 s), noter la valeur affichée dans le tableau. <strong>Effectuer 3 mesures par position</strong> et calculer la moyenne pour réduire l'incertitude aléatoire.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h4>Saisie des données dans le tableur</h4>
+        <p>Reporter toutes les valeurs dans la feuille de calcul Excel ou Google Sheets selon la structure décrite en section 06. Appliquer les formules de calcul des écarts.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">05</div>
+      <div class="step-content">
+        <h4>Analyse et tracé du graphique</h4>
+        <p>Créer un graphique « Valeurs mesurées vs Valeurs programmées ». Ajouter une droite idéale y = x. Analyser visuellement les zones de divergence. Calculer le coefficient de corrélation R².</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">06</div>
+      <div class="step-content">
+        <h4>Rédaction du compte-rendu</h4>
+        <p>Identifier les sources d'erreur (angle, surface, température). Conclure sur la fiabilité du capteur selon la plage de distances testées.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ TABLEUR ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">06 — Tableur</div>
+  <h2>Structure du tableur &amp; formules de calcul</h2>
+
+  <h3>Structure recommandée des colonnes</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Col.</th>
+          <th>Intitulé</th>
+          <th>Contenu / Formule</th>
+          <th>Unité</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="col-accent">A</td>
+          <td>N° mesure</td>
+          <td>1, 2, 3, … (saisie manuelle)</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td class="col-accent">B</td>
+          <td>Distance programmée (d_prog)</td>
+          <td>Valeur de la consigne au sol (saisie)</td>
+          <td>cm</td>
+        </tr>
+        <tr>
+          <td class="col-accent">C</td>
+          <td>Mesure 1</td>
+          <td>Valeur brute capteur — essai 1 (saisie)</td>
+          <td>cm</td>
+        </tr>
+        <tr>
+          <td class="col-accent">D</td>
+          <td>Mesure 2</td>
+          <td>Valeur brute capteur — essai 2 (saisie)</td>
+          <td>cm</td>
+        </tr>
+        <tr>
+          <td class="col-accent">E</td>
+          <td>Mesure 3</td>
+          <td>Valeur brute capteur — essai 3 (saisie)</td>
+          <td>cm</td>
+        </tr>
+        <tr>
+          <td class="col-orange">F</td>
+          <td>Moyenne mesurée (d_mes)</td>
+          <td><code>=MOYENNE(C2:E2)</code></td>
+          <td>cm</td>
+        </tr>
+        <tr>
+          <td class="col-orange">G</td>
+          <td>Écart absolu</td>
+          <td><code>=ABS(F2-B2)</code></td>
+          <td>cm</td>
+        </tr>
+        <tr>
+          <td class="col-orange">H</td>
+          <td>Écart relatif (%)</td>
+          <td><code>=ABS(F2-B2)/B2*100</code></td>
+          <td>%</td>
+        </tr>
+        <tr>
+          <td class="col-green">I</td>
+          <td>Écart signé</td>
+          <td><code>=F2-B2</code></td>
+          <td>cm</td>
+        </tr>
+        <tr>
+          <td class="col-green">J</td>
+          <td>Acceptabilité (±10 %)</td>
+          <td><code>=SI(H2&lt;=10;"✅ OK";"❌ Écart")</code></td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Formules clés — Synthèse</h3>
+
+  <div class="formula-box">
+    <div class="formula-title">Écart absolu</div>
+    <code class="formula">Écart_abs = |d_mesurée − d_programmée|</code>
+    <code class="formula">=ABS(F2-B2)   &nbsp;&nbsp;&nbsp;&nbsp;[Excel / Google Sheets]</code>
+    <p class="formula-desc">Donne la différence en valeur absolue, sans signe. Exprimé en cm.</p>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-title">Écart relatif (en %)</div>
+    <code class="formula">Écart_rel (%) = (|d_mesurée − d_programmée| / d_programmée) × 100</code>
+    <code class="formula">=ABS(F2-B2)/B2*100   &nbsp;&nbsp;&nbsp;&nbsp;[Excel / Google Sheets]</code>
+    <p class="formula-desc">Permet de comparer les erreurs indépendamment de la distance. Un écart &lt; 5 % est généralement acceptable pour le Mbot.</p>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-title">Écart signé (surestimation / sous-estimation)</div>
+    <code class="formula">Écart_signé = d_mesurée − d_programmée</code>
+    <code class="formula">=F2-B2   &nbsp;&nbsp;&nbsp;&nbsp;[Excel / Google Sheets]</code>
+    <p class="formula-desc">Positif → le capteur surestime la distance. Négatif → il la sous-estime.</p>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-title">Moyenne et écart-type des mesures répétées</div>
+    <code class="formula">=MOYENNE(C2:E2)   &nbsp;&nbsp;→ valeur moyenne des 3 essais</code>
+    <code class="formula">=ECARTYPE(C2:E2)  &nbsp;&nbsp;→ dispersion des mesures (répétabilité)</code>
+    <p class="formula-desc">Un écart-type élevé indique une instabilité du capteur à cette distance.</p>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-title">Ligne récapitulative (ligne de synthèse, ex. ligne 13)</div>
+    <code class="formula">=MOYENNE(G2:G12)   &nbsp;&nbsp;→ écart absolu moyen sur toutes les mesures</code>
+    <code class="formula">=MOYENNE(H2:H12)   &nbsp;&nbsp;→ écart relatif moyen (%)</code>
+    <code class="formula">=MAX(H2:H12)       &nbsp;&nbsp;→ erreur relative maximale</code>
+    <code class="formula">=NB.SI(J2:J12;"✅ OK")/NB(J2:J12)*100  &nbsp;&nbsp;→ taux de réussite (%)</code>
+    <p class="formula-desc">Ces indicateurs synthétisent la qualité globale des mesures.</p>
+  </div>
+
+  <h3>Instructions tableur détaillées</h3>
+  <div class="sheet-grid">
+    <div class="sheet-card">
+      <h4><span class="logo">📊</span> Google Sheets</h4>
+      <p>Créer une nouvelle feuille. Saisir les en-têtes en ligne 1.</p>
+      <p>Pour le graphique :</p>
+      <p>Sélectionner colonnes B et F → Insertion → Graphique → Nuage de points.</p>
+      <p>Ajouter une série manuelle pour la droite idéale :</p>
+      <code>=B2  (colonne X)</code>
+      <code>=B2  (colonne Y)</code>
+      <p>Personnaliser : titre, axes, couleurs. Activer la courbe de tendance (R²).</p>
+    </div>
+    <div class="sheet-card excel">
+      <h4><span class="logo">📗</span> Microsoft Excel</h4>
+      <p>Créer un classeur. Renommer la feuille "Mesures Mbot".</p>
+      <p>Pour le graphique :</p>
+      <p>Sélectionner B1:B12 et F1:F12 (Ctrl+clic) → Insertion → Nuage de points.</p>
+      <p>Clic droit sur série → Ajouter une courbe de tendance → Linéaire → Afficher R².</p>
+      <p>Pour la droite y = x : Insertion → Série → X = col. B, Y = col. B.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-info">
+    <span class="callout-icon">💡</span>
+    <p><strong>Conseil :</strong> Utiliser la mise en forme conditionnelle sur la colonne H (Écart relatif) : vert si &lt; 5 %, orange si entre 5 % et 10 %, rouge si &gt; 10 %. Cela permet une lecture visuelle immédiate de la qualité des mesures.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ ANALYSE ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">07 — Analyse</div>
+  <h2>Interprétation des résultats</h2>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>Graphique attendu</h4>
+      <p>Si le capteur est parfaitement précis, tous les points se placent sur la droite y = x. Un nuage décalé vers le haut indique une surestimation systématique, vers le bas une sous-estimation.</p>
+    </div>
+    <div class="card">
+      <h4>Plages de fiabilité typiques HC-SR04</h4>
+      <p>• 2–10 cm : forte imprécision (±1–2 cm)<br>
+         • 10–100 cm : zone fiable (écart &lt; 5 %)<br>
+         • 100–400 cm : précision se dégrade</p>
+    </div>
+    <div class="card">
+      <h4>Sources d'erreur à discuter</h4>
+      <p>Angle du faisceau (±15°), température ambiante (v_son variable), parallaxe lors de la lecture de la règle, vibrations du robot, surface d'obstacle (réflexivité).</p>
+    </div>
+  </div>
+
+  <h3>Questions d'analyse pour les élèves</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>N°</th><th>Question</th><th>Indicateur à calculer</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Q1</td><td>À quelle distance l'erreur relative est-elle minimale ?</td><td>MIN(colonne H)</td></tr>
+        <tr><td>Q2</td><td>Le capteur surestime-t-il ou sous-estime-t-il en général ?</td><td>Signe moyen colonne I</td></tr>
+        <tr><td>Q3</td><td>Quelle est la dispersion des 3 mesures pour chaque distance ?</td><td>ECARTYPE par ligne</td></tr>
+        <tr><td>Q4</td><td>Quel pourcentage de mesures est acceptable (écart &lt; 10 %) ?</td><td>Colonne J — NB.SI</td></tr>
+        <tr><td>Q5</td><td>La relation d_mesurée = f(d_programmée) est-elle linéaire ?</td><td>R² de la tendance</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ SYNTHESE ═══════════════════════════════════ -->
+<section>
+  <div class="section-label">08 — Synthèse</div>
+  <h2>Synthèse du protocole</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Étape</th><th>Action</th><th>Outil</th><th>Résultat attendu</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="col-accent">1</td><td>Installer les repères de distance au sol</td><td>Règle + ruban</td><td>10 positions de 5 à 100 cm</td></tr>
+        <tr><td class="col-accent">2</td><td>Programmer la lecture du capteur</td><td>mBlock 5 / Arduino</td><td>Valeur en cm affichée en continu</td></tr>
+        <tr><td class="col-accent">3</td><td>Relever 3 mesures par position</td><td>Moniteur série / afficheur</td><td>Tableau 10 × 3 valeurs</td></tr>
+        <tr><td class="col-accent">4</td><td>Calculer la moyenne (MOYENNE)</td><td>Excel / Sheets — col. F</td><td>d_mesurée par position</td></tr>
+        <tr><td class="col-accent">5</td><td>Calculer l'écart absolu (ABS)</td><td>Excel / Sheets — col. G</td><td>Différence en cm</td></tr>
+        <tr><td class="col-accent">6</td><td>Calculer l'écart relatif (%)</td><td>Excel / Sheets — col. H</td><td>Erreur en %</td></tr>
+        <tr><td class="col-accent">7</td><td>Créer le graphique de comparaison</td><td>Excel / Sheets</td><td>Nuage de points + droite y = x</td></tr>
+        <tr><td class="col-accent">8</td><td>Identifier les zones fiables</td><td>Analyse graphique + tableau</td><td>Plage de distances recommandée</td></tr>
+        <tr><td class="col-accent">9</td><td>Rédiger les conclusions</td><td>Traitement de texte</td><td>Rapport d'expérimentation</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-ok">
+    <span class="callout-icon">✅</span>
+    <p><strong>Conclusion type attendue :</strong> Le capteur ultrasonique du Mbot est fiable dans la plage <strong>10 – 80 cm</strong> avec un écart relatif généralement inférieur à 5 %. En dehors de cette plage, des corrections logicielles (calibration par régression linéaire) peuvent être envisagées.</p>
+  </div>
+</section>
+
+</div><!-- /page -->
+
+<footer>
+  Protocole expérimental — Capteur ultrasonique Mbot &nbsp;|&nbsp;
+  <span>mBlock 5 · Arduino · Excel · Google Sheets</span> &nbsp;|&nbsp;
+  Document pédagogique — Sciences &amp; Technologie
+</footer>
+
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

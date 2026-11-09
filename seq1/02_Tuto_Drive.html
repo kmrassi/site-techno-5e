@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tuto Drive</title>
+</head>
+<body>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+  :root{
+    --bg:#FBF9F2;
+    --bg-panel:#FFFFFF;
+    --ink:#212844;
+    --ink-soft:#5A6284;
+    --line:#E7E2D2;
+    --teal:#0FA3A3;
+    --teal-dark:#0A7A7A;
+    --teal-soft:#E3F5F3;
+    --yellow-dark:#C9891B;
+    --coral:#FF6B5B;
+    --coral-dark:#D8402F;
+    --green:#3FAE7B;
+    --green-soft:#E4F6ED;
+    --shadow: 0 12px 28px rgba(33,40,68,0.10);
+    --shadow-sm: 0 4px 10px rgba(33,40,68,0.08);
+    --radius-lg:24px;
+    --radius-md:16px;
+    --radius-sm:10px;
+    --font-head:'Baloo 2', system-ui, sans-serif;
+    --font-body:'Nunito', system-ui, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#171B2E; --bg-panel:#242B49; --ink:#EFF1FA; --ink-soft:#AEB4D6; --line:#39406A;
+      --teal-soft:#1B3A3D; --green-soft:#1B3A2C;
+      --shadow:0 12px 28px rgba(0,0,0,.35); --shadow-sm:0 4px 10px rgba(0,0,0,.3);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#171B2E; --bg-panel:#242B49; --ink:#EFF1FA; --ink-soft:#AEB4D6; --line:#39406A;
+    --teal-soft:#1B3A3D; --green-soft:#1B3A2C;
+    --shadow:0 12px 28px rgba(0,0,0,.35); --shadow-sm:0 4px 10px rgba(0,0,0,.3);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{ background:var(--bg); color:var(--ink); font-family:var(--font-body); min-height:100vh; padding:20px 14px 60px; }
+  .wrap{max-width:720px;margin:0 auto;}
+  h1,h2{font-family:var(--font-head); margin:0; line-height:1.15;}
+  p{margin:0 0 0.7em; color:var(--ink-soft); line-height:1.55;}
+  strong{color:var(--ink);}
+
+  .visually-hidden{
+    position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+
+  .app-head{ text-align:center; margin-bottom:22px;}
+  .app-head .kicker{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--font-head); font-weight:600;
+    font-size:.95rem; color:var(--teal-dark); background:var(--teal-soft); padding:6px 14px; border-radius:999px; margin-bottom:10px;
+  }
+  .app-head h1{ font-size:1.7rem; font-weight:800;}
+  @media(min-width:480px){ .app-head h1{font-size:2.05rem;} }
+
+  .trail{ display:flex; align-items:center; justify-content:space-between; max-width:520px; margin:26px auto 0; padding:0 4px; }
+  .trail-node{
+    width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-head); font-weight:700; font-size:.95rem; background:var(--bg-panel);
+    border:2px solid var(--line); color:var(--ink-soft); flex-shrink:0; cursor:pointer;
+  }
+  .trail-line{ flex:1; height:3px; background:var(--line); margin:0 -2px; }
+
+  .panel{ display:none; background:var(--bg-panel); border-radius:var(--radius-lg); box-shadow:var(--shadow); padding:26px 22px 24px; margin-top:22px; }
+  .panel .eyebrow{ font-family:var(--font-head); font-weight:700; font-size:.85rem; color:var(--teal-dark); margin-bottom:6px; }
+  .panel h2{ font-size:1.35rem; font-weight:700; margin-bottom:10px;}
+  @media(min-width:480px){ .panel h2{font-size:1.55rem;} }
+
+  .btn{
+    font-family:var(--font-head); font-weight:700; font-size:1rem; border:none; border-radius:999px;
+    padding:13px 26px; cursor:pointer; background:var(--teal); color:#fff; box-shadow:var(--shadow-sm);
+    display:inline-block; text-decoration:none;
+  }
+  .btn.secondary{ background:transparent; color:var(--ink-soft); box-shadow:none; border:2px solid var(--line); }
+  .btn-row{ display:flex; justify-content:space-between; align-items:center; margin-top:24px; gap:10px; flex-wrap:wrap;}
+  .btn-row .spacer{flex:1;}
+
+  .name-preview{ margin-top:12px; padding:12px 16px; background:var(--teal-soft); border-radius:var(--radius-sm); font-family:var(--font-head); font-weight:600; color:var(--teal-dark); font-size:.95rem;}
+  .hint-note{font-size:.9rem;}
+
+  /* tree / checklist */
+  .tree{ list-style:none; margin:16px 0 6px; padding:0; }
+  .tree .indent-1{ padding-left:20px; }
+  .tree .indent-2{ padding-left:40px; }
+  .tree .indent-3{ padding-left:60px; }
+  .check-row{ display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--radius-sm); cursor:pointer; }
+  .check-row:hover{ background:var(--bg); }
+  .check-row input{ position:absolute; opacity:0; width:24px; height:24px; margin:0; cursor:pointer; }
+  .check-row .box{
+    width:24px; height:24px; flex-shrink:0; border-radius:8px; border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:.85rem; color:transparent; background:var(--bg-panel);
+  }
+  .check-row input:checked ~ .box{ background:var(--green); border-color:var(--green); color:#fff; }
+  .check-row .label{ font-weight:600; font-size:.98rem; }
+  .check-row input:checked ~ .label{ color:var(--ink-soft); text-decoration:line-through; text-decoration-color:var(--line);}
+  .check-row .tag{ font-size:.8rem; color:var(--ink-soft); font-weight:500;}
+
+  .progress-pill{ display:inline-flex; align-items:center; gap:8px; margin-top:14px; background:var(--green-soft);
+    border:2px solid var(--green); border-radius:999px; padding:6px 14px; font-family:var(--font-head); font-weight:700; font-size:.9rem; color:var(--green); }
+  .progress-pill::before{ content: counter(cks) " / 9 cochés"; }
+  .checklist{ counter-reset: cks 0; }
+  .checklist input:checked{ counter-increment: cks; }
+  .panel1:has(.checklist input:not(:checked)) .progress-pill{ background:var(--bg); border-color:var(--line); color:var(--ink-soft); }
+
+  /* accordion (native <details>) */
+  .accordion-item{ border:2px solid var(--line); border-radius:var(--radius-md); margin-top:12px; overflow:hidden; }
+  .accordion-item summary{ padding:14px 16px; cursor:pointer; font-family:var(--font-head); font-weight:700; font-size:1rem; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+  .accordion-item summary::-webkit-details-marker{ display:none; }
+  .accordion-item summary::after{ content:"▶"; color:var(--teal-dark); transition:transform .2s ease; }
+  .accordion-item[open] summary::after{ transform:rotate(90deg); }
+  .accordion-item .body{ padding:0 16px 16px; }
+  .accordion-item ol{ margin:0; padding-left:20px; }
+  .accordion-item li{ margin-bottom:8px; color:var(--ink-soft); }
+
+  /* choice cards */
+  .choices{ display:flex; flex-direction:column; gap:10px; margin:14px 0; }
+  .choice-card{
+    border:2px solid var(--line); border-radius:var(--radius-md); padding:14px 16px; cursor:pointer;
+    font-family:var(--font-head); font-weight:700; font-size:1rem; background:var(--bg-panel); display:block;
+  }
+  .choice-card:hover{ border-color:var(--teal); }
+  .choice-card.correct{ border-color:var(--green); background:var(--green-soft); cursor:default; }
+  .feedback{ display:none; margin-top:10px; font-weight:700; font-family:var(--font-head); font-size:.95rem; }
+  .feedback.ok{ color:var(--green); }
+  .feedback.ko{ color:var(--coral-dark); }
+
+  /* folder quiz */
+  #qf0:checked ~ .choices label[for="qf0"], #qf2:checked ~ .choices label[for="qf2"]{ border-color:var(--coral); background:#FCE9E6; }
+  #qf1:checked ~ .choices label[for="qf1"]{ border-color:var(--green); background:var(--green-soft); }
+  #qf1:checked ~ .fb-ok{ display:block; }
+  #qf0:checked ~ .fb-ko, #qf2:checked ~ .fb-ko{ display:block; }
+
+  /* email */
+  .text-input{
+    width:100%; font-family:var(--font-body); font-size:1rem; padding:12px 14px; border-radius:var(--radius-sm);
+    border:2px solid var(--line); background:var(--bg); color:var(--ink); outline:none;
+  }
+  .text-input:focus{ border-color:var(--teal); }
+  #emailInput:valid ~ .email-ok{ display:block; }
+  #emailInput:invalid:not(:placeholder-shown) ~ .email-ko{ display:block; }
+
+  /* role */
+  .role-row{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
+  .role-card{ flex:1; min-width:150px; border:2px solid var(--line); border-radius:var(--radius-md); padding:14px; cursor:pointer; text-align:center; display:block; }
+  #roleLecteur:checked ~ .role-row label[for="roleLecteur"],
+  #roleEditeur:checked ~ .role-row label[for="roleEditeur"]{ border-color:var(--yellow-dark); background:#FFF6E2; }
+  .role-card .emoji{ font-size:1.6rem; display:block; margin-bottom:4px;}
+  .role-card .name{ font-family:var(--font-head); font-weight:700; display:block;}
+  .role-card .desc{ font-size:.82rem; color:var(--ink-soft); margin-top:2px; display:block;}
+
+  /* explorer */
+  .explorer-path{ font-size:.9rem; color:var(--ink-soft); margin:10px 0; font-weight:700; }
+  .crumb{ display:none; }
+  .crumb.crumb0{ display:block; }
+  .level{ display:block; }
+  .level .hint{ display:none; margin-top:8px; font-size:.9rem; color:var(--coral-dark); font-weight:600; }
+  .level-prompt{ margin-bottom:2px;}
+  .level2, .level3, .level4, .level5, .final-found{ display:none; }
+
+  #l1c:checked ~ .level1{ display:none; }
+  #l1c:checked ~ .level2{ display:block; }
+  #l1c:checked ~ .crumb0{ display:none; }
+  #l1c:checked ~ .crumb1{ display:block; }
+  #l1w1:checked ~ .level1 .hint, #l1w2:checked ~ .level1 .hint{ display:block; }
+  #l1c:checked ~ .level1 label[for="l1c"]{ border-color:var(--green); background:var(--green-soft); }
+  #l1w1:checked ~ .level1 label[for="l1w1"], #l1w2:checked ~ .level1 label[for="l1w2"]{ border-color:var(--coral); background:#FCE9E6; }
+
+  #l2c:checked ~ .level2{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ .level3{ display:block; }
+  #l2c:checked ~ .crumb1{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ .crumb2{ display:block; }
+  #l2w1:checked ~ .level2 .hint, #l2w2:checked ~ .level2 .hint{ display:block; }
+  #l2c:checked ~ .level2 label[for="l2c"]{ border-color:var(--green); background:var(--green-soft); }
+  #l2w1:checked ~ .level2 label[for="l2w1"], #l2w2:checked ~ .level2 label[for="l2w2"]{ border-color:var(--coral); background:#FCE9E6; }
+
+  #l3c:checked ~ .level3{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ #l3c:checked ~ .level4{ display:block; }
+  #l3c:checked ~ .crumb2{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ #l3c:checked ~ .crumb3{ display:block; }
+  #l3w1:checked ~ .level3 .hint, #l3w2:checked ~ .level3 .hint{ display:block; }
+  #l3c:checked ~ .level3 label[for="l3c"]{ border-color:var(--green); background:var(--green-soft); }
+  #l3w1:checked ~ .level3 label[for="l3w1"], #l3w2:checked ~ .level3 label[for="l3w2"]{ border-color:var(--coral); background:#FCE9E6; }
+
+  #l4c:checked ~ .level4{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ #l3c:checked ~ #l4c:checked ~ .level5{ display:block; }
+  #l4c:checked ~ .crumb3{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ #l3c:checked ~ #l4c:checked ~ .crumb4{ display:block; }
+  #l4w1:checked ~ .level4 .hint{ display:block; }
+  #l4c:checked ~ .level4 label[for="l4c"]{ border-color:var(--green); background:var(--green-soft); }
+  #l4w1:checked ~ .level4 label[for="l4w1"]{ border-color:var(--coral); background:#FCE9E6; }
+
+  #l5c:checked ~ .level5{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ #l3c:checked ~ #l4c:checked ~ #l5c:checked ~ .final-found{ display:block; }
+  #l5c:checked ~ .crumb4{ display:none; }
+  #l1c:checked ~ #l2c:checked ~ #l3c:checked ~ #l4c:checked ~ #l5c:checked ~ .crumb5{ display:block; }
+  #l5w1:checked ~ .level5 .hint{ display:block; }
+  #l5c:checked ~ .level5 label[for="l5c"]{ border-color:var(--green); background:var(--green-soft); }
+  #l5w1:checked ~ .level5 label[for="l5w1"]{ border-color:var(--coral); background:#FCE9E6; }
+
+  /* success */
+  .success-badge{ text-align:center; padding:10px 0 4px; }
+  .success-badge .big-emoji{ font-size:3.4rem; display:block; margin-bottom:6px; }
+  .recap{ list-style:none; margin:18px 0 0; padding:0; }
+  .recap li{ display:flex; align-items:center; gap:10px; padding:10px 4px; border-bottom:1px solid var(--line); font-weight:600;}
+  .recap li:last-child{ border-bottom:none;}
+  .recap .dot{ width:22px; height:22px; border-radius:50%; background:var(--green); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.8rem; flex-shrink:0;}
+
+  /* confetti (pure CSS, replays each time panel5 is shown) */
+  .confetti-layer{ position:relative; height:0; overflow:visible; }
+  .confetti-piece{ position:absolute; top:-10px; width:8px; height:13px; border-radius:2px; animation:fall 2.6s linear forwards; }
+  @keyframes fall{ to{ transform:translateY(340px) rotate(380deg); opacity:.25; } }
+  .confetti-piece:nth-child(1){ left:2%;  background:var(--teal);   animation-delay:0s; }
+  .confetti-piece:nth-child(2){ left:12%; background:var(--coral);  animation-delay:.15s; }
+  .confetti-piece:nth-child(3){ left:22%; background:var(--yellow-dark); animation-delay:.3s; }
+  .confetti-piece:nth-child(4){ left:32%; background:var(--green);  animation-delay:.05s; }
+  .confetti-piece:nth-child(5){ left:42%; background:var(--teal);   animation-delay:.4s; }
+  .confetti-piece:nth-child(6){ left:52%; background:var(--coral);  animation-delay:.2s; }
+  .confetti-piece:nth-child(7){ left:62%; background:var(--yellow-dark); animation-delay:.1s; }
+  .confetti-piece:nth-child(8){ left:72%; background:var(--green);  animation-delay:.35s; }
+  .confetti-piece:nth-child(9){ left:82%; background:var(--teal);   animation-delay:.25s; }
+  .confetti-piece:nth-child(10){ left:92%; background:var(--coral); animation-delay:.45s; }
+  .confetti-piece:nth-child(11){ left:7%;  background:var(--green); animation-delay:.5s; }
+  .confetti-piece:nth-child(12){ left:87%; background:var(--yellow-dark); animation-delay:.08s; }
+
+  /* trail states */
+  #nav0:checked ~ .wrap #tn0{ background:var(--teal); border-color:var(--teal); color:#fff; box-shadow:0 0 0 5px var(--teal-soft); }
+  #nav1:checked ~ .wrap #tn0{ background:var(--green); border-color:var(--green); color:#fff; }
+  #nav1:checked ~ .wrap #tn1{ background:var(--teal); border-color:var(--teal); color:#fff; box-shadow:0 0 0 5px var(--teal-soft); }
+  #nav1:checked ~ .wrap #tl0{ background:var(--green); }
+  #nav2:checked ~ .wrap #tn0, #nav2:checked ~ .wrap #tn1{ background:var(--green); border-color:var(--green); color:#fff; }
+  #nav2:checked ~ .wrap #tn2{ background:var(--teal); border-color:var(--teal); color:#fff; box-shadow:0 0 0 5px var(--teal-soft); }
+  #nav2:checked ~ .wrap #tl0, #nav2:checked ~ .wrap #tl1{ background:var(--green); }
+  #nav3:checked ~ .wrap #tn0, #nav3:checked ~ .wrap #tn1, #nav3:checked ~ .wrap #tn2{ background:var(--green); border-color:var(--green); color:#fff; }
+  #nav3:checked ~ .wrap #tn3{ background:var(--teal); border-color:var(--teal); color:#fff; box-shadow:0 0 0 5px var(--teal-soft); }
+  #nav3:checked ~ .wrap #tl0, #nav3:checked ~ .wrap #tl1, #nav3:checked ~ .wrap #tl2{ background:var(--green); }
+  #nav4:checked ~ .wrap #tn0, #nav4:checked ~ .wrap #tn1, #nav4:checked ~ .wrap #tn2, #nav4:checked ~ .wrap #tn3{ background:var(--green); border-color:var(--green); color:#fff; }
+  #nav4:checked ~ .wrap #tn4{ background:var(--teal); border-color:var(--teal); color:#fff; box-shadow:0 0 0 5px var(--teal-soft); }
+  #nav4:checked ~ .wrap #tl0, #nav4:checked ~ .wrap #tl1, #nav4:checked ~ .wrap #tl2, #nav4:checked ~ .wrap #tl3{ background:var(--green); }
+  #nav5:checked ~ .wrap #tn0, #nav5:checked ~ .wrap #tn1, #nav5:checked ~ .wrap #tn2, #nav5:checked ~ .wrap #tn3, #nav5:checked ~ .wrap #tn4{ background:var(--green); border-color:var(--green); color:#fff; }
+  #nav5:checked ~ .wrap #tn5{ background:var(--teal); border-color:var(--teal); color:#fff; box-shadow:0 0 0 5px var(--teal-soft); }
+  #nav5:checked ~ .wrap #tl0, #nav5:checked ~ .wrap #tl1, #nav5:checked ~ .wrap #tl2, #nav5:checked ~ .wrap #tl3, #nav5:checked ~ .wrap #tl4{ background:var(--green); }
+
+  /* panel visibility */
+  #nav0:checked ~ .wrap .panel0{ display:block; }
+  #nav1:checked ~ .wrap .panel1{ display:block; }
+  #nav2:checked ~ .wrap .panel2{ display:block; }
+  #nav3:checked ~ .wrap .panel3{ display:block; }
+  #nav4:checked ~ .wrap .panel4{ display:block; }
+  #nav5:checked ~ .wrap .panel5{ display:block; }
+
+  footer{ text-align:center; margin-top:30px; font-size:.82rem; color:var(--ink-soft); }
+
+</style>
+
+
+<input type="radio" name="nav" id="nav0" class="visually-hidden" checked>
+<input type="radio" name="nav" id="nav1" class="visually-hidden">
+<input type="radio" name="nav" id="nav2" class="visually-hidden">
+<input type="radio" name="nav" id="nav3" class="visually-hidden">
+<input type="radio" name="nav" id="nav4" class="visually-hidden">
+<input type="radio" name="nav" id="nav5" class="visually-hidden">
+
+<div class="wrap">
+
+  <div class="app-head">
+    <span class="kicker">🗺️ Mission Drive</span>
+    <h1>Partage ton dossier avec ton prof</h1>
+  </div>
+
+  <div class="trail">
+    <label class="trail-node" id="tn0" for="nav0">🚩</label>
+    <span class="trail-line" id="tl0"></span>
+    <label class="trail-node" id="tn1" for="nav1">1</label>
+    <span class="trail-line" id="tl1"></span>
+    <label class="trail-node" id="tn2" for="nav2">2</label>
+    <span class="trail-line" id="tl2"></span>
+    <label class="trail-node" id="tn3" for="nav3">3</label>
+    <span class="trail-line" id="tl3"></span>
+    <label class="trail-node" id="tn4" for="nav4">4</label>
+    <span class="trail-line" id="tl4"></span>
+    <label class="trail-node" id="tn5" for="nav5">🏁</label>
+  </div>
+
+  <!-- STEP 0 -->
+  <section class="panel panel0">
+    <div class="eyebrow">Avant de commencer</div>
+    <h2>Ton dossier personnel</h2>
+    <p>Dans <strong>2026-2027</strong>, tu as un dossier à toi, nommé avec ta classe et ton nom (par exemple <em>5e3 DUPONT Léa</em>). Écris-le ici, il apparaîtra partout dans la mission :</p>
+    <label for="folderNameInput" class="hint-note" style="display:block;font-weight:600;color:var(--ink);margin-bottom:6px;">Nom de ton dossier</label>
+    <input type="text" id="folderNameInput" class="text-input" placeholder="5ème NOM Prénom" autocomplete="off">
+    <div class="name-preview">📁 2026-2027 → <span class="dyn-foldername">5ème NOM Prénom</span></div>
+    <div class="btn-row">
+      <span class="spacer"></span>
+      <label class="btn" for="nav1">Commencer la mission 🚀</label>
+    </div>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="panel panel1">
+    <div class="eyebrow">Étape 1 / 4</div>
+    <h2>Vérifie ton dossier</h2>
+    <p>Coche chaque élément quand tu l'as retrouvé dans ton Drive.</p>
+    <ul class="tree checklist">
+      <li><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Dossier <span class="dyn-foldername">5ème NOM Prénom</span></span><span class="tag">— dans 2026-2027</span></label></li>
+      <li class="indent-1"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Dossier TECHNOLOGIE</span></label></li>
+      <li class="indent-2"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Dossier 0_Rentrée</span></label></li>
+      <li class="indent-3"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Doc « test »</span></label></li>
+      <li class="indent-2"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Dossier 1_ les données numériques</span></label></li>
+      <li class="indent-3"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Dossier Séance 1</span></label></li>
+      <li class="indent-3"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Doc « act1 »</span></label></li>
+      <li class="indent-3"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Doc « act2 »</span></label></li>
+      <li class="indent-3"><label class="check-row"><input type="checkbox"><span class="box">✓</span><span class="label">Slides « Où sont stockées les données numériques ? »</span></label></li>
+    </ul>
+    <div class="progress-pill"></div>
+    <div class="btn-row">
+      <label class="btn secondary" for="nav0">← Retour</label>
+      <span class="spacer"></span>
+      <label class="btn" for="nav2">Suivant →</label>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="panel panel2">
+    <div class="eyebrow">Étape 2 / 4</div>
+    <h2>Il te manque quelque chose ?</h2>
+    <p>Clique sur une carte pour voir comment créer ce qui manque.</p>
+
+    <details class="accordion-item">
+      <summary>📁 Il me manque un dossier</summary>
+      <div class="body"><ol>
+        <li>Ouvre le dossier où il doit se trouver.</li>
+        <li>Clique-droit dans un espace vide → <strong>Nouveau</strong> → <strong>Dossier</strong>.</li>
+        <li>Écris le nom exactement comme dans l'étape 1 (majuscules et _ compris).</li>
+        <li>Valide avec <strong>Entrée</strong>.</li>
+      </ol></div>
+    </details>
+
+    <details class="accordion-item">
+      <summary>📄 Il me manque un Google Doc</summary>
+      <div class="body"><ol>
+        <li>Ouvre le bon dossier (par exemple <strong>Séance 1</strong>).</li>
+        <li>Clique-droit → <strong>Nouveau</strong> → <strong>Google Docs</strong>.</li>
+        <li>Clique sur « Document sans titre » et tape le nom demandé (ex. <em>act1</em>).</li>
+      </ol></div>
+    </details>
+
+    <details class="accordion-item">
+      <summary>📊 Il me manque le diaporama (Slides)</summary>
+      <div class="body"><ol>
+        <li>Ouvre le dossier <strong>Séance 1</strong>.</li>
+        <li>Clique-droit → <strong>Nouveau</strong> → <strong>Google Slides</strong>.</li>
+        <li>Renomme-le exactement : <em>Où sont stockées les données numériques ?</em></li>
+      </ol></div>
+    </details>
+
+    <div class="btn-row">
+      <label class="btn secondary" for="nav1">← Retour</label>
+      <span class="spacer"></span>
+      <label class="btn" for="nav3">Suivant →</label>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="panel panel3">
+    <div class="eyebrow">Étape 3 / 4</div>
+    <h2>Partage avec ton prof</h2>
+
+    <p><strong>1. Quel dossier dois-tu partager ?</strong></p>
+    <input type="radio" name="qf" id="qf0" class="visually-hidden">
+    <input type="radio" name="qf" id="qf1" class="visually-hidden">
+    <input type="radio" name="qf" id="qf2" class="visually-hidden">
+    <div class="choices">
+      <label for="qf0" class="choice-card">📁 2026-2027</label>
+      <label for="qf1" class="choice-card">📁 <span class="dyn-foldername">5ème NOM Prénom</span></label>
+      <label for="qf2" class="choice-card">📁 TECHNOLOGIE</label>
+    </div>
+    <p class="feedback ok fb-ok">Exact ! C'est ton dossier personnel qu'il faut partager.</p>
+    <p class="feedback ko fb-ko">Pas tout à fait : réessaie en choisissant une autre carte.</p>
+
+    <p style="margin-top:22px;"><strong>2. Tape l'adresse mail du professeur</strong></p>
+    <input type="text" id="emailInput" class="text-input" placeholder="prenom.nom@ert.tn"
+           pattern="^[Kk][Aa][Ll][Ee][Dd]\.[Mm][Rr][Aa][Ss][Ss][Ii]@[Ee][Rr][Tt]\.[Tt][Nn]$">
+    <p class="feedback ok email-ok">Parfait, c'est la bonne adresse !</p>
+    <p class="feedback ko email-ko">Pas encore bon : vérifie les points et le .tn à la fin.</p>
+
+    <p style="margin-top:22px;"><strong>3. Choisis ce que le prof pourra faire</strong></p>
+    <input type="radio" name="role" id="roleLecteur" class="visually-hidden">
+    <input type="radio" name="role" id="roleEditeur" class="visually-hidden">
+    <div class="role-row">
+      <label for="roleLecteur" class="role-card"><span class="emoji">👀</span><span class="name">Lecteur</span><span class="desc">Il regarde, ne modifie pas</span></label>
+      <label for="roleEditeur" class="role-card"><span class="emoji">✏️</span><span class="name">Éditeur</span><span class="desc">Il peut modifier</span></label>
+    </div>
+
+    <div class="btn-row">
+      <label class="btn secondary" for="nav2">← Retour</label>
+      <span class="spacer"></span>
+      <label class="btn" for="nav4">Suivant →</label>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="panel panel4">
+    <div class="eyebrow">Étape 4 / 4</div>
+    <h2>Retrouve les données numériques</h2>
+    <p>Clique, à chaque niveau, sur le bon dossier pour avancer jusqu'au diaporama.</p>
+
+    <input type="radio" name="l1" id="l1c" class="visually-hidden">
+    <input type="radio" name="l1" id="l1w1" class="visually-hidden">
+    <input type="radio" name="l1" id="l1w2" class="visually-hidden">
+    <input type="radio" name="l2" id="l2c" class="visually-hidden">
+    <input type="radio" name="l2" id="l2w1" class="visually-hidden">
+    <input type="radio" name="l2" id="l2w2" class="visually-hidden">
+    <input type="radio" name="l3" id="l3c" class="visually-hidden">
+    <input type="radio" name="l3" id="l3w1" class="visually-hidden">
+    <input type="radio" name="l3" id="l3w2" class="visually-hidden">
+    <input type="radio" name="l4" id="l4c" class="visually-hidden">
+    <input type="radio" name="l4" id="l4w1" class="visually-hidden">
+    <input type="radio" name="l5" id="l5c" class="visually-hidden">
+    <input type="radio" name="l5" id="l5w1" class="visually-hidden">
+
+    <div class="explorer-path">
+      <span class="crumb crumb0">📍 Tu es dans : 2026-2027</span>
+      <span class="crumb crumb1">📍 Tu es dans : 2026-2027 → <span class="dyn-foldername">5ème NOM Prénom</span></span>
+      <span class="crumb crumb2">📍 Tu es dans : 2026-2027 → <span class="dyn-foldername">5ème NOM Prénom</span> → TECHNOLOGIE</span>
+      <span class="crumb crumb3">📍 Tu es dans : … → TECHNOLOGIE → 1_ les données numériques</span>
+      <span class="crumb crumb4">📍 Tu es dans : … → 1_ les données numériques → Séance 1</span>
+      <span class="crumb crumb5">📍 Trouvé : … → Séance 1 → 📊 diaporama</span>
+    </div>
+
+    <div class="level level1">
+      <p class="level-prompt"><strong>Niveau 1</strong> — clique sur le bon dossier de départ</p>
+      <div class="choices">
+        <label for="l1c" class="choice-card">📁 2026-2027</label>
+        <label for="l1w1" class="choice-card">📁 3eme_archives</label>
+        <label for="l1w2" class="choice-card">📁 Téléchargements</label>
+      </div>
+      <p class="hint">Pas par là : regarde le nom de l'année scolaire.</p>
+    </div>
+
+    <div class="level level2">
+      <p class="level-prompt"><strong>Niveau 2</strong> — dans 2026-2027, clique sur ton dossier</p>
+      <div class="choices">
+        <label for="l2c" class="choice-card">📁 <span class="dyn-foldername">5ème NOM Prénom</span></label>
+        <label for="l2w1" class="choice-card">📁 6e2 MARTIN Tom</label>
+        <label for="l2w2" class="choice-card">📁 Corbeille</label>
+      </div>
+      <p class="hint">Ce n'est pas ton dossier à toi, réessaie.</p>
+    </div>
+
+    <div class="level level3">
+      <p class="level-prompt"><strong>Niveau 3</strong> — quelle matière ?</p>
+      <div class="choices">
+        <label for="l3w1" class="choice-card">📁 FRANCAIS</label>
+        <label for="l3c" class="choice-card">📁 TECHNOLOGIE</label>
+        <label for="l3w2" class="choice-card">📁 SVT</label>
+      </div>
+      <p class="hint">Les données numériques, ce n'est pas dans cette matière.</p>
+    </div>
+
+    <div class="level level4">
+      <p class="level-prompt"><strong>Niveau 4</strong> — quel dossier contient les données numériques ?</p>
+      <div class="choices">
+        <label for="l4w1" class="choice-card">📁 0_Rentrée</label>
+        <label for="l4c" class="choice-card">📁 1_ les données numériques</label>
+      </div>
+      <p class="hint">Ce dossier sert à autre chose. Regarde bien son nom.</p>
+    </div>
+
+    <div class="level level5">
+      <p class="level-prompt"><strong>Niveau 5</strong> — quelle séance ?</p>
+      <div class="choices">
+        <label for="l5c" class="choice-card">📁 Séance 1</label>
+        <label for="l5w1" class="choice-card">📁 Séance 2</label>
+      </div>
+      <p class="hint">Cette séance n'existe pas encore dans le dossier.</p>
+    </div>
+
+    <div class="final-found">
+      <div class="choice-card correct">📊 « Où sont stockées les données numériques ? » trouvé !</div>
+      <div class="btn-row">
+        <label class="btn secondary" for="nav3">← Retour</label>
+        <span class="spacer"></span>
+        <label class="btn" for="nav5">Terminer la mission →</label>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="panel panel5">
+    <div class="success-badge">
+      <span class="big-emoji">🎉</span>
+      <h2>Mission réussie !</h2>
+      <p>Ton dossier <strong class="dyn-foldername">5ème NOM Prénom</strong> est prêt à être partagé avec <strong>kaled.mrassi@ert.tn</strong>.</p>
+    </div>
+    <ul class="recap">
+      <li><span class="dot">✓</span> J'ai vérifié tous les dossiers et fichiers</li>
+      <li><span class="dot">✓</span> J'ai créé ce qui manquait</li>
+      <li><span class="dot">✓</span> J'ai partagé le bon dossier avec le bon mail</li>
+      <li><span class="dot">✓</span> Je sais où trouver les données numériques</li>
+    </ul>
+    <div class="confetti-layer" aria-hidden="true">
+      <span class="confetti-piece"></span><span class="confetti-piece"></span><span class="confetti-piece"></span>
+      <span class="confetti-piece"></span><span class="confetti-piece"></span><span class="confetti-piece"></span>
+      <span class="confetti-piece"></span><span class="confetti-piece"></span><span class="confetti-piece"></span>
+      <span class="confetti-piece"></span><span class="confetti-piece"></span><span class="confetti-piece"></span>
+    </div>
+    <div class="btn-row">
+      <label class="btn secondary" for="nav0" id="restartBtn">↺ Recommencer</label>
+      <span class="spacer"></span>
+    </div>
+  </section>
+
+</div>
+<footer>Astuce : ferme la page quand tu veux, ta progression est gardée.</footer>
+
+<script>
+(function(){
+  "use strict";
+  var STORAGE_KEY = "missionDriveCss_v1";
+
+  function qsa(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+
+  function saveState(){
+    try{
+      var checked = qsa('input[type="radio"], input[type="checkbox"]')
+        .filter(function(el){ return el.checked; })
+        .map(function(el){ return el.id; });
+      var folderInput = document.getElementById("folderNameInput");
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        checked: checked,
+        folderName: folderInput ? folderInput.value : ""
+      }));
+    }catch(e){ /* stockage indisponible, tant pis */ }
+  }
+
+  function applyFolderName(){
+    var input = document.getElementById("folderNameInput");
+    var val = (input && input.value.trim()) ? input.value.trim() : "5ème NOM Prénom";
+    qsa(".dyn-foldername").forEach(function(el){ el.textContent = val; });
+  }
+
+  function restoreState(){
+    var saved = loadState();
+    if(!saved) return;
+    var input = document.getElementById("folderNameInput");
+    if(input && saved.folderName){ input.value = saved.folderName; }
+    (saved.checked || []).forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.checked = true;
+    });
+  }
+
+  function resetAll(){
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    qsa('input[type="checkbox"], input[type="radio"]').forEach(function(el){ el.checked = false; });
+    var nav0 = document.getElementById("nav0");
+    if(nav0) nav0.checked = true;
+    var input = document.getElementById("folderNameInput");
+    if(input) input.value = "";
+    applyFolderName();
+  }
+
+  function init(){
+    restoreState();
+    applyFolderName();
+
+    qsa('input[type="radio"], input[type="checkbox"]').forEach(function(el){
+      el.addEventListener("change", saveState);
+    });
+
+    var folderInput = document.getElementById("folderNameInput");
+    if(folderInput){
+      folderInput.addEventListener("input", function(){
+        applyFolderName();
+        saveState();
+      });
+    }
+
+    var restartBtn = document.getElementById("restartBtn");
+    if(restartBtn){
+      restartBtn.addEventListener("click", resetAll);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

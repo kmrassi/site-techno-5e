@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Synthèse — Séance 2 : fichiers, taille et mots de passe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#fdfdfb; --ink:#1b2a4a; --ink-soft:#4d5b78; --blue:#1f4fb8;
+    --rule:#d7e2f4; --margin:#d64545; --marker:#ffe98a; --ok:#1d8a5a; --ok-soft:#e3f5ec;
+    --no:#c43d3d; --no-soft:#fbe8e8; --box:#f1f5fc;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#141a26; --ink:#e6ecf7; --ink-soft:#a6b3cc; --blue:#7fa6ff;
+      --rule:#243049; --margin:#e06a6a; --marker:#6b5a12; --ok:#5fd19c; --ok-soft:#16322a;
+      --no:#ff8f8f; --no-soft:#3a1d1f; --box:#1b2335;
+    }
+  }
+  :root[data-theme="dark"]{
+      --paper:#141a26; --ink:#e6ecf7; --ink-soft:#a6b3cc; --blue:#7fa6ff;
+      --rule:#243049; --margin:#e06a6a; --marker:#6b5a12; --ok:#5fd19c; --ok-soft:#16322a;
+      --no:#ff8f8f; --no-soft:#3a1d1f; --box:#1b2335;
+  }
+  *,*::before,*::after{box-sizing:inherit}
+  html{scroll-padding-top:env(safe-area-inset-top,0px)}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+    font-size:1.05rem; line-height:1.65;
+    /* lignes de cahier */
+    background-image:linear-gradient(var(--rule) 1px, transparent 1px);
+    background-size:100% 1.65rem;
+  }
+  .page{
+    max-width:820px; margin:0 auto; padding:2.5rem 1.25rem 3rem 3.25rem; position:relative;
+  }
+  .page::before{ /* marge rouge */
+    content:""; position:absolute; top:0; bottom:0; left:2rem; width:2px; background:var(--margin); opacity:.75;
+  }
+  h1,h2,h3{font-family:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif; line-height:1.2; color:var(--blue)}
+  h1{font-size:clamp(1.7rem,4.5vw,2.4rem); font-weight:800; margin:.2rem 0 .4rem}
+  .question{font-size:1.1rem; color:var(--ink-soft); margin:0 0 1.8rem; font-style:italic}
+  .meta{font-size:.9rem; color:var(--ink-soft); margin:0}
+  h2{font-size:1.45rem; font-weight:800; margin:2.6rem 0 .8rem; display:flex; gap:.6rem; align-items:baseline}
+  h2 .num{color:var(--margin); font-size:1.1rem}
+  h3{font-size:1.1rem; font-weight:600; margin:1.6rem 0 .4rem}
+  p{margin:.5rem 0}
+  mark{background:var(--marker); color:inherit; padding:0 .15em; border-radius:2px}
+
+  .def{background:var(--box); border-left:4px solid var(--blue); padding:.8rem 1rem; margin:.9rem 0; border-radius:0 8px 8px 0}
+  .def strong{color:var(--blue)}
+
+  /* L'échelle des unités : l'élément marquant */
+  .ladder{display:flex; align-items:flex-end; gap:.4rem; margin:1.2rem 0 .4rem; overflow-x:auto; padding-bottom:.4rem}
+  .step{flex:1 0 92px; border:2px solid var(--blue); border-radius:10px 10px 0 0; background:var(--paper);
+    text-align:center; padding:.5rem .3rem; display:flex; flex-direction:column; justify-content:flex-end}
+  .step b{font-family:"Bricolage Grotesque",sans-serif; font-size:1.5rem; color:var(--blue); display:block}
+  .step span{font-size:.82rem; color:var(--ink-soft)}
+  .step small{display:block; font-size:.78rem; margin-top:.3rem}
+  .s1{height:88px}.s2{height:118px}.s3{height:148px}.s4{height:178px}.s5{height:208px}
+  .times{font-size:.9rem; color:var(--ink-soft); text-align:center}
+
+  .table-wrap{overflow-x:auto; margin:.8rem 0}
+  table{border-collapse:collapse; width:100%; min-width:420px; background:var(--paper); font-size:.95rem}
+  th,td{border:1px solid var(--rule); padding:.45rem .7rem; text-align:left}
+  th{background:var(--box); color:var(--blue)}
+
+  .why{background:var(--no-soft); border-radius:8px; padding:.8rem 1rem; margin:1rem 0}
+  .why strong{color:var(--no)}
+
+  ol.rules{padding-left:1.4rem; margin:.6rem 0}
+  ol.rules li{margin:.25rem 0}
+
+  .compare{display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin:1rem 0}
+  @media (max-width:560px){ .compare{grid-template-columns:1fr} .page{padding-left:2.6rem} .page::before{left:1.4rem} }
+  .col{border-radius:8px; padding:.8rem 1rem}
+  .col.good{background:var(--ok-soft)} .col.bad{background:var(--no-soft)}
+  .col h3{margin-top:0}
+  .col.good h3{color:var(--ok)} .col.bad h3{color:var(--no)}
+  .col ul{margin:.3rem 0; padding-left:1.1rem}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace; background:var(--box); padding:.05em .35em; border-radius:4px; font-size:.95em}
+
+  .retenir{border:2px dashed var(--margin); border-radius:10px; padding:1rem 1.2rem; margin:2.6rem 0 1rem; background:var(--paper)}
+  .retenir h2{margin-top:0; color:var(--margin)}
+  .retenir ul{margin:.3rem 0; padding-left:1.2rem}
+
+  dl.lexique{display:grid; grid-template-columns:max-content 1fr; gap:.35rem 1rem; margin:.6rem 0}
+  dl.lexique dt{font-weight:700; color:var(--blue)}
+  dl.lexique dd{margin:0}
+  @media (max-width:560px){ dl.lexique{grid-template-columns:1fr} dl.lexique dd{margin-bottom:.5rem} }
+
+  footer{margin-top:2.5rem; font-size:.85rem; color:var(--ink-soft)}
+  .print{margin-top:1rem; font:inherit; font-size:.95rem; cursor:pointer; border:2px solid var(--blue); color:var(--blue);
+    background:var(--paper); border-radius:8px; padding:.45rem 1rem}
+  .print:focus-visible{outline:3px solid var(--marker); outline-offset:2px}
+
+  /* ---------- Animations ---------- */
+  .js .reveal{opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s ease}
+  .js .reveal.in{opacity:1; transform:none}
+
+  mark{background:linear-gradient(var(--marker),var(--marker)) no-repeat 0 0 / 100% 100%}
+  .js mark{background-size:0% 100%; transition:background-size .9s ease .35s}
+  .js .in mark, .js mark.in{background-size:100% 100%}
+
+  h1{animation:drop .8s cubic-bezier(.2,1.3,.5,1) both}
+  .question{animation:fade 1s ease .4s both}
+  @keyframes drop{from{opacity:0; transform:translateY(-24px)} to{opacity:1; transform:none}}
+  @keyframes fade{from{opacity:0} to{opacity:1}}
+
+  h2 .num{display:inline-block}
+  .js h2.in .num{animation:stamp .5s cubic-bezier(.2,1.6,.5,1) .15s both}
+  @keyframes stamp{from{transform:scale(2.4) rotate(-20deg); opacity:0} to{transform:none; opacity:1}}
+
+  .js .ladder .step{transform:scaleY(0); transform-origin:bottom; transition:transform .6s cubic-bezier(.3,1.4,.5,1)}
+  .js .ladder.in .step{transform:scaleY(1)}
+  .ladder .step:nth-child(2){transition-delay:.2s}
+  .ladder .step:nth-child(3){transition-delay:.4s}
+  .ladder .step:nth-child(4){transition-delay:.6s}
+  .ladder .step:nth-child(5){transition-delay:.8s}
+  .js .times{opacity:0; transition:opacity .6s ease 1.3s}
+  .js .ladder.in + .times{opacity:1}
+
+  .meter{height:10px; background:var(--rule); border-radius:5px; overflow:hidden; margin-top:.7rem}
+  .meter i{display:block; height:100%; width:0; border-radius:5px; transition:width 1.4s cubic-bezier(.3,1,.4,1) .4s}
+  .bad .meter i{background:var(--no)} .good .meter i{background:var(--ok)}
+  .compare.in .bad .meter i, html:not(.js) .bad .meter i{width:20%}
+  .compare.in .good .meter i, html:not(.js) .good .meter i{width:100%}
+  .meter-label{font-size:.85rem; color:var(--ink-soft); margin-top:.25rem}
+
+  .demo{border:2px solid var(--rule); border-radius:10px; padding:.8rem 1rem; margin:.8rem 0; background:var(--paper)}
+  .demo h4{margin:0 0 .3rem; font-size:1rem; color:var(--blue)}
+  .phrase{margin:.3rem 0}
+  .phrase span{border-radius:3px; padding:0 .1em; transition:background .3s, color .3s}
+  .phrase span.on{background:var(--marker)}
+  .result{font-size:1.4rem; margin:.4rem 0; min-height:2.2rem}
+  .result .out{font-size:1.2rem; letter-spacing:.05em}
+  .result .out b{display:inline-block; animation:pop .35s cubic-bezier(.2,1.6,.5,1) both; font-weight:700; color:var(--blue)}
+  @keyframes pop{from{transform:translateY(-14px) scale(1.6); opacity:0} to{transform:none; opacity:1}}
+  .caret{display:inline-block; width:2px; height:1.2em; background:var(--blue); vertical-align:middle; margin-left:2px; animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .replay{font:inherit; font-size:.85rem; cursor:pointer; border:1px solid var(--blue); color:var(--blue); background:transparent; border-radius:6px; padding:.2rem .7rem}
+  .replay:focus-visible{outline:3px solid var(--marker); outline-offset:2px}
+
+  .js ol.rules li{opacity:0; transform:translateX(-14px); transition:opacity .4s ease, transform .4s ease; transition-delay:calc(var(--i) * 110ms)}
+  .js ol.rules.in li{opacity:1; transform:none}
+  ol.rules li::after{content:" ✓"; color:var(--ok); font-weight:700}
+  .js ol.rules li::after{opacity:0; transition:opacity .3s; transition-delay:calc(var(--i) * 110ms + .35s)}
+  .js ol.rules.in li::after{opacity:1}
+
+  .js .retenir.in{animation:wiggle .7s ease .5s}
+  @keyframes wiggle{0%,100%{transform:none} 30%{transform:rotate(-.8deg)} 60%{transform:rotate(.6deg)}}
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation:none !important; transition:none !important}
+  }
+
+  @media print{
+    .js .reveal, .js ol.rules li, .js .ladder .step, .js .times{opacity:1 !important; transform:none !important}
+    .js mark{background-size:100% 100% !important}
+    .replay,.caret{display:none}
+    body{background:#fff; color:#000; font-size:11pt}
+    .print{display:none}
+    .page{padding-top:0}
+    h2{break-after:avoid} .def,.why,.compare,.retenir,table{break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="meta">Technologie · 5e · Séance 2 · Synthèse</p>
+  <h1>Fichiers, taille et mots de passe</h1>
+  <p class="question">Est-ce bien sans danger de partager une vidéo sur l'ENT ?</p>
+
+  <h2><span class="num">1</span> Qu'est-ce qu'un fichier informatique ?</h2>
+  <div class="def">
+    <p>Un <strong>fichier informatique</strong> est un ensemble de données numériques réunies sous <mark>un même nom</mark>, enregistrées sur un <mark>support de stockage permanent</mark>.</p>
+  </div>
+  <p>Exemples de supports : disque dur, clé USB, carte mémoire, cédérom, stockage en ligne (cloud, Drive).</p>
+  <p>Un fichier se reconnaît à son nom et à son <strong>extension</strong>, qui indique son type : <code>.mp4</code> pour une vidéo, <code>.jpg</code> pour une image, <code>.pdf</code> pour un document…</p>
+
+  <h2><span class="num">2</span> Comment mesurer la taille d'un fichier ?</h2>
+  <div class="def">
+    <p>La <strong>taille d'un fichier</strong> est la quantité de données qu'il contient. Elle s'exprime en unités basées sur l'<mark>octet</mark> (1 octet = 8 bits).</p>
+  </div>
+
+  <div class="ladder" aria-label="Échelle des unités, du plus petit au plus grand">
+    <div class="step s1"><b>o</b><span>octet</span><small>un caractère</small></div>
+    <div class="step s2"><b>Ko</b><span>kilooctet</span><small>un texte court</small></div>
+    <div class="step s3"><b>Mo</b><span>mégaoctet</span><small>une photo, une musique</small></div>
+    <div class="step s4"><b>Go</b><span>gigaoctet</span><small>un film</small></div>
+    <div class="step s5"><b>To</b><span>téraoctet</span><small>un disque dur entier</small></div>
+  </div>
+  <p class="times">À chaque marche, on multiplie par 1 000 (en informatique, on utilise parfois 1 024).</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Unité</th><th>Symbole</th><th>Équivalence</th></tr></thead>
+      <tbody>
+        <tr><td>1 kilooctet</td><td>Ko</td><td>1 000 octets</td></tr>
+        <tr><td>1 mégaoctet</td><td>Mo</td><td>1 000 Ko</td></tr>
+        <tr><td>1 gigaoctet</td><td>Go</td><td>1 000 Mo</td></tr>
+        <tr><td>1 téraoctet</td><td>To</td><td>1 000 Go</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="why">
+    <p><strong>Retour sur la situation :</strong> la vidéo n'a pas pu être importée sur le Digipad car son fichier est <strong>trop volumineux</strong>. Chaque service en ligne fixe une taille maximale par fichier et un espace de stockage limité. Une vidéo, qui pèse souvent plusieurs centaines de Mo, dépasse facilement ces limites.</p>
+    <p>Solutions possibles : compresser la vidéo, la raccourcir, réduire sa qualité, ou partager un lien vers le fichier plutôt que le fichier lui-même.</p>
+  </div>
+
+  <h2><span class="num">3</span> Protéger l'accès à ses espaces numériques</h2>
+  <p>Le Drive, le Digipad et l'ENT sont protégés par un compte et un <strong>mot de passe</strong>. S'il est deviné ou volé, quelqu'un peut lire, modifier ou supprimer tes fichiers, ou se faire passer pour toi.</p>
+
+  <div class="compare">
+    <div class="col bad">
+      <h3>Mauvais mot de passe</h3>
+      <ul>
+        <li>Trop court (moins de 12 signes)</li>
+        <li>Facile à deviner : prénom, date de naissance, nom du chien</li>
+        <li>Suite simple : <code>123456</code>, <code>azerty</code></li>
+        <li>Le même pour tous ses comptes</li>
+      </ul>
+      <div class="meter" aria-hidden="true"><i></i></div>
+      <p class="meter-label">Robustesse : très faible</p>
+    </div>
+    <div class="col good">
+      <h3>Bon mot de passe</h3>
+      <ul>
+        <li>Au moins 12 signes</li>
+        <li>Mélange de majuscules, minuscules, chiffres et caractères spéciaux</li>
+        <li>Impossible à deviner</li>
+        <li>Différent pour chaque service</li>
+      </ul>
+      <div class="meter" aria-hidden="true"><i></i></div>
+      <p class="meter-label">Robustesse : forte</p>
+    </div>
+  </div>
+
+  <h3>Deux méthodes pour créer un mot de passe solide et facile à retenir</h3>
+  <div class="demo" data-demo>
+    <h4>Méthode des premières lettres</h4>
+    <p>On garde la première lettre de chaque mot d'une phrase inventée.</p>
+    <p class="phrase">« <span data-t="1">Un</span> <span data-t="t">tiens</span> <span data-t="v">vaut</span> <span data-t="m">mieux</span> <span data-t="Q">que</span> <span data-t="2">deux</span> <span data-t="t">tu</span> <span data-t="l'A">l'auras</span> »</p>
+    <p class="result"><code class="out">1tvmQ2tl'A</code><span class="caret" aria-hidden="true"></span></p>
+    <button class="replay" type="button">Rejouer l'animation</button>
+  </div>
+
+  <div class="demo" data-demo>
+    <h4>Méthode phonétique</h4>
+    <p>On remplace des sons par des lettres, chiffres ou symboles qui se prononcent pareil.</p>
+    <p class="phrase">« <span data-t="g">J'ai</span> <span data-t="ht">acheté</span> <span data-t="8">huit</span> <span data-t="CD">CD</span> <span data-t="%">pour cent</span> <span data-t="E">euros</span> <span data-t="7">cet</span> <span data-t="am">après-midi</span> »</p>
+    <p class="result"><code class="out">ght8CD%E7am</code><span class="caret" aria-hidden="true"></span></p>
+    <button class="replay" type="button">Rejouer l'animation</button>
+  </div>
+
+  <h3>Les 10 bonnes pratiques (Cybermalveillance.gouv.fr)</h3>
+  <ol class="rules">
+    <li>Un mot de passe différent pour chaque service.</li>
+    <li>Un mot de passe long et complexe (12 signes minimum).</li>
+    <li>Un mot de passe impossible à deviner.</li>
+    <li>Utiliser un gestionnaire de mots de passe (ex. : KeePass).</li>
+    <li>Changer son mot de passe au moindre soupçon.</li>
+    <li>Ne jamais communiquer son mot de passe à quelqu'un.</li>
+    <li>Ne pas enregistrer ses mots de passe sur un ordinateur partagé.</li>
+    <li>Activer la double authentification quand c'est possible.</li>
+    <li>Changer les mots de passe par défaut.</li>
+    <li>Choisir un mot de passe particulièrement robuste pour sa messagerie.</li>
+  </ol>
+
+  <h3>Les bons réflexes</h3>
+  <p><strong>Double authentification :</strong> en plus du mot de passe, on confirme son identité par un second moyen (code reçu par SMS, application…). Même si le mot de passe est volé, le compte reste protégé.</p>
+  <p><strong>Hameçonnage (phishing) :</strong> aucune organisation sérieuse ne demande ton mot de passe par mail, message ou téléphone. Si c'est le cas, c'est une arnaque : ne réponds pas.</p>
+  <p><strong>En cas de piratage :</strong> change immédiatement ton mot de passe, active la double authentification, préviens un adulte et tes contacts.</p>
+
+  <section class="retenir">
+    <h2>Je retiens</h2>
+    <ul>
+      <li>Un fichier est un ensemble de données numériques portant un nom, enregistré sur un support de stockage.</li>
+      <li>Sa taille se mesure en octets : o &lt; Ko &lt; Mo &lt; Go &lt; To (×1 000 à chaque fois).</li>
+      <li>Un fichier trop volumineux peut être refusé par un service en ligne.</li>
+      <li>Mes espaces numériques sont protégés par un mot de passe long, unique, impossible à deviner et que je ne partage avec personne.</li>
+    </ul>
+  </section>
+
+  <h2><span class="num">✎</span> Lexique</h2>
+  <dl class="lexique">
+    <dt>ENT</dt><dd>Espace numérique de travail : plateforme en ligne de l'établissement.</dd>
+    <dt>Octet</dt><dd>Unité de base pour mesurer une quantité de données (8 bits).</dd>
+    <dt>Support de stockage</dt><dd>Matériel ou service qui conserve les fichiers : disque dur, clé USB, cloud…</dd>
+    <dt>Double authentification</dt><dd>Vérification supplémentaire en plus du mot de passe.</dd>
+    <dt>Hameçonnage</dt><dd>Arnaque qui cherche à voler des informations personnelles en se faisant passer pour un organisme de confiance.</dd>
+    <dt>Gestionnaire de mots de passe</dt><dd>Logiciel qui stocke ses mots de passe de façon sécurisée.</dd>
+  </dl>
+
+  <footer>
+    La technologie au collège · Cycle 4 · 5e · Source des bonnes pratiques : cybermalveillance.gouv.fr
+    <br><button class="print" type="button" onclick="window.print()">Imprimer ou enregistrer en PDF</button>
+  </footer>
+</main>
+<script>
+(function(){
+  const root = document.documentElement;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!('IntersectionObserver' in window)) return;
+  root.classList.add('js');
+
+  const targets = document.querySelectorAll('.def, .why, .compare, .retenir, .table-wrap, .demo, h2, .page > p:not(.meta):not(.question), h3, dl.lexique');
+  targets.forEach(el => el.classList.add('reveal'));
+  document.querySelectorAll('ol.rules li').forEach((li, i) => li.style.setProperty('--i', i));
+
+  // Démonstrations « mot de passe » construites mot par mot
+  const timers = new WeakMap();
+  function playDemo(demo){
+    (timers.get(demo) || []).forEach(clearTimeout);
+    const words = demo.querySelectorAll('.phrase span');
+    const out = demo.querySelector('.out');
+    words.forEach(w => w.classList.remove('on'));
+    out.textContent = '';
+    if (reduce){
+      words.forEach(w => { const b = document.createElement('b'); b.textContent = w.dataset.t; out.appendChild(b); });
+      return;
+    }
+    const list = [];
+    words.forEach((w, i) => {
+      list.push(setTimeout(() => {
+        words.forEach(x => x.classList.remove('on'));
+        w.classList.add('on');
+        const b = document.createElement('b');
+        b.textContent = w.dataset.t;
+        out.appendChild(b);
+      }, 400 + i * 650));
+    });
+    list.push(setTimeout(() => words.forEach(x => x.classList.remove('on')), 400 + words.length * 650 + 500));
+    timers.set(demo, list);
+  }
+  document.querySelectorAll('[data-demo]').forEach(demo => {
+    demo.querySelector('.out').textContent = '';
+    demo.querySelector('.replay').addEventListener('click', () => playDemo(demo));
+  });
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      el.classList.add('in');
+      if (el.matches('[data-demo]')) playDemo(el);
+      io.unobserve(el);
+    });
+  }, { threshold: 0.25, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal, .ladder, ol.rules, [data-demo]').forEach(el => io.observe(el));
+
+  // À l'impression, tout afficher
+  window.addEventListener('beforeprint', () => {
+    document.querySelectorAll('.reveal, .ladder, ol.rules').forEach(el => el.classList.add('in'));
+    document.querySelectorAll('[data-demo]').forEach(d => {
+      (timers.get(d) || []).forEach(clearTimeout);
+      const out = d.querySelector('.out'); out.textContent = '';
+      d.querySelectorAll('.phrase span').forEach(w => { const b = document.createElement('b'); b.textContent = w.dataset.t; out.appendChild(b); });
+    });
+  });
+})();
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

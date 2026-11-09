@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arborescence Drive — Technologie 5ème (2026-2027)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F7FB; --grid:#DCE5F1; --ink:#1C2B4A; --muted:#55627D; --surface:#FFFFFF; --line:#C9D4E4;
+  --folder:#E3A22F; --folder-soft:#FCF0D6; --doc:#2F6FDB; --doc-soft:#E3ECFC; --slide:#D9642B; --slide-soft:#FBE7DC;
+  --ok:#23835A; --ko:#C23B3B; --focus:#7B4FE0;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",Verdana,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#131A28; --grid:#1D2638; --ink:#E6ECF7; --muted:#A1ADC4; --surface:#1A2335; --line:#2E3A52;
+    --folder:#F0B545; --folder-soft:#3A2F17; --doc:#6C9BF0; --doc-soft:#1E2C4A; --slide:#F08A55; --slide-soft:#3D2519;
+    --ok:#4CC08A; --ko:#F07171; --focus:#A98BF5;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#131A28; --grid:#1D2638; --ink:#E6ECF7; --muted:#A1ADC4; --surface:#1A2335; --line:#2E3A52;
+  --folder:#F0B545; --folder-soft:#3A2F17; --doc:#6C9BF0; --doc-soft:#1E2C4A; --slide:#F08A55; --slide-soft:#3D2519;
+  --ok:#4CC08A; --ko:#F07171; --focus:#A98BF5;
+}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:1.0625rem;line-height:1.6;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+img,svg{max-width:100%}
+main{max-width:980px;margin:0 auto;padding:2rem 1.25rem 4rem}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.2;margin:0}
+h1{font-size:clamp(1.9rem,4.5vw,2.8rem)}
+h2{font-size:1.6rem;margin-bottom:.75rem}
+h3{font-size:1.15rem;font-weight:500}
+p{margin:.5rem 0;max-width:68ch}
+a{color:var(--doc)}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+.intro{margin-bottom:1.5rem}
+.intro p{color:var(--muted)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:1.5rem;margin-top:1.5rem}
+nav.toc{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1rem}
+nav.toc a{font-family:var(--display);font-weight:500;text-decoration:none;color:var(--ink);background:var(--surface);border:1px solid var(--line);padding:.35rem .8rem;border-radius:999px}
+nav.toc a:hover{border-color:var(--ink)}
+
+/* ---------- Arbre ---------- */
+.explorer{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:1.25rem;align-items:start}
+@media (max-width:760px){.explorer{grid-template-columns:1fr}}
+.tree-tools{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{font-family:var(--display);font-weight:500;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.35rem .8rem}
+.btn:hover{border-color:var(--ink)}
+.tree,.tree ul{list-style:none;margin:0;padding:0}
+.tree ul{margin-left:1.05rem;padding-left:1rem;border-left:2px dashed var(--line)}
+.tree li{position:relative}
+.tree ul>li::before{content:"";position:absolute;left:-1rem;top:1.25rem;width:.85rem;border-top:2px dashed var(--line)}
+.node{display:flex;align-items:center;gap:.55rem;width:100%;text-align:left;background:none;border:2px solid transparent;border-radius:9px;padding:.4rem .5rem;margin:.1rem 0}
+.node:hover{background:var(--paper)}
+.node[aria-current="true"]{border-color:var(--ink);background:var(--paper)}
+.node .ic{flex:none;width:28px;height:28px}
+.node .name{font-weight:700}
+.node .tag{margin-left:auto;font-size:.8rem;color:var(--muted);white-space:nowrap}
+.chev{flex:none;width:14px;transition:transform .2s}
+.node[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.node.file .chev{visibility:hidden}
+li.collapsed>ul{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:.9rem;margin-top:1rem;font-size:.92rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:.4rem}
+.legend svg{width:22px;height:22px}
+
+.info{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:1rem;position:sticky;top:calc(env(safe-area-inset-top,0px) + 1rem)}
+.info .big{display:flex;align-items:center;gap:.7rem;margin-bottom:.6rem}
+.info .big svg{width:44px;height:44px;flex:none}
+.info dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.3rem .8rem;font-size:.95rem}
+.info dt{color:var(--muted)}
+.info dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+.path{margin-top:.9rem;font-size:.9rem}
+.path .crumbs{display:flex;flex-wrap:wrap;gap:.2rem;align-items:center;margin-top:.3rem}
+.path .crumb{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:.1rem .45rem}
+.path .sep{color:var(--muted);font-weight:700}
+
+/* ---------- Définition ---------- */
+.def-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.def{border-left:5px solid var(--line);padding:.4rem 0 .4rem .9rem}
+.def.root{border-color:var(--ink)}
+.def.branch{border-color:var(--folder)}
+.def.leaf{border-color:var(--doc)}
+.bits{font-family:var(--display);font-size:1.15rem;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem}
+.bits span{display:inline-grid;place-items:center;width:1.8rem;height:1.8rem;border-radius:6px;background:var(--doc-soft);font-weight:600}
+.key{background:var(--folder-soft);border-radius:10px;padding:.8rem 1rem;margin-top:1rem}
+
+/* ---------- Extensions ---------- */
+.ext-table-wrap{overflow-x:auto;margin-top:1rem}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:.97rem}
+th,td{text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--line)}
+th{font-family:var(--display);font-weight:500}
+td code{font-weight:700;font-size:1rem;background:var(--paper);padding:.1rem .4rem;border-radius:5px}
+.filename{font-size:1.4rem;font-family:var(--display);margin:.8rem 0;text-align:center}
+.filename .base{color:var(--muted)}
+.filename .dot{color:var(--slide);font-weight:600}
+.filename .ext{color:var(--doc)}
+.quiz{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:1rem;margin-top:1.25rem}
+.quiz .q{font-size:1.1rem}
+.quiz .q code{font-size:1.3rem;font-weight:700;color:var(--doc)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.5rem;margin:.8rem 0}
+.choice{background:var(--surface);border:2px solid var(--line);border-radius:9px;padding:.55rem;font-weight:700}
+.choice:hover:not(:disabled){border-color:var(--ink)}
+.choice.good{border-color:var(--ok);color:var(--ok)}
+.choice.bad{border-color:var(--ko);color:var(--ko)}
+.feedback{min-height:1.6em;font-weight:700}
+.score{color:var(--muted)}
+
+/* ---------- Taille ---------- */
+.units{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;margin:1rem 0}
+.unit{background:var(--doc-soft);border-radius:8px;padding:.35rem .6rem;text-align:center;line-height:1.25}
+.unit b{display:block;font-family:var(--display);font-size:1.1rem}
+.unit small{color:var(--muted)}
+.arrow{color:var(--muted);font-size:.85rem;text-align:center}
+.conv{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.6rem}
+.conv input,.conv select{font:inherit;color:var(--ink);background:var(--surface);border:2px solid var(--line);border-radius:8px;padding:.4rem .6rem}
+.conv input{width:9rem}
+.conv-out{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.5rem;margin-top:.8rem}
+.conv-out div{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.45rem .6rem;overflow-wrap:anywhere}
+.conv-out span{display:block;font-size:.8rem;color:var(--muted)}
+.bars{margin-top:1rem;display:grid;gap:.55rem}
+.bar{display:grid;grid-template-columns:9.5rem 1fr 5.5rem;gap:.6rem;align-items:center;font-size:.95rem}
+@media (max-width:560px){.bar{grid-template-columns:1fr 4.8rem}.bar .track{grid-column:1/-1;grid-row:2}}
+.track{background:var(--paper);border-radius:6px;height:16px;overflow:hidden;border:1px solid var(--line)}
+.fill{height:100%;background:var(--slide);border-radius:5px;width:0;transition:width .8s ease}
+.bar .val{text-align:right;font-weight:700}
+.note{font-size:.9rem;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{
+  body{background:#fff}
+  section{break-inside:avoid;border-color:#bbb}
+  nav.toc,.tree-tools,.quiz,.conv,.btn{display:none}
+  li.collapsed>ul{display:block}
+  .info{position:static}
+}
+</style>
+</head>
+<body>
+<main>
+  <header class="intro">
+    <h1>Mon dossier de Technologie</h1>
+    <p>Chaque élève duplique ce dossier modèle, puis remplace « NOM PRENOM » par son nom et son prénom (le dossier s'appelle par exemple « 5eme DUPONT Lina »). Clique sur un dossier pour l'ouvrir ou le fermer, et sur un fichier pour voir ses informations.</p>
+    <nav class="toc" aria-label="Sommaire">
+      <a href="#arbre">L'arborescence</a>
+      <a href="#fichier">Fichier et dossier</a>
+      <a href="#definition">Arborescence</a>
+      <a href="#extensions">Extensions</a>
+      <a href="#taille">Taille des fichiers</a>
+    </nav>
+  </header>
+
+  <!-- ================= ARBORESCENCE ================= -->
+  <section id="arbre" aria-labelledby="t-arbre">
+    <h2 id="t-arbre">L'arborescence du Drive</h2>
+    <div class="explorer">
+      <div>
+        <div class="tree-tools">
+          <button class="btn" id="openAll" type="button">Tout ouvrir</button>
+          <button class="btn" id="closeAll" type="button">Tout fermer</button>
+        </div>
+        <ul class="tree" id="tree" role="tree" aria-label="Arborescence du dossier"></ul>
+        <div class="legend" aria-label="Légende">
+          <span><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-folder"/></svg>Dossier</span>
+          <span><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-doc"/></svg>Fichier Google Doc</span>
+          <span><svg viewBox="0 0 32 32" aria-hidden="true"><use href="#i-slide"/></svg>Fichier Google Slides</span>
+        </div>
+      </div>
+      <aside class="info" id="info" aria-live="polite"></aside>
+    </div>
+  </section>
+
+  <!-- ================= DÉFINITION ================= -->
+  <section id="fichier" aria-labelledby="t-fic">
+    <h2 id="t-fic">Fichier et dossier</h2>
+    <div class="def-grid">
+      <div class="def leaf">
+        <h3>Un fichier informatique</h3>
+        <p>C'est un ensemble d'informations (des données) enregistré sous un nom sur un support de stockage : disque dur, clé USB, Drive… Il peut contenir un texte, une image, un son, une vidéo, une présentation ou un programme.</p>
+        <p>Un fichier a un <strong>nom</strong>, une <strong>extension</strong> qui indique son format, et une <strong>taille</strong> mesurée en octets.</p>
+      </div>
+      <div class="def branch">
+        <h3>Un dossier</h3>
+        <p>C'est un espace de rangement qui contient des fichiers et d'autres dossiers (des sous-dossiers). Un dossier ne contient pas lui-même de données : il sert à organiser.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="definition" aria-labelledby="t-def">
+    <h2 id="t-def">Qu'est-ce qu'une arborescence ?</h2>
+    <p>Une <strong>arborescence</strong> est la façon dont les dossiers et les fichiers sont rangés les uns dans les autres sur un ordinateur ou dans un espace de stockage comme le Drive. On l'appelle ainsi parce qu'elle ressemble à un arbre à l'envers.</p>
+    <div class="def-grid">
+      <div class="def root"><h3>La racine</h3><p>Le dossier principal, tout en haut. Ici : « 2026-2027 ».</p></div>
+      <div class="def branch"><h3>Les branches</h3><p>Les dossiers et sous-dossiers. Ils servent à ranger, comme des pochettes dans un classeur.</p></div>
+      <div class="def leaf"><h3>Les feuilles</h3><p>Les fichiers : ce sont eux qui contiennent le travail (texte, image, présentation…).</p></div>
+    </div>
+    <div class="key">
+      <h3>Le chemin d'accès</h3>
+      <p>C'est l'adresse d'un fichier : la liste des dossiers à ouvrir, de la racine jusqu'au fichier, séparés par des barres « / ». Clique sur un fichier dans l'arborescence pour voir son chemin.</p>
+    </div>
+  </section>
+
+  <!-- ================= EXTENSIONS ================= -->
+  <section id="extensions" aria-labelledby="t-ext">
+    <h2 id="t-ext">Les extensions de fichier</h2>
+    <p>L'<strong>extension</strong> est la fin du nom d'un fichier, après le dernier point. Elle indique le <strong>format</strong> du fichier, c'est-à-dire le type de contenu et le logiciel capable de l'ouvrir.</p>
+    <p class="filename" aria-label="Exemple : Act1 point docx"><span class="base">Act1</span><span class="dot">.</span><span class="ext">docx</span></p>
+    <p class="note">Les Google Docs et Google Slides n'affichent pas d'extension dans le Drive. Quand on les télécharge, ils deviennent par exemple un fichier <code>.docx</code> (Word) ou <code>.pptx</code> (PowerPoint), ou un <code>.pdf</code>.</p>
+    <div class="ext-table-wrap">
+      <table>
+        <thead><tr><th>Extension</th><th>Type de contenu</th><th>Exemple de logiciel</th></tr></thead>
+        <tbody id="extBody"></tbody>
+      </table>
+    </div>
+    <div class="quiz" id="quiz">
+      <h3>Teste-toi</h3>
+      <p class="q" id="quizQ"></p>
+      <div class="choices" id="quizChoices"></div>
+      <p class="feedback" id="quizFb" aria-live="polite"></p>
+      <button class="btn" id="quizNext" type="button">Question suivante</button>
+      <span class="score" id="quizScore"></span>
+    </div>
+  </section>
+
+  <!-- ================= TAILLE ================= -->
+  <section id="taille" aria-labelledby="t-size">
+    <h2 id="t-size">Mesurer la taille d'un fichier</h2>
+    <p>La taille d'un fichier est la <strong>quantité d'informations</strong> qu'il contient. Toutes les informations d'un ordinateur (textes, images, sons) sont codées avec seulement deux chiffres : 0 et 1.</p>
+    <div class="def-grid">
+      <div class="def root">
+        <h3>Qu'est-ce qu'un bit ?</h3>
+        <p>Le <strong>bit</strong> (de l'anglais <em>binary digit</em>, « chiffre binaire ») est la plus petite unité d'information. Il ne peut prendre que deux valeurs : <strong>0</strong> ou <strong>1</strong>, comme un interrupteur éteint ou allumé.</p>
+      </div>
+      <div class="def leaf">
+        <h3>Qu'est-ce qu'un octet ?</h3>
+        <p>Un <strong>octet</strong> est un groupe de <strong>8 bits</strong>. C'est l'unité utilisée pour mesurer la taille des fichiers. Un octet permet par exemple de coder une lettre.</p>
+        <p class="bits" aria-label="Exemple d'octet : la lettre A">A = <span>0</span><span>1</span><span>0</span><span>0</span><span>0</span><span>0</span><span>0</span><span>1</span></p>
+      </div>
+    </div>
+    <div class="units" aria-label="Échelle des unités">
+      <div class="unit"><b>1 bit</b><small>0 ou 1</small></div><div class="arrow">×8</div>
+      <div class="unit"><b>octet</b><small>o</small></div><div class="arrow">×1000</div>
+      <div class="unit"><b>kilooctet</b><small>Ko</small></div><div class="arrow">×1000</div>
+      <div class="unit"><b>mégaoctet</b><small>Mo</small></div><div class="arrow">×1000</div>
+      <div class="unit"><b>gigaoctet</b><small>Go</small></div><div class="arrow">×1000</div>
+      <div class="unit"><b>téraoctet</b><small>To</small></div>
+    </div>
+    <p class="note">On rencontre aussi parfois 1 Ko = 1024 octets (notation Kio). Dans ce cours, on utilise 1 Ko = 1000 octets.</p>
+
+    <h3 style="margin-top:1.2rem">Convertisseur</h3>
+    <div class="conv">
+      <label for="convVal">Valeur</label>
+      <input id="convVal" type="number" min="0" step="any" value="3">
+      <label for="convUnit" class="visually-hidden" style="position:absolute;left:-9999px">Unité</label>
+      <select id="convUnit">
+        <option value="b">bit</option><option value="o">octet</option><option value="Ko">Ko</option>
+        <option value="Mo" selected>Mo</option><option value="Go">Go</option><option value="To">To</option>
+      </select>
+    </div>
+    <div class="conv-out" id="convOut" aria-live="polite"></div>
+
+    <h3 style="margin-top:1.4rem">Ordres de grandeur</h3>
+    <p class="note">Valeurs approximatives. Les barres utilisent une échelle où chaque graduation vaut 10 fois plus que la précédente.</p>
+    <div class="bars" id="bars"></div>
+  </section>
+</main>
+
+<!-- Icônes -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-folder" viewBox="0 0 32 32">
+      <path d="M3 8a2 2 0 0 1 2-2h7l3 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="var(--folder)"/>
+      <path d="M3 12h26v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="var(--folder)" opacity=".75"/>
+    </symbol>
+    <symbol id="i-folder-open" viewBox="0 0 32 32">
+      <path d="M3 8a2 2 0 0 1 2-2h7l3 3h12a2 2 0 0 1 2 2v2H3z" fill="var(--folder)"/>
+      <path d="M2 14h28l-3 12a2 2 0 0 1-2 1.5H5A2 2 0 0 1 3 26z" fill="var(--folder)" opacity=".75"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 32 32">
+      <path d="M7 3h13l6 6v19a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="var(--doc)"/>
+      <path d="M20 3v6h6z" fill="#fff" opacity=".45"/>
+      <rect x="10" y="14" width="12" height="2" rx="1" fill="#fff"/><rect x="10" y="18" width="12" height="2" rx="1" fill="#fff"/><rect x="10" y="22" width="8" height="2" rx="1" fill="#fff"/>
+    </symbol>
+    <symbol id="i-slide" viewBox="0 0 32 32">
+      <path d="M7 3h13l6 6v19a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="var(--slide)"/>
+      <path d="M20 3v6h6z" fill="#fff" opacity=".45"/>
+      <rect x="10" y="14" width="12" height="9" rx="1.2" fill="none" stroke="#fff" stroke-width="2"/>
+    </symbol>
+    <symbol id="i-chev" viewBox="0 0 14 14"><path d="M4 2l6 5-6 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<script>
+(function(){
+  /* ---------- Données de l'arborescence ---------- */
+  const tree = {name:"2026-2027", type:"folder", role:"Racine : dossier de l'année scolaire", children:[
+   {name:"Technologie", type:"folder", role:"Dossier de la matière", children:[
+    {name:"5eme NOM PRENOM", type:"folder", role:"Dossier personnel de l'élève (classe + nom et prénom, à renommer)", children:[
+      {name:"0_rentrée", type:"folder", role:"Dossier de la rentrée", children:[
+        {name:"test", type:"doc", size:"≈ 25 Ko"}
+      ]},
+      {name:"1 - Les données numériques", type:"folder", role:"Dossier de la séquence", children:[
+        {name:"Séance 1", type:"folder", role:"Sous-dossier de séance", children:[
+          {name:"Act1", type:"doc", size:"≈ 25 Ko"},
+          {name:"Act2", type:"doc", size:"≈ 25 Ko"},
+          {name:"Act3", type:"slide", size:"≈ 1 Mo"}
+        ]}
+      ]}
+    ]}
+   ]}
+  ]};
+  const kinds = {
+    doc:{label:"Google Doc", icon:"i-doc", ext:".docx", content:"Texte (traitement de texte)"},
+    slide:{label:"Google Slides", icon:"i-slide", ext:".pptx", content:"Présentation (diaporama)"}
+  };
+
+  const treeEl = document.getElementById("tree");
+  const info = document.getElementById("info");
+  let current = null;
+
+  function icon(id, cls){ return `<svg class="${cls||"ic"}" viewBox="0 0 32 32" aria-hidden="true"><use href="#${id}"/></svg>`; }
+
+  function countItems(n){ let f=0,d=0; (n.children||[]).forEach(c=>{ if(c.type==="folder"){d++; const r=countItems(c); d+=r.d; f+=r.f;} else f++; }); return {f,d}; }
+
+  function build(node, parentEl, path, depth){
+    const li = document.createElement("li");
+    li.setAttribute("role","none");
+    const btn = document.createElement("button");
+    btn.type="button";
+    btn.setAttribute("role","treeitem");
+    const isFolder = node.type==="folder";
+    btn.className = "node " + (isFolder ? "folder" : "file");
+    const fullPath = path.concat(node.name);
+    let tag = isFolder ? "dossier" : kinds[node.type].label;
+    btn.innerHTML = `<svg class="chev" viewBox="0 0 14 14" aria-hidden="true"><use href="#i-chev"/></svg>`
+      + icon(isFolder ? "i-folder-open" : kinds[node.type].icon)
+      + `<span class="name">${node.name}</span><span class="tag">${tag}</span>`;
+    li.appendChild(btn);
+    if(isFolder){
+      btn.setAttribute("aria-expanded","true");
+      const ul = document.createElement("ul");
+      ul.setAttribute("role","group");
+      node.children.forEach(c=>build(c, ul, fullPath, depth+1));
+      li.appendChild(ul);
+      if(!node.children.length) btn.querySelector(".chev").style.visibility="hidden";
+    }
+    btn.addEventListener("click",()=>{
+      if(isFolder && node.children.length){
+        const open = btn.getAttribute("aria-expanded")==="true";
+        setOpen(li, btn, !open);
+      }
+      select(btn, node, fullPath);
+    });
+    parentEl.appendChild(li);
+    return btn;
+  }
+  function setOpen(li, btn, open){
+    btn.setAttribute("aria-expanded", String(open));
+    li.classList.toggle("collapsed", !open);
+    btn.querySelector(".ic use").setAttribute("href", open ? "#i-folder-open" : "#i-folder");
+  }
+  function select(btn, node, path){
+    if(current) current.removeAttribute("aria-current");
+    btn.setAttribute("aria-current","true"); current = btn;
+    const isFolder = node.type==="folder";
+    let rows;
+    if(isFolder){
+      const c = countItems(node);
+      rows = `<dt>Nature</dt><dd>Dossier</dd><dt>Rôle</dt><dd>${node.role}</dd>
+              <dt>Contient</dt><dd>${c.d} dossier(s), ${c.f} fichier(s)</dd>`;
+    } else {
+      const k = kinds[node.type];
+      rows = `<dt>Nature</dt><dd>Fichier</dd><dt>Type</dt><dd>${k.label}</dd>
+              <dt>Contenu</dt><dd>${k.content}</dd>
+              <dt>Si téléchargé</dt><dd>${node.name}${k.ext}</dd>
+              <dt>Taille</dt><dd>${node.size} (indicative)</dd>`;
+    }
+    const crumbs = path.map(p=>`<span class="crumb">${p}</span>`).join('<span class="sep">/</span>');
+    info.innerHTML = `<div class="big">${icon(isFolder?"i-folder":kinds[node.type].icon,"")}<h3>${node.name}</h3></div>
+      <dl>${rows}</dl>
+      <div class="path"><strong>Chemin d'accès</strong><div class="crumbs">${crumbs}</div></div>`;
+  }
+
+  const rootBtn = build(tree, treeEl, [], 0);
+  // Sélection initiale : Act1
+  const firstFile = treeEl.querySelector(".node.file");
+  firstFile.click();
+
+  function all(open){ treeEl.querySelectorAll("li").forEach(li=>{ const b=li.querySelector(":scope>.node.folder"); if(b && li.querySelector(":scope>ul li")) setOpen(li,b,open); }); }
+  document.getElementById("openAll").onclick=()=>all(true);
+  document.getElementById("closeAll").onclick=()=>{ all(false); setOpen(rootBtn.parentElement, rootBtn, true); };
+
+  /* ---------- Extensions ---------- */
+  const exts = [
+    [".txt","Texte simple","Bloc-notes"],
+    [".docx / .odt","Texte mis en forme","Word, LibreOffice Writer, Google Docs"],
+    [".pdf","Document à lire ou imprimer","Lecteur PDF, navigateur"],
+    [".pptx / .odp","Présentation","PowerPoint, Impress, Google Slides"],
+    [".xlsx / .ods / .csv","Tableau de données","Excel, Calc, Google Sheets"],
+    [".jpg / .png","Image","Visionneuse de photos"],
+    [".mp3 / .wav","Son","Lecteur audio"],
+    [".mp4 / .avi","Vidéo","Lecteur vidéo (VLC…)"],
+    [".html","Page web","Navigateur internet"],
+    [".zip","Archive (fichiers compressés)","Explorateur de fichiers, 7-Zip"]
+  ];
+  document.getElementById("extBody").innerHTML = exts.map(e=>`<tr><td><code>${e[0]}</code></td><td>${e[1]}</td><td>${e[2]}</td></tr>`).join("");
+
+  const quizData = [
+    ["photo_vacances.jpg","Image"],["exposé.pptx","Présentation"],["chanson.mp3","Son"],
+    ["film.mp4","Vidéo"],["notes.txt","Texte"],["notes_classe.csv","Tableau de données"],
+    ["site.html","Page web"],["devoir.docx","Texte"],["logo.png","Image"],["dossier_projet.zip","Archive"]
+  ];
+  const types = ["Image","Présentation","Son","Vidéo","Texte","Tableau de données","Page web","Archive"];
+  let order = shuffle(quizData.map((_,i)=>i)), qi = 0, score = 0, answered = 0;
+  const qEl=document.getElementById("quizQ"), chEl=document.getElementById("quizChoices"), fb=document.getElementById("quizFb"), sc=document.getElementById("quizScore");
+  function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+  function ask(){
+    const [file, good] = quizData[order[qi % order.length]];
+    const dot = file.lastIndexOf(".");
+    qEl.innerHTML = `Quel est le type du fichier <strong>${file.slice(0,dot)}</strong><code>${file.slice(dot)}</code> ?`;
+    const opts = shuffle([good].concat(shuffle(types.filter(t=>t!==good)).slice(0,3)));
+    chEl.innerHTML = "";
+    opts.forEach(o=>{
+      const b=document.createElement("button"); b.type="button"; b.className="choice"; b.textContent=o;
+      b.onclick=()=>{
+        answered++;
+        chEl.querySelectorAll(".choice").forEach(x=>{ x.disabled=true; if(x.textContent===good) x.classList.add("good"); });
+        if(o===good){ score++; fb.textContent="Bonne réponse !"; fb.style.color="var(--ok)"; }
+        else { b.classList.add("bad"); fb.textContent=`Non : l'extension ${file.slice(dot)} correspond à « ${good} ».`; fb.style.color="var(--ko)"; }
+        sc.textContent = `Score : ${score} / ${answered}`;
+      };
+      chEl.appendChild(b);
+    });
+    fb.textContent="";
+  }
+  document.getElementById("quizNext").onclick=()=>{ qi++; if(qi%order.length===0) order=shuffle(order); ask(); };
+  ask();
+
+  /* ---------- Convertisseur ---------- */
+  const inBits = {b:1, o:8, Ko:8e3, Mo:8e6, Go:8e9, To:8e12};
+  const labels = {b:"bits", o:"octets", Ko:"Ko", Mo:"Mo", Go:"Go", To:"To"};
+  const fmt = n => { if(n===0) return "0"; if(n>=1e15||n<1e-6) return n.toExponential(2).replace(".",","); return n.toLocaleString("fr-FR",{maximumFractionDigits:6}); };
+  function convert(){
+    const v = parseFloat(document.getElementById("convVal").value);
+    const u = document.getElementById("convUnit").value;
+    const out = document.getElementById("convOut");
+    if(isNaN(v) || v<0){ out.innerHTML = `<div>Entre un nombre positif pour lancer la conversion.</div>`; return; }
+    const bits = v*inBits[u];
+    out.innerHTML = Object.keys(inBits).map(k=>`<div><span>${labels[k]}</span><strong>${fmt(bits/inBits[k])}</strong></div>`).join("");
+  }
+  document.getElementById("convVal").addEventListener("input",convert);
+  document.getElementById("convUnit").addEventListener("change",convert);
+  convert();
+
+  /* ---------- Ordres de grandeur ---------- */
+  const sizes = [
+    ["Un caractère (lettre)",1,"1 o"],
+    ["Fichier texte (1 page)",3e3,"≈ 3 Ko"],
+    ["Document Word avec images",5e5,"≈ 500 Ko"],
+    ["Photo de smartphone",3e6,"≈ 3 Mo"],
+    ["Chanson MP3",4e6,"≈ 4 Mo"],
+    ["Vidéo HD de 10 min",5e8,"≈ 500 Mo"],
+    ["Film HD complet",4e9,"≈ 4 Go"],
+    ["Disque dur d'ordinateur",1e12,"≈ 1 To"]
+  ];
+  const barsEl = document.getElementById("bars");
+  barsEl.innerHTML = sizes.map(s=>`<div class="bar"><span>${s[0]}</span><div class="track"><div class="fill" data-w="${Math.max(2,(Math.log10(s[1])/12)*100)}"></div></div><span class="val">${s[2]}</span></div>`).join("");
+  const grow = ()=>barsEl.querySelectorAll(".fill").forEach(f=>f.style.width=f.dataset.w+"%");
+  if("IntersectionObserver" in window){
+    const io = new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)){ grow(); io.disconnect(); } },{threshold:.3});
+    io.observe(barsEl);
+  } else grow();
+  window.addEventListener("beforeprint",grow);
+})();
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

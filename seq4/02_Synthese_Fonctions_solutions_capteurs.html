@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthèse – Fonctions, Solutions & Capteurs</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple-50: #EEEDFE; --purple-200: #AFA9EC; --purple-600: #534AB7; --purple-800: #3C3489; --purple-900: #26215C;
+    --teal-50: #E1F5EE; --teal-200: #5DCAA5; --teal-600: #0F6E56; --teal-800: #085041;
+    --coral-50: #FAECE7; --coral-200: #F0997B; --coral-600: #993C1D; --coral-800: #712B13;
+    --amber-50: #FAEEDA; --amber-200: #EF9F27; --amber-600: #854F0B;
+    --gray-50: #F1EFE8; --gray-100: #D3D1C7; --gray-600: #5F5E5A; --gray-800: #444441;
+    --bg: #FAFAF8;
+    --card: #FFFFFF;
+    --text: #1a1a18;
+    --muted: #6b6b66;
+    --border: rgba(0,0,0,0.08);
+    --accent: #534AB7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .header-left { flex: 1; }
+
+  .badge {
+    display: inline-block;
+    background: var(--purple-50);
+    color: var(--purple-800);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  .header-tags {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+
+  .tag {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-100);
+    color: var(--gray-800);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  /* SECTION TITLES */
+  .section { margin-bottom: 2.5rem; }
+
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.25rem;
+  }
+
+  .section-label .num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .section-label h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* KEY DEFINITION */
+  .definition-box {
+    background: var(--purple-50);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .definition-box .def-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--purple-600);
+    margin-bottom: 4px;
+  }
+
+  .definition-box p {
+    color: var(--purple-900);
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  .definition-box strong { font-weight: 500; }
+
+  /* EXAMPLE GRID */
+  .example-block { margin-bottom: 1.5rem; }
+
+  .example-title {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    padding-left: 4px;
+  }
+
+  .function-label {
+    display: inline-block;
+    background: var(--teal-50);
+    color: var(--teal-600);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--teal-200);
+  }
+
+  .solutions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 0.5rem;
+  }
+
+  .solution-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem;
+    text-align: center;
+    transition: box-shadow 0.15s;
+  }
+
+  .solution-card:hover { box-shadow: 0 2px 12px rgba(83,74,183,0.1); }
+
+  .sol-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    margin: 0 auto 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .sol-name {
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 400;
+    line-height: 1.3;
+  }
+
+  /* DESIGN PROCESS CIRCLES */
+  .venn-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .venn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .venn-item {
+    padding: 1rem;
+    border-radius: 10px;
+    position: relative;
+  }
+
+  .venn-item .vi-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .venn-item .vi-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .venn-item.purple { background: var(--purple-50); }
+  .venn-item.purple .vi-title { color: var(--purple-800); }
+  .venn-item.purple .vi-desc { color: var(--purple-600); }
+
+  .venn-item.teal { background: var(--teal-50); }
+  .venn-item.teal .vi-title { color: var(--teal-800); }
+  .venn-item.teal .vi-desc { color: var(--teal-600); }
+
+  .venn-item.coral { background: var(--coral-50); }
+  .venn-item.coral .vi-title { color: var(--coral-800); }
+  .venn-item.coral .vi-desc { color: var(--coral-600); }
+
+  .venn-item.amber { background: var(--amber-50); }
+  .venn-item.amber .vi-title { color: var(--amber-600); }
+  .venn-item.amber .vi-desc { color: var(--amber-600); }
+
+  .center-conception {
+    grid-column: 1 / -1;
+    background: var(--accent);
+    color: white;
+    border-radius: 10px;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .center-conception .cc-arrow { font-size: 1.5rem; }
+  .center-conception .cc-text { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+  .center-conception .cc-sub { font-size: 12px; opacity: 0.8; font-weight: 300; }
+
+  /* TELECOMMANDE EXAMPLE */
+  .telecommande-diagram {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    overflow-x: auto;
+  }
+
+  .td-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr;
+    gap: 0;
+    align-items: stretch;
+    margin-bottom: 8px;
+  }
+
+  .td-cell {
+    padding: 8px 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+  }
+
+  .td-header {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .col-service { background: var(--purple-50); color: var(--purple-800); }
+  .col-function { background: var(--teal-50); color: var(--teal-800); }
+  .col-solution { background: var(--coral-50); color: var(--coral-800); }
+
+  .td-service-cell {
+    background: var(--purple-50);
+    color: var(--purple-900);
+    font-size: 13px;
+    font-weight: 400;
+    padding: 12px;
+    border-radius: 0 0 0 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  .td-functions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    background: var(--teal-50);
+    border-left: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .tf-pill {
+    background: white;
+    color: var(--teal-600);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--teal-200);
+    white-space: nowrap;
+  }
+
+  .td-solutions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+    background: var(--coral-50);
+    border-left: 1px solid rgba(0,0,0,0.05);
+    border-radius: 0 0 8px 0;
+  }
+
+  .ts-pill {
+    background: white;
+    color: var(--coral-600);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--coral-200);
+    white-space: nowrap;
+  }
+
+  /* 3 STEPS */
+  .steps-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 1.25rem;
+  }
+
+  .step-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem;
+  }
+
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--purple-200);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .step-desc {
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  /* CASQUE EXAMPLE */
+  .casque-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+    margin-top: 0.75rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .casque-table th {
+    background: var(--gray-50);
+    color: var(--gray-800);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .casque-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+    background: white;
+  }
+
+  .casque-table tr:last-child td { border-bottom: none; }
+
+  .casque-table td:nth-child(2) { color: var(--teal-600); font-weight: 500; }
+  .casque-table td:nth-child(3) { color: var(--coral-600); }
+
+  /* FOOTER NOTE */
+  .key-words {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-100);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .kw-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    margin-bottom: 0.75rem;
+  }
+
+  .kw-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .kw-tag {
+    background: white;
+    border: 1px solid var(--gray-100);
+    color: var(--gray-800);
+    font-size: 13px;
+    padding: 5px 13px;
+    border-radius: 20px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .solutions-grid { grid-template-columns: repeat(2, 1fr); }
+    .venn-grid { grid-template-columns: 1fr; }
+    .steps-row { grid-template-columns: 1fr; }
+    .td-row { grid-template-columns: 1fr; }
+    h1 { font-size: 1.6rem; }
+    .header { flex-direction: column; }
+    .header-tags { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="badge">Technologie — Cycle 4</div>
+      <h1>Fonctions, Solutions &amp; <span>Capteurs</span></h1>
+      <p class="subtitle">Synthèse — Codes A6, A7 · CT 2.4 · MSOST 1.2 · Robot Mbot</p>
+    </div>
+    <div class="header-tags">
+      <span class="tag">A6 – Comparer des solutions</span>
+      <span class="tag">A7 – Choisir selon le CDC</span>
+      <span class="tag">Les capteurs</span>
+      <span class="tag">Séances 1-2-3</span>
+    </div>
+  </div>
+
+  <!-- SECTION 1 : DÉFINITION -->
+  <div class="section">
+    <div class="section-label">
+      <div class="num">A6</div>
+      <h2>Comparer et imaginer des solutions répondant à une même fonction</h2>
+    </div>
+
+    <div class="definition-box">
+      <div class="def-label">Mot clé — Solution technique</div>
+      <p>Elle répond à une <strong>fonction technique</strong> ou d'estime en tenant compte des contraintes imposées par le <strong>cahier des charges</strong>. Pour une même fonction, il existe une grande diversité de solutions possibles.</p>
+    </div>
+
+    <!-- Exemples -->
+    <div class="example-block">
+      <div class="example-title">Exemples de solutions pour une même fonction technique</div>
+
+      <div class="function-label">🍾 Fermer une bouteille</div>
+      <div class="solutions-grid">
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#E1F5EE;">🔒</div>
+          <div class="sol-name">Bouchon mécanique</div>
+        </div>
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#EEEDFE;">🔩</div>
+          <div class="sol-name">Bouchon vissé</div>
+        </div>
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#FAECE7;">🪵</div>
+          <div class="sol-name">Bouchon monté serré</div>
+        </div>
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#FAEEDA;">🪙</div>
+          <div class="sol-name">Capsule sertie</div>
+        </div>
+      </div>
+
+      <br>
+      <div class="function-label">🏠 Protéger et valoriser le sol</div>
+      <div class="solutions-grid">
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#E1F5EE;">🟢</div>
+          <div class="sol-name">Étalage de résine</div>
+        </div>
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#EEEDFE;">🔲</div>
+          <div class="sol-name">Collage de carrelage</div>
+        </div>
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#FAECE7;">🟫</div>
+          <div class="sol-name">Pose de moquette</div>
+        </div>
+        <div class="solution-card">
+          <div class="sol-icon" style="background:#FAEEDA;">🪵</div>
+          <div class="sol-name">Fixation d'un parquet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 2 : CHOISIR -->
+  <div class="section">
+    <div class="section-label">
+      <div class="num">A7</div>
+      <h2>Choisir la solution qui respecte le mieux les contraintes du CDC</h2>
+    </div>
+
+    <p style="font-size:14px; color:var(--muted); margin-bottom:1.25rem; font-weight:300;">
+      La conception est un <strong style="color:var(--text); font-weight:500;">compromis</strong> entre quatre piliers. Une solution est retenue uniquement si elle satisfait tous les critères simultanément.
+    </p>
+
+    <div class="venn-section">
+      <div class="venn-grid">
+        <div class="venn-item purple">
+          <div class="vi-title">🎯 Attentes du client</div>
+          <div class="vi-desc">Cahier des charges, normes françaises. <em>Sans ce pilier → la solution ne correspond pas aux attentes.</em></div>
+        </div>
+        <div class="venn-item teal">
+          <div class="vi-title">⚙️ Faisabilité technique</div>
+          <div class="vi-desc">Fabrication, matériaux, énergie, forme. <em>Sans ce pilier → la solution n'est pas réalisable.</em></div>
+        </div>
+        <div class="venn-item amber">
+          <div class="vi-title">💶 Maîtrise des coûts</div>
+          <div class="vi-desc">Budget client + rentabilité de l'entreprise. <em>Sans ce pilier → la solution est hors budget.</em></div>
+        </div>
+        <div class="venn-item coral">
+          <div class="vi-title">🌍 Influences sociétales</div>
+          <div class="vi-desc">Développement durable, filtres culturels (région, religion, âge). <em>Sans ce pilier → le contexte social est ignoré.</em></div>
+        </div>
+        <div class="center-conception">
+          <div class="cc-arrow">✦</div>
+          <div>
+            <div class="cc-text">CONCEPTION</div>
+            <div class="cc-sub">La solution idéale se trouve à l'intersection des 4 piliers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 3 : MÉTHODE ASSOCIER -->
+  <div class="section">
+    <div class="section-label">
+      <div class="num" style="background:#0F6E56;">3</div>
+      <h2>Associer fonctions techniques et solutions techniques</h2>
+    </div>
+
+    <p style="font-size:14px; color:var(--muted); margin-bottom:1.25rem; font-weight:300;">
+      Le bureau d'études propose des solutions pour chaque fonction. La meilleure solution est souvent un compromis. La démarche se déroule en 3 étapes.
+    </p>
+
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-title">Décomposer l'objet</div>
+        <div class="step-desc">Identifier tous les composants qui constituent l'objet technique étudié.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-title">Identifier les fonctions</div>
+        <div class="step-desc">Pour chaque composant, indiquer la fonction technique qu'il remplit.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-title">Associer les solutions</div>
+        <div class="step-desc">Relier chaque fonction à la solution technique retenue parmi les possibles.</div>
+      </div>
+    </div>
+
+    <!-- Exemple casque -->
+    <div style="margin-top:1.5rem;">
+      <div class="example-title">Application — Le casque audio</div>
+      <div class="telecommande-diagram">
+        <table class="casque-table">
+          <thead>
+            <tr>
+              <th>Fonction attendue</th>
+              <th>Fonction technique</th>
+              <th>Solution technique retenue</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td rowspan="5" style="color:var(--purple-800); font-weight:500; background:var(--purple-50); border-right:1px solid var(--border);">Émettre un son à partir d'un appareil</td>
+              <td>S'adapter à l'oreille</td>
+              <td>Mousse</td>
+            </tr>
+            <tr>
+              <td>S'adapter à la taille de la tête</td>
+              <td>Arche déformable</td>
+            </tr>
+            <tr>
+              <td>Émettre un son</td>
+              <td>Haut-parleurs</td>
+            </tr>
+            <tr>
+              <td>Commander le niveau sonore</td>
+              <td>Commande de volume</td>
+            </tr>
+            <tr>
+              <td>Recevoir le son d'un appareil</td>
+              <td>Prise Jack 1,5mm</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Exemple télécommande -->
+    <div style="margin-top:1.5rem;">
+      <div class="example-title">Application — La télécommande de portail</div>
+      <div class="telecommande-diagram">
+        <div style="display:flex; gap:0; border-radius:10px; overflow:hidden; border:1px solid var(--border);">
+          <div style="min-width:170px; background:var(--purple-50); padding:0.75rem; border-right:1px solid var(--border);">
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--purple-800); margin-bottom:8px;">Fonction de service</div>
+            <div style="font-size:13px; color:var(--purple-900); font-weight:400;">Permettre à l'utilisateur de communiquer son choix</div>
+            <div style="margin-top:10px; border-top:1px solid rgba(83,74,183,0.15); padding-top:8px;">
+              <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--purple-600); margin-bottom:5px;">Contraintes</div>
+              <div style="font-size:11.5px; color:var(--purple-600); line-height:1.6; font-weight:300;">
+                Sécurité<br>Budget<br>Fonctionnement<br>Dév. durable<br>Ergonomie
+              </div>
+            </div>
+          </div>
+          <div style="flex:1; background:var(--teal-50); padding:0.75rem; border-right:1px solid var(--border);">
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--teal-800); margin-bottom:8px;">Fonctions techniques</div>
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <span class="tf-pill">Sélectionner son choix</span>
+              <span class="tf-pill">Communiquer son choix</span>
+              <span class="tf-pill">Ergonomie / Design</span>
+            </div>
+          </div>
+          <div style="flex:1.2; background:var(--coral-50); padding:0.75rem;">
+            <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:var(--coral-800); margin-bottom:8px;">Solutions techniques</div>
+            <div style="display:flex; flex-direction:column; gap:5px;">
+              <span class="ts-pill">Bouton poussoir</span>
+              <span class="ts-pill">Écran tactile</span>
+              <span class="ts-pill">Commande vocale</span>
+              <span class="ts-pill">Com. filaire / CPL</span>
+              <span class="ts-pill">Bluetooth / Wifi</span>
+              <span class="ts-pill" style="background:var(--coral-50); border-color:var(--coral-600); color:var(--coral-800); font-weight:500;">★ Infrarouge / Radio ← idéal</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:0.75rem; font-size:12px; color:var(--muted); padding:0.5rem 0.75rem; background:var(--gray-50); border-radius:8px; font-style:italic;">
+          💡 La solution idéale : bouton + communication infrarouge ou radio → distance satisfaisante, sécurité correcte, budget réduit. La commande vocale peut être préférée pour une personne handicapée.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 4 : DÉFINITION CAPTEUR -->
+  <div class="section">
+    <div class="section-label">
+      <div class="num" style="background:#185FA5;">4</div>
+      <h2>Les capteurs — définition et rôle</h2>
+    </div>
+
+    <div class="definition-box" style="background:#E6F1FB; border-left-color:#185FA5;">
+      <div class="def-label" style="color:#185FA5;">Définition — Capteur</div>
+      <p style="color:#042C53;">Un <strong>capteur</strong> est un dispositif qui <strong>détecte des informations</strong> (grandeurs physiques) afin de les transmettre à un objet pour qu'il puisse réagir. Il mesure : la distance, la température, la luminosité, l'humidité, le bruit, la vitesse…</p>
+    </div>
+
+    <div class="definition-box" style="background:#EAF3DE; border-left-color:#3B6D11; margin-top:0.75rem;">
+      <div class="def-label" style="color:#3B6D11;">Exemple concret — Robot Mbot (séances 1 à 3)</div>
+      <p style="color:#173404;">Le robot Mbot utilise un <strong>transducteur ultrason</strong> (capteur de distance). Il émet une onde et mesure le temps de retour de l'écho pour calculer la distance à l'obstacle. La distance d'arrêt est fixée dans le programme. L'écart moyen entre valeur programmée et valeur réelle est de <strong>3,14 %</strong>.</p>
+    </div>
+
+    <!-- Tableau test Mbot -->
+    <div style="margin-top:1.25rem;">
+      <div class="example-title">Résultats du protocole de test — capteur ultrason du Mbot</div>
+      <div class="telecommande-diagram">
+        <table class="casque-table">
+          <thead>
+            <tr>
+              <th>Valeur programmée</th>
+              <th>5 cm</th>
+              <th>10 cm</th>
+              <th>15 cm</th>
+              <th>20 cm</th>
+              <th>25 cm</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:500; background:var(--teal-50); color:var(--teal-800);">Valeur mesurée</td>
+              <td>4,8 cm</td>
+              <td>9,8 cm</td>
+              <td>14,4 cm</td>
+              <td>19,5 cm</td>
+              <td>24,2 cm</td>
+            </tr>
+            <tr>
+              <td style="font-weight:500; background:var(--coral-50); color:var(--coral-800);">% d'erreur</td>
+              <td>4,00 %</td>
+              <td>2,00 %</td>
+              <td>4,00 %</td>
+              <td>2,50 %</td>
+              <td>3,20 %</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:0.6rem; font-size:12px; color:var(--muted); background:var(--gray-50); padding:0.5rem 0.75rem; border-radius:8px; font-style:italic;">
+          📊 Erreur moyenne = <strong style="color:var(--text);">3,14 %</strong> — Le capteur est fiable mais imparfait (tolérance normale pour un capteur ultrason).
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 5 : CATALOGUE CAPTEURS -->
+  <div class="section">
+    <div class="section-label">
+      <div class="num" style="background:#185FA5;">5</div>
+      <h2>Catalogue des capteurs par catégorie</h2>
+    </div>
+
+    <!-- Catégorie : Environnement -->
+    <div style="margin-bottom:1.5rem;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.75rem;">
+        <span style="background:#E6F1FB; color:#185FA5; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 12px; border-radius:20px;">🌿 Environnement</span>
+      </div>
+      <div class="capteur-grid">
+        <div class="capteur-card blue">
+          <div class="cap-name">Capteur de flamme</div>
+          <div class="cap-desc">Détecte les infrarouges (750–1100 nm). Utilisé dans les systèmes de sécurité.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Capteur altitude / pression</div>
+          <div class="cap-desc">Mesure pression ambiante, altitude et température.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Capteur de son</div>
+          <div class="cap-desc">Sortie binaire (son présent ou non) + mesure d'amplitude.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Thermomètre infrarouge</div>
+          <div class="cap-desc">Mesure la température d'un corps sans contact.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Capteur lumière RGB</div>
+          <div class="cap-desc">Détecte la couleur des objets. Reconnaissance de couleurs.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Photorésistance</div>
+          <div class="cap-desc">Résistance proportionnelle à la lumière. Coût faible, usages variés (smartphone, appareil photo…).</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Capteur humidité des sols</div>
+          <div class="cap-desc">Conductivité proportionnelle à l'humidité. Indique le bon moment d'arrosage.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Capteur UV</div>
+          <div class="cap-desc">Détecte la lumière ultraviolette. Alerte crème solaire ou éclairage artificiel des plantes.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Capteurs de gaz</div>
+          <div class="cap-desc">Détectent : méthane, butane, CO, CO₂, ozone, fumée, qualité de l'air…</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Thermistance</div>
+          <div class="cap-desc">Résistance dépendante de la température — mesure facile et économique.</div>
+        </div>
+        <div class="capteur-card blue">
+          <div class="cap-name">Compteur Geiger</div>
+          <div class="cap-desc">Mesure les rayonnements ionisants (α, β, γ, X). Usage en cas de catastrophe nucléaire.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catégorie : Mouvement -->
+    <div style="margin-bottom:1.5rem;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.75rem;">
+        <span style="background:#E1F5EE; color:#0F6E56; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 12px; border-radius:20px;">⚡ Mouvement & position</span>
+      </div>
+      <div class="capteur-grid">
+        <div class="capteur-card teal">
+          <div class="cap-name">Accéléromètre / Gyroscope</div>
+          <div class="cap-desc">Détecte accélération et rotation selon plusieurs degrés de liberté.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur de flexion</div>
+          <div class="cap-desc">Résistance augmente avec la flexion. Détecte ouverture de porte, tension d'arc…</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur de vibrations piézoélectrique</div>
+          <div class="cap-desc">Détecte les vibrations avec plus ou moins de sensibilité.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur d'obstacles / proximité</div>
+          <div class="cap-desc">Émet en IR et analyse la lumière renvoyée. Détecte l'approche d'un objet.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur de mouvement PIR</div>
+          <div class="cap-desc">Détecte des mouvements jusqu'à 5 m par radiations infrarouges. Très fiable.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Détecteur tilt</div>
+          <div class="cap-desc">Bille métallique qui roule selon l'orientation → détecte le basculement d'un objet.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur IR suiveur de ligne</div>
+          <div class="cap-desc">Analyse sa propre lumière IR renvoyée. Utilisé en robotique pour suivre un tracé.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Transducteur ultrason</div>
+          <div class="cap-desc">Calcule la distance par écho ultrasonique. Utilisé sur le robot Mbot.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur d'angle</div>
+          <div class="cap-desc">Potentiomètre rotatif — mesure précise d'un angle par résistance.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur de position (GPS)</div>
+          <div class="cap-desc">Localisation géographique. Navigation, smartphones, tablettes…</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Cellule de charge</div>
+          <div class="cap-desc">Convertit une pression en signal électrique. Mesure la masse d'un objet.</div>
+        </div>
+        <div class="capteur-card teal">
+          <div class="cap-name">Capteur magnétique à effet Hall</div>
+          <div class="cap-desc">Sensible aux champs magnétiques. Mesure vitesse de rotation, alarme d'intrusion…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Catégorie : Interaction humaine -->
+    <div style="margin-bottom:1.5rem;">
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:0.75rem;">
+        <span style="background:#FAECE7; color:#993C1D; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:4px 12px; border-radius:20px;">👤 Interaction humaine & divers</span>
+      </div>
+      <div class="capteur-grid">
+        <div class="capteur-card coral">
+          <div class="cap-name">Caméra thermique</div>
+          <div class="cap-desc">Capte les rayonnements IR des corps. Vision dans l'obscurité totale.</div>
+        </div>
+        <div class="capteur-card coral">
+          <div class="cap-name">Caméra infrarouge</div>
+          <div class="cap-desc">Moins précise, moins chère. Nécessite une source IR. Applications simples.</div>
+        </div>
+        <div class="capteur-card coral">
+          <div class="cap-name">Module RFID</div>
+          <div class="cap-desc">Échange de données à très courte distance entre un lecteur et un tag RFID.</div>
+        </div>
+        <div class="capteur-card coral">
+          <div class="cap-name">Lecteur d'empreinte digitale</div>
+          <div class="cap-desc">Lecteur optique + CPU intégré. Communique par port TTL.</div>
+        </div>
+        <div class="capteur-card coral">
+          <div class="cap-name">Capteur de pulsations</div>
+          <div class="cap-desc">Placé sur le corps, capte le rythme cardiaque.</div>
+        </div>
+        <div class="capteur-card coral">
+          <div class="cap-name">Capteur musculaire</div>
+          <div class="cap-desc">Filtre et redresse les signaux électriques des muscles.</div>
+        </div>
+        <div class="capteur-card coral">
+          <div class="cap-name">Capteur capacitif (tactile)</div>
+          <div class="cap-desc">Détecte le toucher en mesurant la capacitance d'une électrode.</div>
+        </div>
+        <div class="capteur-card coral">
+          <div class="cap-name">Joystick</div>
+          <div class="cap-desc">Fonctionne comme un potentiomètre mais sur plusieurs axes.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOTS CLÉS -->
+  <div class="key-words">
+    <div class="kw-title">Mots clés à retenir</div>
+    <div class="kw-tags">
+      <span class="kw-tag">Solution technique</span>
+      <span class="kw-tag">Fonction technique</span>
+      <span class="kw-tag">Fonction d'estime</span>
+      <span class="kw-tag">Cahier des charges (CDC)</span>
+      <span class="kw-tag">Contraintes</span>
+      <span class="kw-tag">Conception</span>
+      <span class="kw-tag">Faisabilité technique</span>
+      <span class="kw-tag">Maîtrise des coûts</span>
+      <span class="kw-tag">Influences sociétales</span>
+      <span class="kw-tag">Développement durable</span>
+      <span class="kw-tag">Capteur</span>
+      <span class="kw-tag">Grandeur physique</span>
+      <span class="kw-tag">Transducteur ultrason</span>
+      <span class="kw-tag">Capteur PIR</span>
+      <span class="kw-tag">Pourcentage d'erreur</span>
+      <span class="kw-tag">Robot Mbot</span>
+    </div>
+  </div>
+
+</div>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

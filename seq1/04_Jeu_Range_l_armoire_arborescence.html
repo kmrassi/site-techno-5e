@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Range l'armoire ! Le jeu de l'arborescence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wall:#E3EEF7; --ink:#1F2A44; --muted:#5A6785;
+  --wood:#B97A3E; --wood-dark:#7A4A1E; --face:#F6E1BC; --face-line:#D8B07A;
+  --sub:#FFF3D6; --sub-line:#E2A23A;
+  --chip:#FFFFFF; --chip-line:#C9D6E6;
+  --ok:#23895B; --ok-bg:#DDF3E8; --bad:#C93A3A; --bad-bg:#FBE3E3;
+  --panel:#FFFFFF; --line:#9AAAC4; --hl:#FFE27A;
+  --pc:#2F5FA8; --pc-face:#E8F0FC; --pc-line:#9DB7E0;
+}
+:root{box-sizing:border-box}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--wall);color:var(--ink);font-family:"Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:17px;line-height:1.5}
+h1,h2,.fred{font-family:"Fredoka","Nunito",system-ui,sans-serif;font-weight:600}
+.wrap{max-width:1200px;margin:0 auto;padding:12px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+h1{font-size:clamp(24px,4vw,34px);margin:0;line-height:1.1}
+.levels{display:flex;gap:8px;flex-wrap:wrap}
+.lvl{font:600 15px "Fredoka",system-ui,sans-serif;border:2px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer}
+.lvl[aria-current="true"]{background:var(--ink);color:var(--wall);border-color:var(--ink)}
+.lvl.done::after{content:" ✓"}
+.lvl:focus-visible,.chip:focus-visible,.drawer:focus-visible,button:focus-visible{outline:3px solid var(--pc);outline-offset:2px}
+.intro{margin:0 0 10px;color:var(--muted);max-width:70ch}
+.msg{min-height:52px;border-radius:14px;padding:12px 16px;margin-bottom:14px;background:var(--panel);border:2px solid var(--line);font-weight:600;display:flex;align-items:center;gap:10px}
+.msg.ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.msg.bad{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.msg .path{font-family:"Fredoka",sans-serif;color:var(--ink)}
+.board{display:grid;grid-template-columns:minmax(200px,1fr) minmax(300px,1.4fr) minmax(260px,1.2fr);gap:16px;align-items:start}
+@media (max-width:900px){.board{grid-template-columns:1fr 1fr}.basket{grid-column:1 / -1}}
+@media (max-width:620px){.board{grid-template-columns:1fr}}
+.panel{background:var(--panel);border-radius:18px;padding:14px;border:2px solid var(--chip-line)}
+.panel h2{font-size:19px;margin:0 0 4px}
+.panel p.help{margin:0 0 10px;color:var(--muted);font-size:15px}
+.basket .pile{display:flex;flex-wrap:wrap;gap:8px;min-height:60px}
+.basket .empty{color:var(--muted);font-style:italic}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border:2px solid var(--chip-line);border-radius:12px;padding:7px 12px;font-weight:700;font-size:16px;color:var(--ink);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.chip .ic{font-size:20px;line-height:1}
+.chip.selected{border-color:var(--pc);box-shadow:0 0 0 3px var(--pc)}
+.chip.dragging{opacity:.35}
+.chip.placed{cursor:pointer;font-size:14px;padding:4px 9px;border-color:var(--ok);touch-action:auto}
+.ghost{position:fixed;pointer-events:none;z-index:50;transform:translate(-50%,-50%) rotate(-4deg);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.armoire{background:var(--wood);border:4px solid var(--wood-dark);border-radius:18px 18px 10px 10px;padding:12px;position:relative}
+.armoire .top{font:600 20px "Fredoka",sans-serif;color:#FFF7EA;text-align:center;margin:0 0 10px}
+.armoire .feet{display:flex;justify-content:space-between;padding:0 14px;margin-bottom:-22px}
+.armoire .feet span{width:18px;height:12px;background:var(--wood-dark);border-radius:0 0 4px 4px;display:block}
+.drawer{background:var(--face);border:2px solid var(--face-line);border-radius:10px;padding:8px 10px 10px;margin-bottom:10px;cursor:pointer;transition:background .15s,border-color .15s}
+.drawer:last-child{margin-bottom:0}
+.dhead{display:flex;align-items:center;gap:8px;font:600 16px "Fredoka",sans-serif}
+.dhead .knob{margin-left:auto;width:30px;height:8px;border-radius:4px;background:var(--wood-dark);opacity:.7}
+.dcontent{display:flex;flex-wrap:wrap;gap:6px;min-height:34px;margin-top:6px;padding:4px;border-radius:8px;border:2px dashed transparent}
+.drawer.sub{background:var(--sub);border:2px dashed var(--sub-line);margin:8px 0 0}
+.drawer.over>.dcontent,.drawer.target>.dcontent{border-color:var(--pc);background:rgba(76,130,214,.12)}
+.drawer.over{border-color:var(--pc)}
+.drawer.flash{background:var(--hl)}
+.drawer.nope{animation:nope .45s}
+.pcmode .armoire{background:var(--pc);border-color:var(--pc);border-radius:12px}
+.pcmode .armoire .feet{display:none}
+.pcmode .drawer{background:var(--pc-face);border-color:var(--pc-line)}
+.pcmode .drawer.sub{background:var(--panel);border-color:var(--pc)}
+.pcmode .dhead .knob{display:none}
+.tree{font-size:15px}
+.tree ul{list-style:none;margin:0;padding-left:20px}
+.tree>ul{padding-left:0}
+.tree li{position:relative;padding:3px 0 3px 18px}
+.tree>ul>li{padding-left:0}
+.tree li li::before{content:"";position:absolute;left:0;top:0;bottom:0;border-left:2px solid var(--line)}
+.tree li li:last-child::before{bottom:auto;height:18px}
+.tree li li::after{content:"";position:absolute;left:0;top:17px;width:14px;border-top:2px solid var(--line)}
+.node{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:2px 8px;border:2px solid transparent}
+.node.root{background:var(--wood);color:#FFF7EA;font:600 16px "Fredoka",sans-serif}
+.pcmode .node.root{background:var(--pc)}
+.node.folder{background:var(--face);border-color:var(--face-line);font-weight:700}
+.node.folder.subf{background:var(--sub);border-color:var(--sub-line);border-style:dashed}
+.pcmode .node.folder{background:var(--pc-face);border-color:var(--pc-line)}
+.node.file{background:var(--chip);border-color:var(--ok);cursor:pointer;font-weight:600}
+.node.hl,.chip.hl{background:var(--hl)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:14px;color:var(--muted)}
+.legend b{color:var(--ink)}
+.pop{animation:pop .5s}
+.shake{animation:nope .45s}
+@keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes nope{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@media (prefers-reduced-motion:reduce){.pop,.shake,.drawer.nope{animation:none}}
+.end{margin:0 0 14px;background:var(--panel);border:3px solid var(--ok);border-radius:18px;padding:18px;text-align:center}
+.end h2{margin:0 0 6px;font-size:26px}
+.stars{font-size:38px;letter-spacing:6px}
+.end p{margin:6px auto;max-width:60ch}
+.btn{font:600 17px "Fredoka",sans-serif;background:var(--ink);color:var(--wall);border:0;border-radius:12px;padding:10px 18px;cursor:pointer;margin:6px}
+.btn.ghostbtn{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.recap{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:12px 0;text-align:left}
+.recap div{background:var(--wall);border-radius:10px;padding:8px 12px}
+.score{font-weight:700;color:var(--muted);font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <header>
+    <h1>Range l'armoire !</h1>
+    <nav class="levels" id="levels" aria-label="Niveaux"></nav>
+  </header>
+  <p class="intro" id="intro"></p>
+  <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  <div id="endBox"></div>
+  <div class="board" id="board">
+    <section class="panel basket">
+      <h2 id="basketTitle">Le linge à ranger</h2>
+      <p class="help">Fais glisser chaque élément dans le bon tiroir. Tu peux aussi toucher l'élément, puis toucher le tiroir.</p>
+      <div class="pile" id="pile"></div>
+      <p class="score" id="score"></p>
+    </section>
+    <section class="panel" aria-label="Le rangement">
+      <h2 id="armTitle">L'armoire</h2>
+      <p class="help" id="armHelp">Ce que tu vois dans ta chambre.</p>
+      <div id="armoire"></div>
+    </section>
+    <section class="panel" aria-label="Arborescence">
+      <h2>Son arborescence</h2>
+      <p class="help">Le même rangement, dessiné comme un arbre. Il se remplit tout seul quand tu ranges.</p>
+      <div class="tree" id="tree"></div>
+      <div class="legend" id="legend"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const LEVELS = [
+  {
+    name:"Niveau 1", title:"Ranger l'armoire", mode:"armoire",
+    intro:"Range chaque vêtement dans le bon tiroir. Regarde l'arbre à droite : il montre le même rangement.",
+    root:"Armoire", rootIcon:"🗄️", word:"Tiroir", subWord:"Petit tiroir", basket:"Le linge à ranger",
+    folders:[
+      {id:"ts", name:"T-shirts", icon:"👕"},
+      {id:"pa", name:"Pantalons", icon:"👖"},
+      {id:"ch", name:"Chaussettes", icon:"🧦"}
+    ],
+    items:[
+      {name:"T-shirt rouge", icon:"👕", t:"ts"},
+      {name:"Jean", icon:"👖", t:"pa"},
+      {name:"Paire blanche", icon:"🧦", t:"ch"},
+      {name:"T-shirt bleu", icon:"👕", t:"ts"},
+      {name:"Jogging", icon:"👖", t:"pa"},
+      {name:"Paire noire", icon:"🧦", t:"ch"}
+    ]
+  },
+  {
+    name:"Niveau 2", title:"Un tiroir dans un tiroir", mode:"armoire",
+    intro:"Nouveau : dans le tiroir Chaussettes, il y a un petit tiroir Sport. Range les chaussettes de sport dedans !",
+    root:"Armoire", rootIcon:"🗄️", word:"Tiroir", subWord:"Petit tiroir", basket:"Le linge à ranger",
+    folders:[
+      {id:"ts", name:"T-shirts", icon:"👕"},
+      {id:"pa", name:"Pantalons", icon:"👖"},
+      {id:"ch", name:"Chaussettes", icon:"🧦", children:[{id:"sp", name:"Sport", icon:"⚽"}]}
+    ],
+    items:[
+      {name:"Chaussettes de foot", icon:"⚽", t:"sp"},
+      {name:"T-shirt vert", icon:"👕", t:"ts"},
+      {name:"Paire à rayures", icon:"🧦", t:"ch"},
+      {name:"Jean", icon:"👖", t:"pa"},
+      {name:"Chaussettes de tennis", icon:"🎾", t:"sp"},
+      {name:"Jogging", icon:"👖", t:"pa"}
+    ]
+  },
+  {
+    name:"Niveau 3", title:"Dans l'ordinateur", mode:"pc",
+    intro:"Maintenant, c'est l'ordinateur ! L'armoire devient le disque, les tiroirs deviennent des dossiers et les vêtements deviennent des fichiers.",
+    root:"Disque C:", rootIcon:"💽", word:"Dossier", subWord:"Sous-dossier", basket:"Les fichiers à ranger",
+    folders:[
+      {id:"co", name:"Cours", icon:"📚", children:[{id:"te", name:"Techno", icon:"🔧"},{id:"ma", name:"Maths", icon:"📐"}]},
+      {id:"ph", name:"Photos", icon:"📷"},
+      {id:"mu", name:"Musique", icon:"🎵"}
+    ],
+    items:[
+      {name:"exercice-techno.docx", icon:"📄", t:"te"},
+      {name:"plage.jpg", icon:"🖼️", t:"ph"},
+      {name:"chanson.mp3", icon:"🎵", t:"mu"},
+      {name:"fractions-maths.pdf", icon:"📄", t:"ma"},
+      {name:"anniversaire.jpg", icon:"🖼️", t:"ph"},
+      {name:"robot-techno.pdf", icon:"📄", t:"te"}
+    ]
+  },
+  {
+    name:"Niveau 4", title:"Expert", mode:"pc",
+    intro:"Plus difficile : il y a des dossiers dans des dossiers dans des dossiers ! Attention aux pièges : lis bien le nom de chaque fichier avant de le ranger.",
+    root:"Disque C:", rootIcon:"💽", word:"Dossier", subWord:"Sous-dossier", basket:"Les fichiers à ranger",
+    folders:[
+      {id:"co", name:"Cours", icon:"📚", children:[
+        {id:"te", name:"Techno", icon:"🔧", children:[{id:"pr", name:"Projet robot", icon:"🤖"}]},
+        {id:"ma", name:"Maths", icon:"📐"}
+      ]},
+      {id:"ph", name:"Photos", icon:"📷", children:[
+        {id:"va", name:"Vacances", icon:"🏖️"},
+        {id:"fa", name:"Famille", icon:"👪"}
+      ]},
+      {id:"mu", name:"Musique", icon:"🎵"}
+    ],
+    items:[
+      {name:"photo-robot.jpg", icon:"🖼️", t:"pr"},
+      {name:"plage-2026.jpg", icon:"🖼️", t:"va"},
+      {name:"exercice-armoire.docx", icon:"📄", t:"te"},
+      {name:"rap.mp3", icon:"🎵", t:"mu"},
+      {name:"anniversaire-mamie.jpg", icon:"🖼️", t:"fa"},
+      {name:"programme-robot.pdf", icon:"📄", t:"pr"},
+      {name:"fractions.pdf", icon:"📄", t:"ma"},
+      {name:"montagne.jpg", icon:"🖼️", t:"va"}
+    ]
+  }
+];
+
+const $ = id => document.getElementById(id);
+let L = 0, placed = {}, errors = 0, selected = null, lastPlaced = null, shakeId = null, hlItem = null;
+const done = new Set();
+
+function allFolders(lv){ const out=[]; (function walk(fs,p){fs.forEach(f=>{out.push({...f,parent:p}); if(f.children) walk(f.children,f.id);});})(lv.folders,null); return out; }
+function folderById(id){ return allFolders(LEVELS[L]).find(f=>f.id===id); }
+function pathNames(fid){ const n=[]; let f=folderById(fid); while(f){ n.unshift(f.name); f=f.parent?folderById(f.parent):null; } return [LEVELS[L].root, ...n]; }
+function isSub(f){ return !!f.parent; }
+function esc(s){ return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function setMsg(html, kind){ const m=$("msg"); m.className="msg"+(kind?" "+kind:""); m.innerHTML=html; }
+
+function start(i){
+  L=i; placed={}; errors=0; selected=null; lastPlaced=null; shakeId=null; hlItem=null;
+  const lv=LEVELS[L];
+  document.body.classList.toggle("pcmode", lv.mode==="pc");
+  $("intro").textContent = lv.intro;
+  $("basketTitle").textContent = lv.basket;
+  $("armTitle").textContent = lv.mode==="pc" ? "L'ordinateur" : "L'armoire";
+  $("armHelp").textContent = lv.mode==="pc" ? "Le disque et ses dossiers." : "Ce que tu vois dans ta chambre.";
+  document.querySelector(".basket .help").textContent = lv.mode==="pc"
+    ? "Fais glisser chaque fichier dans le bon dossier. Tu peux aussi toucher le fichier, puis toucher le dossier."
+    : "Fais glisser chaque vêtement dans le bon tiroir. Tu peux aussi toucher le vêtement, puis toucher le tiroir.";
+  $("legend").innerHTML = lv.mode==="pc"
+    ? "<span><b>💽 Disque</b> = l'armoire</span><span><b>Dossier</b> = un tiroir</span><span><b>Fichier</b> = un vêtement</span>"
+    : "<span><b>Armoire</b> = le disque</span><span><b>Tiroir</b> = un dossier</span><span><b>Vêtement</b> = un fichier</span>";
+  setMsg(lv.mode==="pc" ? "À toi ! Choisis un fichier et range-le." : "À toi ! Choisis un vêtement et range-le.");
+  $("endBox").innerHTML="";
+  render();
+}
+
+function renderLevels(){
+  $("levels").innerHTML = LEVELS.map((lv,i)=>`<button class="lvl${done.has(i)?" done":""}" aria-current="${i===L}" data-l="${i}">${lv.name} : ${lv.title}</button>`).join("");
+  $("levels").querySelectorAll(".lvl").forEach(b=>b.onclick=()=>start(+b.dataset.l));
+}
+
+function chipHTML(it, idx, isPlaced){
+  const cls=["chip"]; if(isPlaced) cls.push("placed"); if(selected===idx&&!isPlaced) cls.push("selected");
+  if(isPlaced&&lastPlaced===idx) cls.push("pop"); if(!isPlaced&&shakeId===idx) cls.push("shake"); if(hlItem===idx) cls.push("hl");
+  return `<span class="${cls.join(" ")}" tabindex="0" role="button" data-i="${idx}" aria-label="${esc(it.name)}${isPlaced?" (rangé)":""}"><span class="ic" aria-hidden="true">${it.icon}</span>${esc(it.name)}</span>`;
+}
+
+function drawerHTML(f, sub){
+  const lv=LEVELS[L];
+  const inside = lv.items.map((it,i)=>[it,i]).filter(([it,i])=>placed[i]===f.id).map(([it,i])=>chipHTML(it,i,true)).join("");
+  const kids = f.children ? f.children.map(c=>drawerHTML(c,true)).join("") : "";
+  return `<div class="drawer${sub?" sub":""}" data-drop="${f.id}" tabindex="0" role="button" aria-label="${sub?lv.subWord:lv.word} ${esc(f.name)}">
+    <div class="dhead"><span aria-hidden="true">${f.icon}</span><span>${sub?lv.subWord:lv.word} ${esc(f.name)}</span><span class="knob"></span></div>
+    <div class="dcontent">${inside}</div>${kids}</div>`;
+}
+
+function treeFolder(f, sub){
+  const lv=LEVELS[L];
+  const kids = (f.children||[]).map(c=>treeFolder(c,true)).join("");
+  const files = lv.items.map((it,i)=>[it,i]).filter(([it,i])=>placed[i]===f.id)
+    .map(([it,i])=>`<li><span class="node file${hlItem===i?" hl":""}${lastPlaced===i?" pop":""}" data-i="${i}" tabindex="0" role="button">${it.icon} ${esc(it.name)}</span></li>`).join("");
+  const inner = kids+files;
+  return `<li><span class="node folder${sub?" subf":""}">${lv.mode==="pc"?"📁":f.icon} ${esc(f.name)}</span>${inner?`<ul>${inner}</ul>`:""}</li>`;
+}
+
+function render(){
+  const lv=LEVELS[L];
+  renderLevels();
+  const left = lv.items.map((it,i)=>[it,i]).filter(([it,i])=>placed[i]===undefined);
+  $("pile").innerHTML = left.length ? left.map(([it,i])=>chipHTML(it,i,false)).join("") : `<span class="empty">Tout est rangé !</span>`;
+  $("score").textContent = `Rangés : ${Object.keys(placed).length} / ${lv.items.length}  •  Erreurs : ${errors}`;
+  $("armoire").innerHTML = `<div class="armoire"><p class="top">${lv.rootIcon} ${esc(lv.root)}</p>${lv.folders.map(f=>drawerHTML(f,false)).join("")}<div class="feet"><span></span><span></span></div></div>`;
+  $("tree").innerHTML = `<ul><li><span class="node root">${lv.rootIcon} ${esc(lv.root)}</span><ul>${lv.folders.map(f=>treeFolder(f,false)).join("")}</ul></li></ul>`;
+  bind();
+}
+
+function tryPlace(idx, fid){
+  const lv=LEVELS[L], it=lv.items[idx], f=folderById(fid), word=isSub(f)?lv.subWord.toLowerCase():lv.word.toLowerCase();
+  selected=null;
+  if(it.t===fid){
+    placed[idx]=fid; lastPlaced=idx; shakeId=null; hlItem=null;
+    const p=pathNames(fid).concat(it.name).map(esc).join(" › ");
+    setMsg(`✅ Bravo ! Son chemin : <span class="path">${p}</span>`,"ok");
+    render();
+    const d=document.querySelector(`[data-drop="${fid}"]`); if(d){d.classList.add("flash"); setTimeout(()=>d.classList.remove("flash"),500);}
+    if(Object.keys(placed).length===lv.items.length) finish();
+  } else {
+    errors++; shakeId=idx; lastPlaced=null;
+    const target=folderById(it.t);
+    let txt;
+    const anc=(a,b)=>{let x=folderById(b);while(x&&x.parent){if(x.parent===a)return true;x=folderById(x.parent);}return false;};
+    if(target.parent!==fid && anc(fid,it.t)) txt=`🤏 Presque ! Tu es sur le bon chemin, mais il faut aller plus loin : ouvre les ${lv.subWord.toLowerCase()}s à l'intérieur de ${esc(f.name)}.`;
+    else if(f.parent!==it.t && anc(it.t,fid)) txt=`🤔 Trop loin ! « ${esc(it.name)} » ne va pas aussi profond. Remonte d'un ou deux niveaux.`;
+    else if(target.parent===fid) txt=`🤏 Presque ! « ${esc(it.name)} » va bien dans ${esc(f.name)}, mais il y a un ${lv.subWord.toLowerCase()} plus précis à l'intérieur.`;
+    else if(f.parent===it.t) txt=`🤔 Pas tout à fait. « ${esc(it.name)} » ne va pas dans le ${lv.subWord.toLowerCase()} ${esc(f.name)} : range-le juste au-dessus.`;
+    else txt=`❌ Oups ! « ${esc(it.name)} » ne va pas dans le ${word} ${esc(f.name)}. Essaie un autre ${lv.word.toLowerCase()}.`;
+    setMsg(txt,"bad");
+    render();
+    const d=document.querySelector(`[data-drop="${fid}"]`); if(d){d.classList.add("nope");}
+  }
+}
+
+function finish(){
+  done.add(L); renderLevels();
+  const lv=LEVELS[L], stars = errors===0?3:errors<=2?2:1;
+  const ex = lv.items.find(it=>folderById(it.t).parent) || lv.items[0];
+  const exPath = pathNames(ex.t).concat(ex.name).map(esc).join(" › ");
+  const last = L===LEVELS.length-1;
+  $("endBox").innerHTML = `<div class="end" role="status">
+    <h2>${last?"Tu as tout compris !":"Niveau réussi !"}</h2>
+    <div class="stars" aria-label="${stars} étoiles sur 3">${"⭐".repeat(stars)}${"☆".repeat(3-stars)}</div>
+    <p>${errors===0?"Zéro erreur, bravo !":`Tu as fait ${errors} erreur${errors>1?"s":""}.`}</p>
+    <p>Exemple de chemin : <b>${exPath}</b></p>
+    ${last?`<div class="recap"><div>🗄️ <b>Armoire</b> = 💽 <b>Disque</b></div><div>🗃️ <b>Tiroir</b> = 📁 <b>Dossier</b></div><div>📦 <b>Petit tiroir</b> = 📂 <b>Sous-dossier</b></div><div>👕 <b>Vêtement</b> = 📄 <b>Fichier</b></div></div><p>Le dessin en forme d'arbre s'appelle une <b>arborescence</b>.</p>`:""}
+    <button class="btn ghostbtn" id="again">Rejouer ce niveau</button>
+    ${last?"":`<button class="btn" id="next">Niveau suivant</button>`}
+  </div>`;
+  $("again").onclick=()=>start(L);
+  if(!last) $("next").onclick=()=>{start(L+1);};
+}
+
+function showPath(i){
+  const lv=LEVELS[L]; hlItem=i; lastPlaced=null; shakeId=null;
+  const p=pathNames(placed[i]).concat(lv.items[i].name).map(esc).join(" › ");
+  setMsg(`📍 Chemin : <span class="path">${p}</span>`);
+  render();
+}
+
+let drag=null;
+function bind(){
+  document.querySelectorAll("#pile .chip").forEach(ch=>{
+    ch.addEventListener("pointerdown", e=>{
+      if(e.button!==undefined && e.button!==0) return;
+      drag={i:+ch.dataset.i, el:ch, x:e.clientX, y:e.clientY, moved:false, ghost:null, over:null};
+      ch.setPointerCapture(e.pointerId);
+    });
+    ch.addEventListener("pointermove", e=>{
+      if(!drag||drag.el!==ch) return;
+      if(!drag.moved && Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>6){
+        drag.moved=true; ch.classList.add("dragging");
+        const g=ch.cloneNode(true); g.classList.add("ghost"); g.classList.remove("dragging","selected","shake"); document.body.appendChild(g); drag.ghost=g;
+      }
+      if(drag.moved){
+        drag.ghost.style.left=e.clientX+"px"; drag.ghost.style.top=e.clientY+"px";
+        const z=document.elementFromPoint(e.clientX,e.clientY)?.closest("[data-drop]");
+        if(drag.over&&drag.over!==z) drag.over.classList.remove("over");
+        if(z) z.classList.add("over"); drag.over=z;
+      }
+    });
+    const end = e=>{
+      if(!drag||drag.el!==ch) return;
+      const d=drag; drag=null;
+      if(d.ghost) d.ghost.remove();
+      ch.classList.remove("dragging");
+      if(d.over) d.over.classList.remove("over");
+      if(d.moved){
+        if(e.type==="pointerup" && d.over) tryPlace(d.i, d.over.dataset.drop);
+      } else if(e.type==="pointerup"){
+        selected = selected===d.i ? null : d.i; shakeId=null; lastPlaced=null;
+        if(selected!==null) setMsg(`👉 Tu as choisi « ${esc(LEVELS[L].items[selected].name)} ». Touche maintenant le bon ${LEVELS[L].word.toLowerCase()}.`);
+        render();
+      }
+    };
+    ch.addEventListener("pointerup", end);
+    ch.addEventListener("pointercancel", end);
+    ch.addEventListener("keydown", e=>{
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); selected = selected===+ch.dataset.i?null:+ch.dataset.i;
+        if(selected!==null) setMsg(`👉 Tu as choisi « ${esc(LEVELS[L].items[selected].name)} ». Va sur le bon ${LEVELS[L].word.toLowerCase()} et appuie sur Entrée.`);
+        render(); document.querySelector(".drawer")?.focus(); }
+    });
+  });
+  document.querySelectorAll(".drawer").forEach(dr=>{
+    dr.addEventListener("click", e=>{
+      const chip=e.target.closest(".chip.placed"); if(chip){ e.stopPropagation(); showPath(+chip.dataset.i); return; }
+      if(e.target.closest("[data-drop]")!==dr) return;
+      if(selected!==null) tryPlace(selected, dr.dataset.drop);
+      else setMsg(`Choisis d'abord un élément à ranger dans « ${esc(LEVELS[L].basket.replace(/^Les? /,""))} ».`);
+    });
+    dr.addEventListener("keydown", e=>{
+      if((e.key==="Enter"||e.key===" ") && e.target===dr){ e.preventDefault(); if(selected!==null) tryPlace(selected, dr.dataset.drop); }
+    });
+    dr.addEventListener("animationend",()=>dr.classList.remove("nope"));
+  });
+  document.querySelectorAll(".node.file").forEach(n=>{
+    n.onclick=()=>showPath(+n.dataset.i);
+    n.onkeydown=e=>{ if(e.key==="Enter"||e.key===" "){e.preventDefault(); showPath(+n.dataset.i);} };
+  });
+}
+
+start(0);
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

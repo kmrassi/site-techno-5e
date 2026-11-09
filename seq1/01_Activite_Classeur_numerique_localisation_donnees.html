@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Séq 1 — Classeur numérique &amp; Localisation des données</title>
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --card:#ffffff;
+    --ink:#1c2733;
+    --muted:#5b6b7c;
+    --line:#dde5ee;
+    --accent:#2563eb;
+    --accent-ink:#ffffff;
+    --accent-soft:#e8f0fe;
+    --green:#1a9c6f;
+    --green-soft:#e4f7ef;
+    --amber:#b6790a;
+    --amber-soft:#fdf2df;
+    --chip:#eef2f7;
+    --shadow: 0 1px 3px rgba(20,30,50,.07), 0 8px 24px rgba(20,30,50,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#12161c;
+      --card:#1a2129;
+      --ink:#e8edf3;
+      --muted:#9aa9ba;
+      --line:#2b3542;
+      --accent:#5b9dff;
+      --accent-ink:#0b1520;
+      --accent-soft:#1c2a40;
+      --green:#4cd0a0;
+      --green-soft:#173327;
+      --amber:#e0ab4e;
+      --amber-soft:#3a2e14;
+      --chip:#232c36;
+      --shadow: 0 1px 3px rgba(0,0,0,.35), 0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding-block:24px; padding-inline:16px;
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:860px; margin:0 auto;}
+
+  header.top{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:18px 20px; box-shadow:var(--shadow); margin-bottom:16px;
+  }
+  .theme-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px;}
+  .badge{
+    font-size:.72rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    background:var(--accent-soft); color:var(--accent); padding:4px 10px; border-radius:999px;
+  }
+  h1{font-size:1.35rem; margin:4px 0 2px; line-height:1.25}
+  .sub{color:var(--muted); font-size:.9rem; margin:0}
+
+  .identity{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px;
+  }
+  @media (max-width:520px){ .identity{grid-template-columns:1fr} }
+  .identity label{display:block; font-size:.78rem; color:var(--muted); margin-bottom:4px;}
+  .identity input{
+    width:100%; padding:8px 10px; border-radius:9px; border:1px solid var(--line);
+    background:var(--bg); color:var(--ink); font-size:.92rem;
+  }
+
+  .progress-wrap{margin-top:14px;}
+  .progress-track{
+    height:8px; border-radius:999px; background:var(--chip); overflow:hidden;
+  }
+  .progress-fill{height:100%; width:0%; background:var(--green); transition:width .3s ease;}
+  .progress-label{font-size:.78rem; color:var(--muted); margin-top:6px;}
+
+  nav.tabs{
+    display:flex; gap:8px; margin:16px 0; flex-wrap:wrap;
+  }
+  nav.tabs button{
+    flex:1; min-width:160px; cursor:pointer; border:1px solid var(--line); background:var(--card);
+    color:var(--ink); padding:10px 14px; border-radius:11px; font-size:.88rem; font-weight:600;
+  }
+  nav.tabs button.active{background:var(--accent); color:var(--accent-ink); border-color:var(--accent);}
+
+  section.activity{display:none;}
+  section.activity.visible{display:block;}
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:18px 20px; box-shadow:var(--shadow); margin-bottom:14px;
+  }
+  .card h2{font-size:1.1rem; margin:0 0 8px;}
+  .card h3{font-size:.98rem; margin:18px 0 8px; color:var(--accent);}
+  .card p{margin:6px 0; font-size:.94rem;}
+  .card p.muted{color:var(--muted); font-size:.88rem;}
+
+  .callout{
+    background:var(--amber-soft); border:1px solid #e7c983; border-radius:11px;
+    padding:12px 14px; font-size:.9rem; margin:12px 0;
+  }
+  @media (prefers-color-scheme: dark){ .callout{border-color:#5a481f;} }
+
+  .step{
+    display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px dashed var(--line);
+    font-size:.92rem;
+  }
+  .step:last-child{border-bottom:none;}
+  .step input[type=checkbox]{
+    margin-top:3px; width:18px; height:18px; accent-color:var(--green); flex:none; cursor:pointer;
+  }
+  .step label{cursor:pointer;}
+  .step.done label{color:var(--muted); text-decoration:line-through;}
+
+  .answer-block{margin:14px 0;}
+  .answer-block > label{display:block; font-size:.9rem; font-weight:600; margin-bottom:6px;}
+  textarea{
+    width:100%; min-height:80px; resize:vertical; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg); color:var(--ink); padding:10px 12px; font-size:.9rem; font-family:inherit;
+  }
+
+  .links{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
+  .links a{
+    font-size:.8rem; text-decoration:none; color:var(--accent); background:var(--accent-soft);
+    padding:6px 11px; border-radius:999px; display:inline-flex; align-items:center; gap:5px;
+    border:1px solid transparent;
+  }
+  .links a:hover{border-color:var(--accent);}
+
+  details.hint{
+    margin-top:10px; background:var(--chip); border:1px solid var(--line); border-radius:10px;
+    padding:8px 12px; font-size:.86rem;
+  }
+  details.hint summary{cursor:pointer; font-weight:600; color:var(--accent);}
+  details.hint p{margin:8px 0 2px;}
+  details.hint ul{margin:8px 0 2px; padding-left:20px;}
+  details.hint li{margin:4px 0;}
+
+  .slide-cta{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    background:var(--accent-soft); border:1px solid var(--accent); border-radius:13px;
+    padding:14px 16px; margin:14px 0;
+  }
+  .slide-cta .txt{flex:1; min-width:200px;}
+  .slide-cta .txt strong{display:block; font-size:.95rem; margin-bottom:2px;}
+  .slide-cta .txt span{font-size:.83rem; color:var(--muted);}
+  .slide-cta a.btn-slide{
+    text-decoration:none; background:var(--accent); color:var(--accent-ink);
+    font-size:.88rem; font-weight:700; padding:9px 16px; border-radius:10px;
+    display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+
+  .toolbox{
+    background:var(--green-soft); border:1px solid #9ddcbe; border-radius:16px; padding:18px 20px;
+    margin-top:18px;
+  }
+  @media (prefers-color-scheme: dark){ .toolbox{border-color:#2f6b52;} }
+  .toolbox h2{margin-top:0; font-size:1.05rem;}
+  .toolbox .links a{background:var(--card);}
+
+  .actions{display:flex; gap:10px; flex-wrap:wrap; margin:18px 0;}
+  .actions button{
+    cursor:pointer; border:none; border-radius:10px; padding:10px 16px; font-size:.88rem; font-weight:600;
+  }
+  .btn-primary{background:var(--accent); color:var(--accent-ink);}
+  .btn-secondary{background:var(--chip); color:var(--ink); border:1px solid var(--line) !important;}
+  #copyMsg{font-size:.8rem; color:var(--green); margin-left:4px; align-self:center;}
+
+  footer{text-align:center; color:var(--muted); font-size:.78rem; margin-top:20px;}
+
+  @media print{
+    nav.tabs, .actions, .links, .slide-cta, details.hint{display:none !important;}
+    section.activity{display:block !important;}
+    body{background:#fff; color:#000;}
+    .card{box-shadow:none; break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="theme-row">
+      <span class="badge">Usage et impacts sociétaux du numérique</span>
+      <span class="badge" style="background:var(--green-soft); color:var(--green);">5e · Collège PMF</span>
+    </div>
+    <h1>Séquence 1 — Mon classeur numérique &amp; mes données</h1>
+    <p class="sub">Version interactive des activités 1 et 2, avec des liens de recherche pour t'aider à trouver les réponses.</p>
+
+    <div class="identity">
+      <div><label for="prenom">Prénom</label><input id="prenom" type="text" placeholder="Ton prénom"></div>
+      <div><label for="nom">Nom</label><input id="nom" type="text" placeholder="Ton nom"></div>
+      <div><label for="classe">Classe</label><input id="classe" type="text" placeholder="Ex : 5e2"></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 % complété</div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="active" data-target="act1">Activité 1 — Créer mon classeur</button>
+    <button data-target="act2">Activité 2 — Localiser mes données</button>
+  </nav>
+
+  <!-- ACTIVITÉ 1 -->
+  <section class="activity visible" id="act1">
+    <div class="card">
+      <h2>Séq 1 – Act 1 : Créer et utiliser mon classeur numérique</h2>
+      <p class="muted"><strong>Introduction —</strong> Lorsque tu utilises l'ordinateur au collège, tu crées ou utilises souvent des fichiers. Tu dois ensuite les sauvegarder dans des dossiers. Mais où les stocker ? Tout va dépendre de ce que tu comptes en faire par la suite.</p>
+      <p class="muted"><strong>Mise en situation —</strong> Dans cette activité, tu vas créer ton classeur numérique. Il va te permettre de gérer TOUS les fichiers numériques que tu vas créer ou utiliser cette année. Tu vas ensuite apprendre à le manipuler.</p>
+
+      <h3>I – Création de ton classeur numérique</h3>
+      <div class="step"><input type="checkbox" id="s1-1"><label for="s1-1">1°) Ouvre ta session sur l'ordinateur.</label></div>
+      <div class="step"><input type="checkbox" id="s1-2"><label for="s1-2">2°) À l'aide du navigateur <em>Google Chrome</em>, ouvre ta messagerie « ert.tn ».</label></div>
+      <div class="step"><input type="checkbox" id="s1-3"><label for="s1-3">3°) Dans « Applications Google », clique sur « Drive ».</label></div>
+      <div class="step"><input type="checkbox" id="s1-4"><label for="s1-4">4°) Une fois la fenêtre ouverte, clique sur « Mon Drive » (à gauche de l'écran).</label></div>
+      <div class="step"><input type="checkbox" id="s1-5"><label for="s1-5">5°) Clique sur « Nouveau » (à gauche de l'écran).</label></div>
+      <div class="step"><input type="checkbox" id="s1-6"><label for="s1-6">6°) Clique sur « Nouveau dossier » et nomme-le « 2026-2027 ».</label></div>
+      <div class="step"><input type="checkbox" id="s1-7"><label for="s1-7">7°) Ouvre-le en double-cliquant dessus.</label></div>
+      <div class="step"><input type="checkbox" id="s1-8"><label for="s1-8">8°) Clique sur « Nouveau dossier » et nomme-le « TECHNOLOGIE ».</label></div>
+      <div class="step"><input type="checkbox" id="s1-9"><label for="s1-9">9°) Ouvre-le en double-cliquant dessus.</label></div>
+      <div class="step"><input type="checkbox" id="s1-10"><label for="s1-10">10°) Clique sur « Nouveau dossier » et nomme-le « 0_Rentrée ».</label></div>
+
+      <div class="links">
+        <a href="https://www.google.com/search?q=qu%27est-ce+qu%27une+arborescence+de+dossiers+informatique" target="_blank" rel="noopener">🔍 Qu'est-ce qu'une arborescence de dossiers ?</a>
+        <a href="https://www.google.com/search?q=comment+cr%C3%A9er+un+dossier+sur+Google+Drive" target="_blank" rel="noopener">🔍 Créer un dossier sur Google Drive</a>
+      </div>
+
+      <div class="callout">
+        Dans ton <strong>E</strong>space <strong>N</strong>umérique de <strong>T</strong>ravail (= <strong>ENT</strong>) de « ert.tn », tu viens de créer ce que l'on appelle une <strong>arborescence</strong> de dossiers (des dossiers dans des dossiers dans des dossiers...). C'est ça ton <strong>CLASSEUR NUMÉRIQUE</strong> !
+      </div>
+
+      <h3>II – Utilisation de ton classeur numérique</h3>
+      <div class="step"><input type="checkbox" id="s2-1"><label for="s2-1">1°) Va sur « Applications Google » et clique sur « Google Docs ».</label></div>
+      <div class="step"><input type="checkbox" id="s2-2"><label for="s2-2">2°) Donne au fichier le titre « TEST ».</label></div>
+      <div class="step"><input type="checkbox" id="s2-3"><label for="s2-3">3°) Dans le document, écris le texte « Ceci est un test. ».</label></div>
+      <div class="step"><input type="checkbox" id="s2-4"><label for="s2-4">4°) Cherche à déplacer le fichier créé dans le dossier « 0_Rentrée ».</label></div>
+
+      <div class="answer-block">
+        <label for="procedure">5°) Note la procédure que tu as utilisée pour déplacer le fichier :</label>
+        <textarea id="procedure" placeholder="Explique ici, étape par étape, comment tu as déplacé ton fichier..."></textarea>
+        <div class="links">
+          <a href="https://www.google.com/search?q=comment+d%C3%A9placer+un+fichier+dans+un+dossier+Google+Drive" target="_blank" rel="noopener">🔍 Déplacer un fichier sur Google Drive</a>
+          <a href="https://www.google.com/search?q=raccourci+glisser+d%C3%A9poser+Google+Drive" target="_blank" rel="noopener">🔍 Glisser-déposer sur Drive</a>
+        </div>
+      </div>
+
+      <div class="step"><input type="checkbox" id="s2-6"><label for="s2-6">6°) Rendre le fichier en réponse à cette activité dans votre drive.</label></div>
+    </div>
+  </section>
+
+  <!-- ACTIVITÉ 2 -->
+  <section class="activity" id="act2">
+    <div class="card">
+      <h2>Séq 1 – Act 2 : Où vont les données numériques que j'utilise au collège ? Comment y accéder ?</h2>
+      <p class="muted"><strong>Introduction —</strong> Cette activité vient compléter la précédente. On va identifier toutes les situations où tu es amené à stocker des données, puis voir la procédure adéquate dans chaque cas.</p>
+      <p class="muted"><strong>Mise en situation —</strong> Un diaporama « Mes données numériques » va être complété petit à petit pour comprendre où sont stockées nos données et comment y accéder. Cela demande de réfléchir à ta pratique de l'ordinateur et de faire quelques recherches.</p>
+
+      <div class="slide-cta">
+        <div class="txt">
+          <strong>📽️ Ton diaporama « Mes données numériques »</strong>
+          <span>Le bouton ci-dessous crée un diaporama Google Slides <strong>totalement vierge</strong> — c'est normal, il est fait pour que tu le remplisses toi-même. Renomme-le « Mes données numériques » et déplace-le dans ton dossier « 0_Rentrée ».</span>
+        </div>
+        <a class="btn-slide" href="https://docs.google.com/presentation/d/1ydoKChR1IFuJVgbmaVKjpNWMtDw3E-uu6RLZyijVxrU/edit?usp=sharing" target="_blank" rel="noopener">Créer mon diaporama ↗</a>
+      </div>
+      <p class="muted" style="margin-top:-6px;">Tu préfères partir d'une structure déjà organisée (titres des diapos + emplacements à remplir, sans les réponses) ? Demande à ton professeur le fichier gabarit à importer dans ton Drive.</p>
+
+      <div class="step"><input type="checkbox" id="s3-0"><label for="s3-0">0°) J'ai créé le diaporama, je l'ai renommé « Mes données numériques » et déplacé dans « 0_Rentrée ».</label></div>
+
+      <div class="answer-block">
+        <label for="q1">1°) Après avoir visionné le diaporama, y a-t-il des parties que tu es déjà capable de compléter ? Si oui, lesquelles ?</label>
+        <textarea id="q1" placeholder="Note ici les parties que tu peux déjà compléter..."></textarea>
+      </div>
+
+      <div class="answer-block">
+        <label for="q2">2°) Diapo n°2 — Propose des informations pour la compléter (texte, schéma, image, photo...).</label>
+        <p class="muted" style="margin-top:-4px;">Pas besoin d'internet pour cette partie !</p>
+        <textarea id="q2" placeholder="Tes propositions pour la diapo n°2..."></textarea>
+        <details class="hint">
+          <summary>💡 Des questions pour t'aider à chercher</summary>
+          <ul>
+            <li>Chez toi, sur quoi peux-tu enregistrer un fichier <strong>sans avoir besoin d'internet</strong> ? (regarde dans un ordinateur, un tiroir, une trousse...)</li>
+            <li>Qu'est-ce qu'on branche sur un ordinateur avec un petit connecteur pour transporter des fichiers ?</li>
+            <li>Qu'est-ce qui stocke les photos dans un appareil photo ou un smartphone quand il n'y a pas de wifi ?</li>
+            <li>Essaie d'en trouver au moins 3 et explique en une phrase à quoi sert chacun.</li>
+          </ul>
+        </details>
+      </div>
+
+      <div class="answer-block">
+        <label for="q3">3°) À partir de la diapo n°3, c'est un peu plus compliqué — aide-toi d'un adulte ou d'internet.</label>
+        <textarea id="q3" placeholder="Tes réponses / notes de recherche pour les diapos suivantes..."></textarea>
+        <div class="links">
+          <a href="https://www.google.com/search?q=o%C3%B9+sont+stock%C3%A9es+les+donn%C3%A9es+dans+le+cloud" target="_blank" rel="noopener">🔍 Où sont stockées les données dans le cloud ?</a>
+          <a href="https://www.google.com/search?q=qu%27est-ce+qu%27un+ENT+espace+num%C3%A9rique+de+travail" target="_blank" rel="noopener">🔍 Qu'est-ce qu'un ENT ?</a>
+          <a href="https://www.google.com/search?q=diff%C3%A9rence+stockage+local+et+stockage+en+ligne" target="_blank" rel="noopener">🔍 Stockage local vs stockage en ligne</a>
+          <a href="https://www.google.com/search?q=qu%27est-ce+qu%27un+data+center+centre+de+donn%C3%A9es" target="_blank" rel="noopener">🔍 Qu'est-ce qu'un data center ?</a>
+        </div>
+        <details class="hint">
+          <summary>💡 Des questions pour t'aider à chercher</summary>
+          <ul>
+            <li>À l'école, tu utilises un « ENT » (ert.tn) et Google Drive : est-ce que tes fichiers sont dessus <strong>sans</strong> internet, ou faut-il être connecté pour les voir ?</li>
+            <li>Quand tu enregistres un fichier sur Google Drive, où penses-tu qu'il est <strong>réellement</strong> stocké ? Sur ton ordinateur, ou ailleurs ?</li>
+            <li>Cherche : qu'est-ce qu'un <strong>serveur</strong> ? Qu'est-ce qu'un <strong>data center</strong> ?</li>
+            <li>Pourquoi est-il important de ne jamais donner son mot de passe à quelqu'un d'autre ?</li>
+            <li>As-tu déjà entendu parler du <strong>RGPD</strong> ? À ton avis, à quoi ça sert ?</li>
+          </ul>
+          <p class="muted" style="margin:8px 0 0;">Note tes réponses avec tes propres mots — pas besoin de tout savoir, une phrase par question suffit pour commencer.</p>
+        </details>
+      </div>
+
+      <div class="answer-block">
+        <label for="q4">4°) Organisation pour compléter le diaporama (synthèse de l'activité) :</label>
+        <textarea id="q4" placeholder="Comment allez-vous vous organiser en classe pour la synthèse ?"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <div class="toolbox">
+    <h2>🧰 Boîte à outils recherche</h2>
+    <p class="muted" style="margin-top:0;">Des pistes de recherche utiles pour l'ensemble de la séquence.</p>
+    <div class="links">
+      <a href="https://www.google.com/search?q=d%C3%A9finition+classeur+num%C3%A9rique" target="_blank" rel="noopener">🔍 Définition : classeur numérique</a>
+      <a href="https://www.google.com/search?q=qu%27est-ce+que+le+cloud+computing+expliqu%C3%A9+simplement" target="_blank" rel="noopener">🔍 Le cloud expliqué simplement</a>
+      <a href="https://www.google.com/search?q=prot%C3%A9ger+ses+donn%C3%A9es+personnelles+au+coll%C3%A8ge" target="_blank" rel="noopener">🔍 Protéger ses données personnelles</a>
+      <a href="https://www.google.com/search?q=qu%27est-ce+que+le+RGPD+expliqu%C3%A9+aux+enfants" target="_blank" rel="noopener">🔍 Le RGPD expliqué simplement</a>
+      <a href="https://www.google.com/search?q=stockage+de+donn%C3%A9es+cl%C3%A9+USB+disque+dur+cloud+diff%C3%A9rences" target="_blank" rel="noopener">🔍 Clé USB, disque dur, cloud : différences</a>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn-primary" id="printBtn">🖨️ Imprimer / Enregistrer en PDF</button>
+    <button class="btn-secondary" id="copyBtn">📋 Copier mes réponses</button>
+    <span id="copyMsg"></span>
+  </div>
+
+  <footer>Thème : Usage et impacts sociétaux du numérique — Séquence 1 — Collège PMF</footer>
+</div>
+
+<script>
+  // Tabs
+  const tabButtons = document.querySelectorAll('nav.tabs button');
+  const sections = document.querySelectorAll('section.activity');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabButtons.forEach(b => b.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('visible'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.target).classList.add('visible');
+    });
+  });
+
+  // Checkbox strike-through
+  document.querySelectorAll('.step input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      cb.closest('.step').classList.toggle('done', cb.checked);
+      updateProgress();
+    });
+  });
+
+  const textareas = document.querySelectorAll('textarea');
+  textareas.forEach(t => t.addEventListener('input', updateProgress));
+
+  function updateProgress(){
+    const boxes = document.querySelectorAll('.step input[type=checkbox]');
+    const checked = document.querySelectorAll('.step input[type=checkbox]:checked').length;
+    const filled = Array.from(textareas).filter(t => t.value.trim().length > 0).length;
+    const total = boxes.length + textareas.length;
+    const done = checked + filled;
+    const pct = total ? Math.round((done/total)*100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = pct + ' % complété (' + done + ' / ' + total + ')';
+  }
+  updateProgress();
+
+  // Print
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+  // Copy answers as text
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    const prenom = document.getElementById('prenom').value || '…';
+    const nom = document.getElementById('nom').value || '…';
+    const classe = document.getElementById('classe').value || '…';
+    let out = `Prénom : ${prenom}   Nom : ${nom}   Classe : ${classe}\n\n`;
+    out += `=== Activité 1 — Créer et utiliser mon classeur numérique ===\n`;
+    out += `Procédure pour déplacer le fichier :\n${document.getElementById('procedure').value || '(non renseigné)'}\n\n`;
+    out += `=== Activité 2 — Où vont mes données numériques ===\n`;
+    out += `1°) Parties déjà maîtrisées :\n${document.getElementById('q1').value || '(non renseigné)'}\n\n`;
+    out += `2°) Diapo n°2 :\n${document.getElementById('q2').value || '(non renseigné)'}\n\n`;
+    out += `3°) Diapos suivantes (recherches) :\n${document.getElementById('q3').value || '(non renseigné)'}\n\n`;
+    out += `4°) Organisation / synthèse :\n${document.getElementById('q4').value || '(non renseigné)'}\n`;
+
+    try{
+      await navigator.clipboard.writeText(out);
+      const msg = document.getElementById('copyMsg');
+      msg.textContent = 'Copié ✓';
+      setTimeout(() => msg.textContent = '', 2500);
+    }catch(e){
+      const msg = document.getElementById('copyMsg');
+      msg.textContent = "Impossible de copier automatiquement";
+      setTimeout(() => msg.textContent = '', 3000);
+    }
+  });
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

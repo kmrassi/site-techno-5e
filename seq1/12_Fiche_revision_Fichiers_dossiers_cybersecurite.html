@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fichiers, dossiers &amp; cybersécurité — Fiche de révision</title>
+<style>
+  :root{
+    --blue:#1F5C99;
+    --blue-dark:#0D3B66;
+    --blue-light:#DDEBF7;
+    --teal:#1F7A6C;
+    --teal-dark:#0F4A40;
+    --teal-light:#DFF3EE;
+    --amber:#E0A100;
+    --amber-bg:#FFF7E6;
+    --amber-text:#8A5A00;
+    --red:#C0392B;
+    --red-bg:#FBEAE8;
+    --green:#2E7D46;
+    --green-bg:#E7F5EA;
+    --ink:#1E1E1E;
+    --paper:#FAFBFD;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family:'Segoe UI', Calibri, Arial, sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+  }
+  .wrap{ max-width:920px; margin:0 auto; padding:24px 18px 60px; }
+
+  /* ---- banner ---- */
+  .banner{
+    display:flex;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    margin-bottom:28px;
+  }
+  .banner .main{
+    flex:1;
+    background:var(--blue);
+    color:#fff;
+    padding:20px 24px;
+  }
+  .banner .main .kicker{ font-style:italic; font-size:0.85rem; opacity:0.9; }
+  .banner .main h1{ margin:6px 0 0; font-size:1.55rem; }
+  .banner .side{
+    background:var(--blue-dark);
+    color:#fff;
+    padding:20px 22px;
+    text-align:center;
+    min-width:180px;
+    display:flex; flex-direction:column; justify-content:center;
+  }
+  .banner .side .level{ font-size:1.5rem; font-weight:700; }
+  .banner .side .sub{ font-size:0.8rem; font-style:italic; opacity:0.9; margin-top:4px;}
+
+  /* ---- section headers ---- */
+  .sect{
+    background:var(--blue-light);
+    border:2px solid var(--blue);
+    border-radius:8px;
+    padding:10px 16px;
+    font-weight:700;
+    color:var(--blue-dark);
+    margin: 30px 0 14px;
+    font-size:1.05rem;
+  }
+  .sect.teal{ background:var(--teal-light); border-color:var(--teal); color:var(--teal-dark); }
+
+  .card{
+    background:#fff;
+    border:1px solid #e2e6ec;
+    border-radius:10px;
+    padding:16px 20px;
+    margin-bottom:14px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  }
+  .card h3{ margin-top:0; color:var(--blue-dark); font-size:1rem; }
+  .card ul{ margin:6px 0; padding-left:20px; }
+  .card li{ margin-bottom:6px; }
+
+  .tip{
+    background:var(--amber-bg);
+    border-left:6px solid var(--amber);
+    border-radius:6px;
+    padding:12px 16px;
+    margin:14px 0;
+    font-size:0.95rem;
+  }
+  .tip strong{ color:var(--amber-text); }
+
+  table.ref{
+    width:100%;
+    border-collapse:collapse;
+    margin:10px 0;
+    font-size:0.92rem;
+  }
+  table.ref th, table.ref td{
+    border:1px solid #d7dde5;
+    padding:7px 10px;
+    text-align:left;
+  }
+  table.ref th{ background:var(--blue); color:#fff; }
+  table.ref tr:nth-child(even){ background:#f4f7fb; }
+
+  /* ---- exercises ---- */
+  .exo{
+    background:#fff;
+    border:2px solid var(--teal);
+    border-radius:10px;
+    padding:18px 20px;
+    margin-bottom:22px;
+  }
+  .exo h3{
+    margin:0 0 12px;
+    color:var(--teal-dark);
+    font-size:1.05rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .question{ margin-bottom:16px; }
+  .question p.q-text{ font-weight:600; margin:0 0 8px; }
+  .opts label{
+    display:block;
+    background:#f4f7fb;
+    border:1px solid #dbe2ea;
+    border-radius:6px;
+    padding:8px 12px;
+    margin-bottom:6px;
+    cursor:pointer;
+    transition: background 0.15s;
+  }
+  .opts label:hover{ background:#eaf1f9; }
+  .opts input{ margin-right:8px; }
+  .opts label.correct{ background:var(--green-bg); border-color:var(--green); }
+  .opts label.incorrect{ background:var(--red-bg); border-color:var(--red); }
+
+  .feedback{
+    margin-top:6px;
+    font-size:0.9rem;
+    font-weight:600;
+    display:none;
+  }
+  .feedback.show{ display:block; }
+  .feedback.ok{ color:var(--green); }
+  .feedback.ko{ color:var(--red); }
+
+  .fill-row{
+    display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;
+  }
+  .fill-row input[type=text]{
+    border:1px solid #c4cdd8;
+    border-radius:5px;
+    padding:5px 8px;
+    width:110px;
+    font-size:0.95rem;
+  }
+  .fill-row input.ok{ border-color:var(--green); background:var(--green-bg); }
+  .fill-row input.ko{ border-color:var(--red); background:var(--red-bg); }
+
+  select.match{
+    border:1px solid #c4cdd8;
+    border-radius:5px;
+    padding:5px 8px;
+    font-size:0.9rem;
+  }
+  select.match.ok{ border-color:var(--green); background:var(--green-bg); }
+  select.match.ko{ border-color:var(--red); background:var(--red-bg); }
+
+  .btn{
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    padding:9px 18px;
+    font-size:0.95rem;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .btn:hover{ background:var(--teal-dark); }
+
+  .score-box{
+    background:var(--blue-dark);
+    color:#fff;
+    border-radius:10px;
+    padding:18px 22px;
+    text-align:center;
+    font-size:1.15rem;
+    font-weight:700;
+    margin-top:30px;
+  }
+  .score-box .big{ font-size:1.8rem; display:block; margin-top:4px; }
+
+  footer{ text-align:center; font-size:0.82rem; color:#8a93a0; margin-top:34px; }
+
+  @media (max-width:600px){
+    .banner{ flex-direction:column; }
+    .banner .side{ text-align:left; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="banner">
+    <div class="main">
+      <div class="kicker">Usages et impacts sociétaux du numérique</div>
+      <h1>💾🔒 Fichiers, dossiers &amp; cybersécurité</h1>
+    </div>
+    <div class="side">
+      <div class="level">5e</div>
+      <div class="sub">Collège PMF — M'rassi</div>
+    </div>
+  </div>
+
+  <p style="font-size:0.95rem; color:#555;">Cette fiche reprend l'essentiel du cours et te propose des exercices interactifs corrigés automatiquement pour t'entraîner avant l'évaluation.</p>
+
+  <!-- ===================== SYNTHÈSE 1 ===================== -->
+  <div class="sect">📁 1. Fichiers, dossiers et arborescence</div>
+
+  <div class="card">
+    <h3>Fichier</h3>
+    <p>Un <strong>fichier</strong> est un document enregistré dans l'ordinateur. Il peut être un texte, une image, une vidéo, une musique… Il est caractérisé par sa <strong>taille</strong>, son <strong>chemin de stockage</strong> et son <strong>format</strong>.</p>
+  </div>
+  <div class="card">
+    <h3>Dossier</h3>
+    <p>Un <strong>dossier</strong> sert à ranger plusieurs fichiers ensemble, comme un classeur. Il peut contenir des <strong>sous-dossiers</strong> pour mieux organiser.</p>
+  </div>
+  <div class="card">
+    <h3>Arborescence</h3>
+    <p>L'<strong>arborescence</strong> montre comment les dossiers et fichiers sont organisés, comme un arbre avec :</p>
+    <ul>
+      <li>une <strong>racine</strong> (le dossier principal) ;</li>
+      <li>des <strong>branches</strong> (les sous-dossiers) ;</li>
+      <li>des <strong>feuilles</strong> (les fichiers).</li>
+    </ul>
+    <p>Le <strong>chemin</strong> correspond à la route à prendre depuis la racine jusqu'au fichier recherché.</p>
+  </div>
+
+  <!-- ===================== SYNTHÈSE 2 ===================== -->
+  <div class="sect">📏 2. Unités de mesure et formats de fichiers</div>
+
+  <div class="card">
+    <h3>Unités de quantité d'information</h3>
+    <p>Les ordinateurs fonctionnent en <strong>binaire</strong> (des 0 et des 1, appelés <em>bits</em>). Un <strong>octet</strong> est composé de <strong>8 bits</strong>.</p>
+    <table class="ref">
+      <tr><th>Nom</th><th>Abréviation</th><th>Équivalence</th></tr>
+      <tr><td>octet</td><td>o</td><td>8 bits</td></tr>
+      <tr><td>kilooctet</td><td>Ko</td><td>1 000 octets</td></tr>
+      <tr><td>mégaoctet</td><td>Mo</td><td>1 000 000 octets</td></tr>
+      <tr><td>gigaoctet</td><td>Go</td><td>1 000 000 000 octets</td></tr>
+      <tr><td>téraoctet</td><td>To</td><td>1 000 000 000 000 octets</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h3>Formats et extensions</h3>
+    <table class="ref">
+      <tr><th>Format</th><th>Extensions possibles</th></tr>
+      <tr><td>Texte</td><td>.txt · .doc · .docx · .odt</td></tr>
+      <tr><td>Image</td><td>.gif · .jpg</td></tr>
+      <tr><td>Vidéo</td><td>.avi · .mp4</td></tr>
+      <tr><td>Son</td><td>.wav · .mp3</td></tr>
+      <tr><td>Feuille de calcul</td><td>.xls · .ods</td></tr>
+    </table>
+  </div>
+
+  <!-- ===================== SYNTHÈSE 3 ===================== -->
+  <div class="sect teal">🔒 3. Cybersécurité</div>
+
+  <div class="card">
+    <h3>Reconnaître un mail frauduleux (phishing)</h3>
+    <ul>
+      <li>Adresse de l'expéditeur suspecte (incohérente, fautes, chiffres).</li>
+      <li>Message alarmiste ou trop alléchant (urgence, gain surprise).</li>
+      <li>Demande d'informations confidentielles (mots de passe, carte bancaire).</li>
+      <li>Fautes de langue et incohérences.</li>
+      <li>Lien hypertexte qui ne correspond pas au site officiel.</li>
+      <li>Absence de personnalisation (« Cher client »).</li>
+      <li>Pièce jointe inattendue.</li>
+    </ul>
+  </div>
+  <div class="tip"><strong>En cas de doute :</strong> ne clique sur aucun lien, ne réponds pas, signale le mail, et si tu as déjà cliqué : change ton mot de passe et préviens un adulte (ou ta banque si des données bancaires sont concernées).</div>
+
+  <div class="card">
+    <h3>Caractéristiques d'un mot de passe fort</h3>
+    <ul>
+      <li><strong>Longueur</strong> : au moins 12 à 14 caractères.</li>
+      <li><strong>Diversité</strong> : minuscules, majuscules, chiffres, caractères spéciaux.</li>
+      <li><strong>Non-évidence</strong> : pas d'informations personnelles, de mots courants ou de suites logiques (azerty, 123456).</li>
+      <li><strong>Unicité</strong> : un mot de passe différent par compte important.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Risques liés au piratage et aux cookies</h3>
+    <ul>
+      <li><strong>Cliquer sur un lien de phishing</strong> peut mener à un faux site (vol d'identifiants), installer un malware, ou détourner ta session.</li>
+      <li><strong>Un compte piraté</strong> peut entraîner : usurpation d'identité, pertes financières, chantage, atteinte à la réputation, propagation de malwares.</li>
+      <li><strong>Les cookies</strong> permettent de rester connecté, mais peuvent être détournés (vol de session) ou utilisés pour te suivre sur internet (cookies tiers, publicité).</li>
+    </ul>
+  </div>
+
+  <div class="tip"><strong>Bonnes pratiques :</strong> mots de passe complexes et changés régulièrement, mises à jour de sécurité, antivirus, sauvegardes régulières, ne jamais cliquer sur un lien suspect, télécharger uniquement sur les sites officiels, éviter le wifi public, ne pas ouvrir de pièces jointes inconnues.</div>
+
+  <!-- ===================== EXERCICES ===================== -->
+  <div class="sect teal" style="margin-top:40px;">✏️ Exercices interactifs</div>
+  <p style="font-size:0.9rem; color:#555;">Réponds puis clique sur « Corriger » pour voir si c'est juste. Tu peux recommencer autant de fois que tu veux.</p>
+
+  <!-- QCM -->
+  <div class="exo">
+    <h3>🧠 Exercice 1 — QCM</h3>
+
+    <div class="question" data-qtype="single" data-correct="b">
+      <p class="q-text">1. Un octet est composé de :</p>
+      <div class="opts">
+        <label><input type="radio" name="q1" value="a"> 2 bits</label>
+        <label><input type="radio" name="q1" value="b"> 8 bits</label>
+        <label><input type="radio" name="q1" value="c"> 100 bits</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="question" data-qtype="single" data-correct="c">
+      <p class="q-text">2. Que représente la « racine » dans une arborescence ?</p>
+      <div class="opts">
+        <label><input type="radio" name="q2" value="a"> Un fichier</label>
+        <label><input type="radio" name="q2" value="b"> Un sous-dossier</label>
+        <label><input type="radio" name="q2" value="c"> Le dossier principal</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="question" data-qtype="single" data-correct="b">
+      <p class="q-text">3. Laquelle de ces extensions correspond à un fichier vidéo ?</p>
+      <div class="opts">
+        <label><input type="radio" name="q3" value="a"> .odt</label>
+        <label><input type="radio" name="q3" value="b"> .mp4</label>
+        <label><input type="radio" name="q3" value="c"> .xls</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="question" data-qtype="single" data-correct="a">
+      <p class="q-text">4. Que dois-tu faire si tu reçois un mail suspect te demandant ton mot de passe ?</p>
+      <div class="opts">
+        <label><input type="radio" name="q4" value="a"> Ne pas répondre, ne pas cliquer, et le signaler</label>
+        <label><input type="radio" name="q4" value="b"> Répondre pour vérifier si c'est vrai</label>
+        <label><input type="radio" name="q4" value="c"> Cliquer sur le lien pour voir</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <button class="btn" onclick="correctQCM(this)">Corriger le QCM</button>
+    <div class="feedback total-feedback" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- VRAI/FAUX -->
+  <div class="exo">
+    <h3>✅❌ Exercice 2 — Vrai ou Faux</h3>
+
+    <div class="question" data-qtype="single" data-correct="vrai">
+      <p class="q-text">1. Un mot de passe fort doit contenir au moins 12 caractères.</p>
+      <div class="opts">
+        <label><input type="radio" name="vf1" value="vrai"> Vrai</label>
+        <label><input type="radio" name="vf1" value="faux"> Faux</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="question" data-qtype="single" data-correct="faux">
+      <p class="q-text">2. On peut réutiliser le même mot de passe sur tous ses comptes.</p>
+      <div class="opts">
+        <label><input type="radio" name="vf2" value="vrai"> Vrai</label>
+        <label><input type="radio" name="vf2" value="faux"> Faux</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="question" data-qtype="single" data-correct="vrai">
+      <p class="q-text">3. Un dossier peut contenir des sous-dossiers.</p>
+      <div class="opts">
+        <label><input type="radio" name="vf3" value="vrai"> Vrai</label>
+        <label><input type="radio" name="vf3" value="faux"> Faux</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <div class="question" data-qtype="single" data-correct="faux">
+      <p class="q-text">4. Les cookies ne présentent aucun risque pour la vie privée.</p>
+      <div class="opts">
+        <label><input type="radio" name="vf4" value="vrai"> Vrai</label>
+        <label><input type="radio" name="vf4" value="faux"> Faux</label>
+      </div>
+      <div class="feedback"></div>
+    </div>
+
+    <button class="btn" onclick="correctQCM(this)">Corriger le Vrai/Faux</button>
+    <div class="feedback total-feedback" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- FILL IN BLANKS : unités -->
+  <div class="exo">
+    <h3>🔢 Exercice 3 — Complète les conversions</h3>
+
+    <div class="fill-row" data-correct="8">
+      <span>1 octet =</span> <input type="text"> <span>bits</span>
+    </div>
+    <div class="fill-row" data-correct="1000">
+      <span>1 Ko =</span> <input type="text"> <span>octets</span>
+    </div>
+    <div class="fill-row" data-correct="1000000">
+      <span>1 Mo =</span> <input type="text"> <span>octets</span>
+    </div>
+    <div class="fill-row" data-correct="1000000000">
+      <span>1 Go =</span> <input type="text"> <span>octets</span>
+    </div>
+
+    <button class="btn" onclick="correctFill(this)">Corriger les conversions</button>
+    <div class="feedback total-feedback" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- MATCHING : format <-> extension -->
+  <div class="exo">
+    <h3>🔗 Exercice 4 — Associe chaque extension à son format</h3>
+
+    <div class="fill-row" data-correct="Texte">
+      <span>.docx</span> →
+      <select class="match">
+        <option value="">— choisir —</option>
+        <option>Texte</option>
+        <option>Image</option>
+        <option>Vidéo</option>
+        <option>Son</option>
+        <option>Feuille de calcul</option>
+      </select>
+    </div>
+    <div class="fill-row" data-correct="Image">
+      <span>.jpg</span> →
+      <select class="match">
+        <option value="">— choisir —</option>
+        <option>Texte</option>
+        <option>Image</option>
+        <option>Vidéo</option>
+        <option>Son</option>
+        <option>Feuille de calcul</option>
+      </select>
+    </div>
+    <div class="fill-row" data-correct="Vidéo">
+      <span>.mp4</span> →
+      <select class="match">
+        <option value="">— choisir —</option>
+        <option>Texte</option>
+        <option>Image</option>
+        <option>Vidéo</option>
+        <option>Son</option>
+        <option>Feuille de calcul</option>
+      </select>
+    </div>
+    <div class="fill-row" data-correct="Son">
+      <span>.mp3</span> →
+      <select class="match">
+        <option value="">— choisir —</option>
+        <option>Texte</option>
+        <option>Image</option>
+        <option>Vidéo</option>
+        <option>Son</option>
+        <option>Feuille de calcul</option>
+      </select>
+    </div>
+    <div class="fill-row" data-correct="Feuille de calcul">
+      <span>.xls</span> →
+      <select class="match">
+        <option value="">— choisir —</option>
+        <option>Texte</option>
+        <option>Image</option>
+        <option>Vidéo</option>
+        <option>Son</option>
+        <option>Feuille de calcul</option>
+      </select>
+    </div>
+
+    <button class="btn" onclick="correctMatch(this)">Corriger les associations</button>
+    <div class="feedback total-feedback" style="margin-top:10px;"></div>
+  </div>
+
+  <div class="score-box" id="globalScoreBox" style="display:none;">
+    Score total
+    <span class="big" id="globalScoreText">–</span>
+  </div>
+  <button class="btn" style="display:block;margin:18px auto 0;" onclick="computeGlobalScore()">📊 Calculer mon score total</button>
+
+  <footer>Fiche de révision — Fichiers, dossiers et cybersécurité — 5e — Collège PMF — M'rassi</footer>
+</div>
+
+<script>
+function correctQCM(btn){
+  const exo = btn.closest('.exo');
+  const questions = exo.querySelectorAll('.question');
+  let correctCount = 0;
+  questions.forEach(q => {
+    const correct = q.dataset.correct;
+    const inputs = q.querySelectorAll('input[type=radio]');
+    const fb = q.querySelector('.feedback');
+    let selected = null;
+    inputs.forEach(inp => {
+      inp.parentElement.classList.remove('correct','incorrect');
+      if(inp.checked) selected = inp.value;
+    });
+    inputs.forEach(inp => {
+      if(inp.value === correct) inp.parentElement.classList.add('correct');
+      else if(inp.checked) inp.parentElement.classList.add('incorrect');
+    });
+    fb.classList.add('show');
+    if(selected === correct){
+      fb.textContent = '✔ Bonne réponse !';
+      fb.className = 'feedback show ok';
+      correctCount++;
+    } else if(selected === null){
+      fb.textContent = '➜ Choisis une réponse.';
+      fb.className = 'feedback show ko';
+    } else {
+      fb.textContent = '✘ Ce n\'est pas la bonne réponse.';
+      fb.className = 'feedback show ko';
+    }
+  });
+  const total = exo.querySelector('.total-feedback');
+  total.classList.add('show');
+  total.textContent = `Score : ${correctCount} / ${questions.length}`;
+  total.className = 'feedback show ' + (correctCount === questions.length ? 'ok' : 'ko');
+  exo.dataset.score = correctCount;
+  exo.dataset.maxscore = questions.length;
+}
+
+function correctFill(btn){
+  const exo = btn.closest('.exo');
+  const rows = exo.querySelectorAll('.fill-row');
+  let correctCount = 0;
+  rows.forEach(row => {
+    const correct = row.dataset.correct.replace(/\s/g,'');
+    const input = row.querySelector('input[type=text]');
+    const val = input.value.replace(/\s/g,'');
+    input.classList.remove('ok','ko');
+    if(val === correct){
+      input.classList.add('ok');
+      correctCount++;
+    } else {
+      input.classList.add('ko');
+    }
+  });
+  const total = exo.querySelector('.total-feedback');
+  total.classList.add('show');
+  total.textContent = `Score : ${correctCount} / ${rows.length}`;
+  total.className = 'feedback show ' + (correctCount === rows.length ? 'ok' : 'ko');
+  exo.dataset.score = correctCount;
+  exo.dataset.maxscore = rows.length;
+}
+
+function correctMatch(btn){
+  const exo = btn.closest('.exo');
+  const rows = exo.querySelectorAll('.fill-row');
+  let correctCount = 0;
+  rows.forEach(row => {
+    const correct = row.dataset.correct;
+    const sel = row.querySelector('select.match');
+    sel.classList.remove('ok','ko');
+    if(sel.value === correct){
+      sel.classList.add('ok');
+      correctCount++;
+    } else {
+      sel.classList.add('ko');
+    }
+  });
+  const total = exo.querySelector('.total-feedback');
+  total.classList.add('show');
+  total.textContent = `Score : ${correctCount} / ${rows.length}`;
+  total.className = 'feedback show ' + (correctCount === rows.length ? 'ok' : 'ko');
+  exo.dataset.score = correctCount;
+  exo.dataset.maxscore = rows.length;
+}
+
+function computeGlobalScore(){
+  const exos = document.querySelectorAll('.exo');
+  let score = 0, max = 0;
+  exos.forEach(exo => {
+    if(exo.dataset.score !== undefined){
+      score += parseInt(exo.dataset.score);
+      max += parseInt(exo.dataset.maxscore);
+    } else {
+      max += exo.querySelectorAll('.question, .fill-row').length;
+    }
+  });
+  const box = document.getElementById('globalScoreBox');
+  const text = document.getElementById('globalScoreText');
+  box.style.display = 'block';
+  text.textContent = `${score} / ${max}`;
+  box.scrollIntoView({behavior:'smooth', block:'center'});
+}
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>

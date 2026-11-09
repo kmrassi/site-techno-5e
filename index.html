@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Technologie 5e — Ressources interactives</title>
+<style>
+:root{--vert:#0f5c4d;--vert2:#1a8a72;--clair:#e8f5f1;--fond:#f4f7f6;--txt:#1d2a28;--gris:#66746f;--ligne:#dbe6e2;--accent:#f2a33a;
+ --ACTIVITE:#1f4f8f;--ACTIVITEb:#e2ecfa;--JEU:#7c3aed;--JEUb:#efe7fd;--DOC:#475569;--DOCb:#e8edf3;--VIDEO:#b42318;--VIDEOb:#fde7e4;
+ --TUTO:#a65411;--TUTOb:#fdeedd;--SYNTHESE:#5f2f9a;--SYNTHESEb:#efe6fa;--CORRIGE:#1f7a3d;--CORRIGEb:#e5f5ea;--EVAL:#9d174d;--EVALb:#fce7f3;
+ --LOGICIEL:#334155;--LOGICIELb:#e2e8f0;--FICHIER:#0e7490;--FICHIERb:#dff3f7}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--fond);color:var(--txt);line-height:1.5}
+a{color:inherit}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--vert);color:#fff;padding:18px 12px 24px;scrollbar-width:thin}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px 14px;border-bottom:1px solid rgba(255,255,255,.15);margin-bottom:12px;text-decoration:none}
+.brand .logo{width:40px;height:40px;border-radius:11px;background:var(--accent);display:grid;place-items:center;font-size:1.3rem;flex:none}
+.brand b{display:block;font-size:1.02rem}.brand span{font-size:.78rem;opacity:.75}
+.search{width:100%;padding:8px 11px;border-radius:9px;border:0;font:inherit;font-size:.9rem;margin-bottom:10px}
+.grp{font-size:.7rem;letter-spacing:1.2px;text-transform:uppercase;opacity:.6;font-weight:800;margin:14px 8px 6px}
+.side nav a{display:flex;align-items:center;gap:9px;padding:7px 8px;border-radius:9px;text-decoration:none;font-size:.9rem;color:#e6f2ee;margin-bottom:2px;cursor:pointer}
+.side nav a i{font-style:normal;flex:none;min-width:34px;padding:0 4px;height:26px;border-radius:7px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:.78rem;font-weight:800}
+.side nav a .t{flex:1;line-height:1.25}
+.side nav a .c{font-size:.72rem;font-weight:700;background:var(--accent);color:#fff;border-radius:99px;padding:1px 7px}
+.side nav a:hover{background:rgba(255,255,255,.1)}
+.side nav a.on{background:#fff;color:var(--vert)}.side nav a.on i{background:var(--accent);color:#fff}
+.side nav a.sub{padding-left:22px;font-size:.84rem;opacity:.9}
+.menubtn{display:none}
+main{padding:28px 36px 60px;max-width:1100px;width:100%}
+.hero{background:linear-gradient(135deg,var(--vert),var(--vert2));color:#fff;border-radius:18px;padding:26px 28px;margin-bottom:22px}
+.hero .k{font-size:.78rem;letter-spacing:1.3px;text-transform:uppercase;opacity:.8;font-weight:700}
+.hero h1{margin:4px 0 6px;font-size:clamp(1.5rem,3.5vw,2.1rem);line-height:1.2}
+.hero p{margin:0;opacity:.92;max-width:720px}
+.hero .num{display:inline-grid;place-items:center;min-width:54px;height:54px;border-radius:14px;background:var(--accent);font-weight:800;font-size:1.3rem;margin-bottom:10px;padding:0 10px}
+h2{font-size:1.15rem;color:var(--vert);margin:26px 0 10px;display:flex;align-items:center;gap:8px}
+.box{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:16px 18px}
+.obj ul{margin:6px 0 0;padding-left:20px}.obj li{margin:3px 0}
+.how{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.how div{background:#fff;border:1px solid var(--ligne);border-radius:14px;padding:14px;position:relative}
+.how div b{display:block;margin:6px 0 2px}.how div p{margin:0;font-size:.88rem;color:var(--gris)}
+.how .ico{font-size:1.5rem}
+.how div:not(:last-child)::after{content:"→";position:absolute;right:-12px;top:42%;color:var(--accent);font-weight:800;font-size:1.1rem}
+.seance{background:#fff;border:1px solid var(--ligne);border-radius:16px;padding:16px 18px;margin:0 0 16px;scroll-margin-top:16px}
+.seance h3{margin:0 0 10px;font-size:1.08rem;color:var(--vert);display:flex;gap:10px;align-items:center}
+.seance h3 .sn{flex:none;min-width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:.9rem}
+.note{background:#fff8ec;border-left:5px solid var(--accent);border-radius:10px;padding:9px 13px;margin:0 0 12px;font-size:.93rem}
+.note p{margin:2px 0}
+.pics{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
+.pics img{max-width:100%;max-height:340px;border-radius:10px;border:1px solid var(--ligne)}
+.list{display:grid;gap:8px}
+.card{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--ligne);border-left:6px solid var(--c);border-radius:12px;padding:10px 14px;text-decoration:none;transition:.15s;cursor:pointer;text-align:left;font:inherit;color:inherit;width:100%}
+.card:hover{transform:translateX(3px);box-shadow:0 6px 16px rgba(15,92,77,.12)}
+.card .ic{font-size:1.5rem;flex:none}
+.card .bd{flex:1;min-width:0}
+.card b{display:block;font-size:1rem}
+.card .s{color:var(--gris);font-size:.86rem}
+.card .go{flex:none;font-weight:700;color:var(--vert2);font-size:.86rem;white-space:nowrap}
+.tag{display:inline-block;font-size:.68rem;font-weight:800;letter-spacing:.05em;padding:2px 8px;border-radius:10px;margin-right:6px;color:var(--c);background:var(--cb)}
+.legend{display:flex;flex-wrap:wrap;gap:8px}.legend span{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--ligne);border-radius:99px;padding:5px 12px;font-size:.86rem}
+.seqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.seqgrid a{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--ligne);border-radius:12px;padding:12px;text-decoration:none}
+.seqgrid a:hover{border-color:var(--vert2)}
+.seqgrid a i{font-style:normal;flex:none;min-width:40px;height:40px;border-radius:10px;background:var(--clair);color:var(--vert);display:grid;place-items:center;font-weight:800}
+.seqgrid a small{display:block;color:var(--gris)}
+.pn{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
+.pn a{background:#fff;border:1px solid var(--ligne);border-radius:10px;padding:9px 14px;text-decoration:none;font-weight:600;color:var(--vert);font-size:.9rem}
+.pn a:hover{border-color:var(--vert2)}
+footer{text-align:center;color:var(--gris);font-size:.8rem;padding:24px}
+/* fenêtre d'aperçu */
+.modal{position:fixed;inset:0;background:rgba(10,30,26,.72);display:none;z-index:100;padding:18px}
+.modal.open{display:flex;flex-direction:column}
+.modal .bar{display:flex;gap:10px;align-items:center;background:#fff;border-radius:12px 12px 0 0;padding:10px 14px}
+.modal .bar b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.modal .bar a,.modal .bar button{border:0;border-radius:9px;padding:7px 12px;font:inherit;font-weight:700;font-size:.88rem;cursor:pointer;text-decoration:none}
+.modal .bar a{background:var(--clair);color:var(--vert)}
+.modal .bar button{background:var(--vert);color:#fff}
+.modal iframe{flex:1;width:100%;border:0;background:#fff;border-radius:0 0 12px 12px}
+@media(max-width:900px){
+ .layout{grid-template-columns:minmax(0,1fr)}
+ .side{position:sticky;top:0;height:auto;z-index:20;padding:10px 12px}
+ .brand{border:0;margin:0;padding:0 4px}
+ .menubtn{display:block;width:100%;margin-top:8px;border:0;border-radius:9px;padding:8px;font:inherit;font-weight:700;background:var(--accent);color:#fff;cursor:pointer}
+ .side .inner{display:none;max-height:65vh;overflow-y:auto;margin-top:8px}
+ .side.open .inner{display:block}
+ main{padding:18px 14px 40px}
+ .how{grid-template-columns:1fr 1fr}.how div::after{display:none}
+ .card .go{display:none}
+ .modal{padding:6px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="side" id="side">
+ <a class="brand" href="#accueil"><div class="logo">🛠️</div><div><b>Technologie 5e</b><span>Collège — Ressources interactives</span></div></a>
+ <button class="menubtn" id="menubtn">☰ Séquences</button>
+ <div class="inner">
+  <input class="search" id="q" type="search" placeholder="🔍 Chercher une ressource…">
+  <nav id="nav"></nav>
+ </div>
+</aside>
+<main id="main"></main>
+</div>
+<div class="modal" id="modal">
+ <div class="bar"><b id="mt"></b><a id="mo" href="#" target="_blank" rel="noopener">Ouvrir dans un nouvel onglet ↗</a><button id="mc">✕ Fermer</button></div>
+ <iframe id="mf" allow="autoplay; fullscreen" allowfullscreen></iframe>
+</div>
+<script>
+/* ===== Types de ressources ===== */
+const T={
+ ACTIVITE:{l:"ACTIVITÉ",i:"🎯",d:"Je fais l'activité de la séance"},
+ JEU:{l:"JEU",i:"🎮",d:"Je m'entraîne en jouant"},
+ DOC:{l:"DOCUMENT",i:"📄",d:"Je lis le document"},
+ VIDEO:{l:"VIDÉO",i:"🎬",d:"Je regarde la vidéo"},
+ TUTO:{l:"TUTO",i:"🛠️",d:"Je suis les étapes"},
+ FICHIER:{l:"FICHIER",i:"📁",d:"Je télécharge le fichier"},
+ LOGICIEL:{l:"LOGICIEL",i:"💾",d:"J'installe le logiciel"},
+ SYNTHESE:{l:"SYNTHÈSE",i:"🧠",d:"Je retiens l'essentiel"},
+ EVAL:{l:"ÉVALUATION",i:"📝",d:"Je montre ce que je sais"},
+ CORRIGE:{l:"CORRECTION",i:"✅",d:"Je vérifie mon travail"}
+};
+
+/* ===== Séquences ===== */
+const S=[
+{
+"id": "seq1",
+"n": "1",
+"t": "Les données numériques",
+"o": [
+"Savoir où sont rangées les données numériques (ordinateur, clé USB, cloud…)",
+"Ranger ses fichiers dans des dossiers bien nommés (l'arborescence)",
+"Connaître les unités de taille d'un fichier : octet, Ko, Mo, Go",
+"Se protéger : mots de passe solides, repérer le phishing",
+"Respecter le travail des autres : plagiat et droit d'auteur"
+],
+"seances": [
+{
+"t": "Séance 1 — Où sont les données numériques ?",
+"items": [
+{
+"k": "ACTIVITE",
+"t": "Classeur numérique & localisation des données",
+"s": "Activité interactive de la séance",
+"h": "seq1/01_Activite_Classeur_numerique_localisation_donnees.html"
+},
+{
+"k": "DOC",
+"t": "Activité 1 — Le classeur numérique",
+"s": "Fiche d'activité (PDF)",
+"drive": "1im_fFvBWoXiiUk4jFHNj15nXnJ7-JJ_t",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Activité 2 — Où sont les données ?",
+"s": "Fiche d'activité (PDF)",
+"drive": "13_psYmuSr8HFDk0T3VkVvLAOYUMn0lxg",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Diaporama de la séance 1",
+"s": "Document (PDF)",
+"drive": "1RFW-VOoM7yqOCZ9s1OKzrC1NksVSJT1U",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Activité 2 — Les données numériques",
+"s": "Document (PDF)",
+"drive": "1OCDKisLyRh-3ZaR8PIgRmftEEu95Wlv4",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Tuto Drive",
+"s": "Je crée mes dossiers de Technologie pas à pas",
+"h": "seq1/02_Tuto_Drive.html"
+},
+{
+"k": "DOC",
+"t": "Arborescence du Drive de Technologie 5e",
+"s": "Modèle à suivre (PDF)",
+"drive": "1SSLOLaLeZH_UdYancBjAEWKwHQkKcsVo",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Tuto vidéo — Organiser mon Drive",
+"s": "Je regarde et je fais pareil",
+"h": "seq1/03_Tuto_video_Organiser_mon_Drive.html"
+},
+{
+"k": "VIDEO",
+"t": "Vidéo : bien tenir son Drive en 5e",
+"s": "Vidéo",
+"drive": "1qOGvuIHhjl7rBimnVZWuglJ1FjhCd7Nc",
+"mode": "view"
+},
+{
+"k": "JEU",
+"t": "Range l'armoire ! Le jeu de l'arborescence",
+"s": "Exercice interactif",
+"h": "seq1/04_Jeu_Range_l_armoire_arborescence.html"
+},
+{
+"k": "SYNTHESE",
+"t": "Synthèse — L'arborescence du Drive",
+"s": "Je retiens l'essentiel de la séance 1",
+"h": "seq1/05_Synthese_Arborescence_Drive.html"
+},
+{
+"k": "SYNTHESE",
+"t": "L'armoire et l'arborescence",
+"s": "Synthèse (PDF)",
+"drive": "1WzN8sP4NFTuCJKSohfG0dBS-GpbRumnd",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Conversion des octets",
+"s": "Exercice (PDF)",
+"drive": "1Yke59DuU2qYpoQTUCDH7j0i9cPXZr_7k",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 2 — Cybersécurité",
+"items": [
+{
+"k": "ACTIVITE",
+"t": "Fichiers, taille & mots de passe",
+"s": "Activité interactive de la séance 2",
+"h": "seq1/06_Seance2_Fichiers_taille_mots_de_passe.html"
+},
+{
+"k": "DOC",
+"t": "Présentation : la cybersécurité",
+"s": "Diaporama (PDF)",
+"drive": "1czS2kir5uubck-5-LzmtqfnfdYh-hCR_",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Les mots de passe",
+"s": "Document (PDF)",
+"drive": "1NWj_LvHkFv8U6Kz0JLW2ulfaLBvXF2Rp",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Politique de gestion des mots de passe",
+"s": "Document (PDF)",
+"drive": "15eVR035Dnzt46PInQRUDCTihkw22MESZ",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Que faire en cas de cyberattaque ?",
+"s": "Document (PDF)",
+"drive": "1B3HEmZ3ZzjHf53u7FETjGQKxM0fSzyVQ",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Synthèse — Fichiers, taille et mots de passe",
+"s": "Je retiens l'essentiel de la séance 2",
+"h": "seq1/07_Synthese_Seance2_Cybersecurite.html"
+}
+]
+},
+{
+"t": "Séance 3 — Le phishing (hameçonnage)",
+"items": [
+{
+"k": "ACTIVITE",
+"t": "Phishing & hameçonnage",
+"s": "Activité interactive de la séance 3",
+"h": "seq1/08_Seance3_Phishing_hameconnage.html"
+},
+{
+"k": "DOC",
+"t": "Le phishing",
+"s": "Diaporama (PDF)",
+"drive": "1TPxBdYxpVIdT80G3P7WMXehEsGDBUKwr",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Cyberattaque avec Netsim",
+"s": "Document (PDF)",
+"drive": "144kja584HXRqOS-VXq6qR981VNq0zBq_",
+"mode": "view"
+},
+{
+"k": "VIDEO",
+"t": "L'hameçonnage : comment pêcher un naïf ?",
+"s": "Vidéo",
+"drive": "1V3GKRC4kCtK853w5abDco72zozxiJnPC",
+"mode": "view"
+},
+{
+"k": "VIDEO",
+"t": "Le faux message « Réception colis »",
+"s": "Vidéo",
+"drive": "1cq3qXIi0RuCPIsx5KmDgwr0fw9l4uugn",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Synthèse — Le phishing",
+"s": "Je retiens l'essentiel de la séance 3",
+"h": "seq1/09_Synthese_Seance3_Phishing.html"
+}
+]
+},
+{
+"t": "Séances 4 et 5 — Plagiat et droit d'auteur (Hadopi)",
+"note": [
+"Le logiciel BDnF s'installe directement sur la clé USB."
+],
+"items": [
+{
+"k": "LOGICIEL",
+"t": "Installer BDnF",
+"s": "Je mets le logiciel de BD sur ma clé USB",
+"h": "seq1/10_Installer_BDnF.html"
+},
+{
+"k": "ACTIVITE",
+"t": "Fabrique ta BD sur le cyberharcèlement",
+"s": "Activité avec le logiciel BDnF",
+"h": "seq1/11_BDnF_BD_cyberharcelement.html"
+},
+{
+"k": "DOC",
+"t": "Le plagiat",
+"s": "Diaporama (PDF)",
+"drive": "1oxDsEbauYiAdZr9r8-viGk1zenHCVXBR",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Fiche 1 — Qu'est-ce qu'une œuvre protégée ?",
+"s": "Synthèse (PDF)",
+"drive": "1Fk_a7FKg-6CJXpMrVOzIMVQZPZ4g49SQ",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Fiche 6 — Trouver des ressources sur Internet",
+"s": "Synthèse (PDF)",
+"drive": "1wz8CXuOcGuB_BM6EU4r4nclNXPkgUc0d",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Fiche 7 — Le téléchargement illégal",
+"s": "Synthèse (PDF)",
+"drive": "1mN-lwLQ4Ou0ybjA7V4CczryUGsVTW_3l",
+"mode": "view"
+},
+{
+"k": "FICHIER",
+"t": "Plagiat : une fraude courante",
+"s": "Lien à ouvrir",
+"drive": "1lseMeg0gQWM1rLxsnAYHaQT7Lf4s52Ff",
+"mode": "dl"
+},
+{
+"k": "VIDEO",
+"t": "Le plagiat expliqué en vidéo",
+"s": "Vidéo",
+"drive": "14PZCJYjsf26Sir7nMuaC75FHW9h6iuC_",
+"mode": "view"
+},
+{
+"k": "VIDEO",
+"t": "Hadopi en vidéo",
+"s": "Vidéo",
+"drive": "1d-dgcsCs1d20kWg-HTpu9jtLM8fkl_sc",
+"mode": "view"
+},
+{
+"k": "EVAL",
+"t": "Évaluation de la séquence",
+"s": "Évaluation (PDF)",
+"drive": "1qKNLzhXPJT7OpnmJ9MVfJNCevlvMuVcO",
+"mode": "view"
+}
+]
+},
+{
+"t": "📝 Préparer l'évaluation",
+"items": [
+{
+"k": "SYNTHESE",
+"t": "Fiche de révision — Fichiers, dossiers & cybersécurité",
+"s": "Tout ce qu'il faut savoir pour l'évaluation",
+"h": "seq1/12_Fiche_revision_Fichiers_dossiers_cybersecurite.html"
+}
+]
+}
+]
+},
+{
+"id": "seq2",
+"n": "2",
+"t": "Le réseau informatique",
+"o": [
+"Reconnaître le matériel d'un réseau : ordinateur, switch, routeur, serveur",
+"Comprendre à quoi sert une adresse IP",
+"Simuler un petit réseau avec le logiciel Filius",
+"Ajouter un ordinateur dans un réseau et lui donner une adresse"
+],
+"seances": [
+{
+"t": "Séance 1 — Découvrir le réseau",
+"img": [
+"https://lh3.googleusercontent.com/docsubipk/AP9E6xWj8d8HUDCNb44OHYKf8t4sKqHR63JGq3DlhoPchIcv-d5GhmzGfoTGpV_sHhfkcn84gnoXNErSz5etCRXHJsrMr8KBE7yt1ZkFmvBuY7IlsobbpqCYxrWeURAtbDv1JxkWqwdWgoHjX4fyd7prA93cRys-D9nItqLvT0fw3L5ZwtLBbolmrd5ocRL6S0WTrlYRBZrZRA"
+],
+"items": [
+{
+"k": "DOC",
+"t": "Fiche de la séance 1",
+"s": "Document (PDF)",
+"drive": "1HJK2HhUX1tldN4ToZpJ3ASyz3G3s1_6-",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Le réseau du collège de Kervallon",
+"s": "Fiche (PDF)",
+"drive": "17KqUfcYGTo-Ei2eVkMxmHf-gkCZZngOi",
+"mode": "view"
+},
+{
+"k": "VIDEO",
+"t": "Vidéo : comment fonctionne un réseau ?",
+"s": "Vidéo YouTube",
+"yt": "5AVY6E-7yCc"
+}
+]
+},
+{
+"t": "Séance 2 — Le réseau du collège",
+"img": [
+"https://lh3.googleusercontent.com/docsubipk/AP9E6xXNnFVLWlLUxliXVZopR7VyYpmOCFI5S94jQc_mAwm-lApiX_3omjHBR0MLnFYztq3eremwGFBr2hGsseU7kjklwAun4HvKkGrhXxqaD-lzO6cPELey9zYq2PlobQBL-ZV0UYOL-K0"
+],
+"note": [
+"Le logiciel Filius sert à simuler un réseau. Ton professeur te donne le lien pour l'installer à la maison."
+],
+"items": [
+{
+"k": "ACTIVITE",
+"t": "Le réseau informatique du collège",
+"s": "Activité interactive de la séance 2",
+"h": "seq2/01_Seance2_Reseau_informatique_du_college.html"
+},
+{
+"k": "DOC",
+"t": "Fiche de la séance 2",
+"s": "Document (PDF)",
+"drive": "1pkBSJEOsYRO_aUAi9dCodaI0nyoUvJNP",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Le masque et l'adresse IP",
+"s": "Fiche (PDF)",
+"drive": "1N4cz9giDiG25T83LHuxl2gDYRK-K0I4d",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Le matériel du réseau",
+"s": "Fiche (PDF)",
+"drive": "1HDxzIBKXCkkpQneLWQG7dD7jxIkJaGHz",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 3 — Ajouter un ordinateur au réseau",
+"items": [
+{
+"k": "ACTIVITE",
+"t": "Ajouter une station et donner les adresses",
+"s": "Activité interactive de la séance 3",
+"h": "seq2/02_Seance3_Ajouter_station_adresser_reseau.html"
+},
+{
+"k": "DOC",
+"t": "Fiche de la séance 3",
+"s": "Document (PDF)",
+"drive": "14De4OPenxNwIPvdpFzIt48MZ2vd666GV",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Entraînement : masque et adresse IP",
+"s": "Exercices (PDF)",
+"drive": "1gXnYf1YdXxidB7z21GIj2uY9IUcOFCFE",
+"mode": "view"
+},
+{
+"k": "FICHIER",
+"t": "Fichier Filius du réseau",
+"s": "Fichier .fls à ouvrir avec Filius",
+"drive": "1a_JoTgIqpETTa_gGcot0t6Pb2qO9MyAS",
+"mode": "dl"
+}
+]
+},
+{
+"t": "🧠 Synthèse de la séquence",
+"items": [
+{
+"k": "SYNTHESE",
+"t": "Synthèse — Les réseaux informatiques",
+"s": "Je retiens l'essentiel de la séquence",
+"h": "seq2/03_Synthese_Reseaux_informatiques.html"
+},
+{
+"k": "SYNTHESE",
+"t": "L'architecture d'un réseau et d'Internet",
+"s": "Synthèse (PDF)",
+"drive": "1U_wsYL8ESqEjAKocOFJy-gVtwigO9RFo",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "L'adressage IP",
+"s": "Synthèse (PDF)",
+"drive": "12YyQLNQLrnLoziSD0XV-ZYWP0YtHqSNV",
+"mode": "view"
+}
+]
+}
+]
+},
+{
+"id": "seq3",
+"n": "3",
+"t": "Modélisation 3D : support de sac à dos",
+"o": [
+"Découvrir les procédés de fabrication",
+"Dessiner une pièce en 3D avec Onshape",
+"Tester la solidité d'une pièce (test de flexion)",
+"Choisir un matériau et une épaisseur adaptés",
+"Exporter sa pièce pour l'imprimer en 3D (fichier STL)"
+],
+"seances": [
+{
+"t": "Séances 0, 1 et 2 — Les procédés de fabrication",
+"note": [
+"Avant de commencer la séance 1: vous devez concevoir et fabriquer votre propre support de sac pour la classe afin de supporter votre sac à dos. Les matériaux seront fournis par le professeur.",
+"A l'aide des machines disponibles dans le fablab: concevoir et fabriquer votre model support de sac à dos pour la classe. (présentation des machines faites par le professeur en classe)."
+],
+"items": [
+{
+"k": "CORRIGE",
+"t": "Les procédés de fabrication",
+"s": "Corrigé (PDF)",
+"drive": "1nfB4gRV5n9makiXNbTUjSzJxY3dfohdh",
+"mode": "view"
+}
+]
+},
+{
+"t": "Initiation à Onshape",
+"img": [
+"https://lh3.googleusercontent.com/docsubipk/AP9E6xWdS_a6KSyFHeNQFBaEjmD6vthjNfcXLyDYYIPbhxXHeTGRPO4fhp-1DzQct7Ilh5-6qfx-gGOZFaUVXc4ixeSGzEWQ71b4cJvm4NSODrpQjVKvBdVzM828Zl_agf7hkBnE_hxAwRW3ZhRtMW60FRT7nRCyozJ_zXueuL-i"
+],
+"note": [
+"Crée ton compte Onshape avec ton adresse mail ert."
+],
+"items": [
+{
+"k": "DOC",
+"t": "Cours : la modélisation 3D avec Onshape",
+"s": "Cours (PDF)",
+"drive": "1oFvlFNJizQ6y7oNbdOdVTW712SvlKU0p",
+"mode": "view"
+},
+{
+"k": "VIDEO",
+"t": "Tuto vidéo Onshape",
+"s": "Vidéo",
+"drive": "18fCY90rDqHZQ3q-1NkIz1bEOk-RW3uTS",
+"mode": "view"
+},
+{
+"k": "VIDEO",
+"t": "Simulation : la force et les matériaux",
+"s": "Vidéo",
+"drive": "1e62H6Eqlg8QOHdNLxjmoBZZQHkTClxsH",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Tutoriel : modifier l'épaisseur",
+"s": "Tutoriel (PDF)",
+"drive": "1JSHItm6C0xgYgPrN1y91gn3LA0k_DT99",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Tutoriel : changer le matériau",
+"s": "Tutoriel (PDF)",
+"drive": "1CMh0tiaspxafLDbB2nqOG88PkBqyG9_j",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Tutoriel : exporter en STL",
+"s": "Tutoriel (PDF)",
+"drive": "1JF0iOi1hk07S4tuwsMQYb0lmom9zjJyM",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 3 — Le test de flexion",
+"note": [
+"Répondre aux questions dans un google doc et à enregistrer dans votre drive dans un dossier nommé : Modélisation_3D_onshape/séance_3/ Activité_3"
+],
+"items": [
+{
+"k": "DOC",
+"t": "Déroulement de la séance 3",
+"s": "Document (PDF)",
+"drive": "1DWpnHFLutQkYm5kHG9x0rgcvXFTrWU_E",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Document élève — séance 3",
+"s": "Fiche d'activité (PDF)",
+"drive": "1eAePnZ4NEGoELg9AjjyRkfFAZpRSefFk",
+"mode": "view"
+},
+{
+"k": "VIDEO",
+"t": "Le plugin de simulation sur Onshape",
+"s": "Vidéo",
+"drive": "1oa1qyS7o07mIuz1RVpdCkVFOq69f-ocW",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Synthèse de la séance 3",
+"s": "Synthèse (PDF)",
+"drive": "1amdOVwehNFh52Y-FMJbuvcTvG1go1znK",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 4",
+"note": [
+"Répondre aux questions dans un google doc et à enregistrer dans votre drive dans un dossier nommé : Modélisation_3D_onshape/séance_1/ Activité_1"
+],
+"items": [
+{
+"k": "DOC",
+"t": "Déroulement de la séance",
+"s": "Document (PDF)",
+"drive": "1gK1NeZP5BT9LEFrZ7gu7wqX4iv75hUZr",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Document élève",
+"s": "Fiche d'activité (PDF)",
+"drive": "1nOA3o8A-aout2SRpRkFHBP6VdbSJxzSq",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Synthèse de la séance 4",
+"s": "Synthèse (PDF)",
+"drive": "1wWqLNXIk15HqbvIqGFbnTFvWUcdGrwxY",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "La mise en forme des matériaux",
+"s": "Synthèse (PDF)",
+"drive": "1l2-mbKAL5oDn5dgpLmRzOVIsJ9tQwgDT",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 5",
+"note": [
+"Répondre aux questions dans un google doc et à enregistrer dans votre drive dans un dossier nommé : Modélisation_3D_onshape/séance_2/ Activité_2"
+],
+"items": [
+{
+"k": "DOC",
+"t": "Déroulement de la séance",
+"s": "Document (PDF)",
+"drive": "1fYBuQtSF44J6nWZQkaklOHefmxWgAHEf",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Document élève",
+"s": "Fiche d'activité (PDF)",
+"drive": "1LcfxUkqlGdhKfqG3DXfgho23454r8Ssl",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Synthèse de la séance 5",
+"s": "Synthèse (PDF)",
+"drive": "1hCKgqyOsdAHoo4s0kutZHdocxgxpA0TK",
+"mode": "view"
+}
+]
+},
+{
+"t": "✅ Correction de la séquence",
+"items": [
+{
+"k": "CORRIGE",
+"t": "Correction : le support de sac",
+"s": "Corrigé (PDF)",
+"drive": "1b0yRK3tU-3HX4FfbzfIXIU_6MD51WhMr",
+"mode": "view"
+}
+]
+}
+]
+},
+{
+"id": "seq4",
+"n": "4",
+"t": "Le robot mBot",
+"o": [
+"Décrire le robot : ses fonctions et ses solutions techniques",
+"Reconnaître la chaîne d'information et la chaîne d'énergie",
+"Programmer le robot avec mBlock et téléverser le programme",
+"Mesurer une distance avec le capteur à ultrasons",
+"Suivre un protocole et calculer un pourcentage d'erreur"
+],
+"seances": [
+{
+"t": "Introduction — Description du robot",
+"note": [
+"Complète les fonctions techniques du robot à l'aide du document. Range ton travail dans ton Drive, comme d'habitude."
+],
+"items": [
+{
+"k": "DOC",
+"t": "La nomenclature du robot mBot",
+"s": "Document (PDF)",
+"drive": "1AQA1xV10RTXCkz0VkAO9Q0B7x1Mw7PY6",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "Des fonctions aux solutions techniques",
+"s": "Document (PDF)",
+"drive": "1sV_5PTkjdun05tVwY_TooA5MiEvheje4",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 1 — Mesurer une distance",
+"items": [
+{
+"k": "DOC",
+"t": "Déroulement de la séance 1",
+"s": "Document (PDF)",
+"drive": "1_DkzOHYjFAfpXbaE5CBfkjtAdCZJhGEb",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Téléverser un programme dans le mBot",
+"s": "Tutoriel mBlock (PDF)",
+"drive": "14zihswyUMJ_okApisMKpCeqMClFzFEax",
+"mode": "view"
+},
+{
+"k": "DOC",
+"t": "La chaîne d'information et d'énergie du mBot",
+"s": "Document (PDF)",
+"drive": "1cORoorPaTCsvq6z0njlcdf1Ae6EQLdM3",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 2",
+"items": [
+{
+"k": "DOC",
+"t": "Déroulement de la séance 2",
+"s": "Document (PDF)",
+"drive": "1bUYtV9miXszDapgGwRS7jf-mff8UiF0a",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Suivre un protocole",
+"s": "Fiche méthode (PDF)",
+"drive": "18WLflDq3Mdj9jD_prIgO2jqFCaQS2MLt",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Téléverser un programme dans le mBot",
+"s": "Tutoriel mBlock (PDF)",
+"drive": "1cgxJPSHxrJKzXOkJK44WROZaNj70qREf",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Éléments de synthèse — séance 2",
+"s": "Synthèse (PDF)",
+"drive": "1OQA-8BrvoMoYV4Ll4M87Mi3MDU_kHANc",
+"mode": "view"
+}
+]
+},
+{
+"t": "Séance 3 — Le protocole expérimental",
+"items": [
+{
+"k": "DOC",
+"t": "Déroulement de la séance 3",
+"s": "Document (PDF)",
+"drive": "1e1tlh4pLkC6-eZIiiOtTfiGRoOMzN0lG",
+"mode": "view"
+},
+{
+"k": "TUTO",
+"t": "Calculer un pourcentage d'erreur",
+"s": "Fiche méthode (PDF)",
+"drive": "1mQtsvIL5AHMJvEnW3rJ-00R2p-Dq7WoQ",
+"mode": "view"
+},
+{
+"k": "FICHIER",
+"t": "Tableur : calcul du pourcentage d'erreur",
+"s": "Fichier .ods à télécharger",
+"drive": "1xzbDo0gBthmRRiKX1kvDPKo8gQgXFR0f",
+"mode": "dl"
+},
+{
+"k": "VIDEO",
+"t": "Faire un graphique sur Google Sheets",
+"s": "Vidéo",
+"drive": "19NzR2uj3Id19g43sPcT88oHZJOtK5wat",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Éléments de synthèse — séance 3",
+"s": "Synthèse (PDF)",
+"drive": "1eYmHU7uzGBHw5saZeA2DT4NU79LPgP7h",
+"mode": "view"
+},
+{
+"k": "SYNTHESE",
+"t": "Synthèse — Le protocole avec le capteur à ultrasons",
+"s": "Je retiens l'essentiel de la séance 3",
+"h": "seq4/01_Synthese_Protocole_capteur_ultrasons.html"
+}
+]
+},
+{
+"t": "🧠 Synthèse de la séquence",
+"items": [
+{
+"k": "SYNTHESE",
+"t": "Synthèse — Fonctions, solutions et capteurs",
+"s": "Je retiens l'essentiel de la séquence",
+"h": "seq4/02_Synthese_Fonctions_solutions_capteurs.html"
+}
+]
+}
+]
+}
+];
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const count=s=>s.seances.reduce((n,x)=>n+x.items.length,0);
+const all=[];S.forEach(s=>s.seances.forEach((x,j)=>x.items.forEach(r=>all.push([s,j,r]))));
+
+function card(r){const ty=T[r.k];const st=`style="--c:var(--${r.k});--cb:var(--${r.k}b)"`;
+ const inner=`<span class="ic">${ty.i}</span><span class="bd"><span class="tag">${ty.l}</span><b>${esc(r.t)}</b><span class="s">${esc(r.s)}</span></span>`;
+ if(r.h) return `<a class="card" href="${r.h}" ${st}>${inner}<span class="go">Ouvrir →</span></a>`;
+ if(r.drive&&r.mode==='dl') return `<a class="card" href="https://drive.google.com/file/d/${r.drive}/view" target="_blank" rel="noopener" ${st}>${inner}<span class="go">Télécharger ↗</span></a>`;
+ const src=r.yt?`https://www.youtube-nocookie.com/embed/${r.yt}`:`https://drive.google.com/file/d/${r.drive}/preview`;
+ const ext=r.yt?`https://www.youtube.com/watch?v=${r.yt}`:`https://drive.google.com/file/d/${r.drive}/view`;
+ return `<button class="card" ${st} data-src="${src}" data-ext="${ext}" data-t="${esc(r.t)}">${inner}<span class="go">${r.k==='VIDEO'?'Regarder ▶':'Voir 👁'}</span></button>`}
+
+/* ===== menu ===== */
+function buildNav(filter){
+ const f=(filter||"").trim().toLowerCase();
+ if(f){const hits=all.filter(([s,j,r])=>(r.t+" "+r.s+" "+s.t+" "+s.seances[j].t).toLowerCase().includes(f));
+  $('#nav').innerHTML=`<div class="grp">Résultats (${hits.length})</div>`+(hits.length?hits.map(([s,j,r])=>`<a href="#${s.id}-${j}"><i>S${s.n}</i><span class="t">${T[r.k].i} ${esc(r.t)}</span></a>`).join(''):'<div style="padding:6px 8px;opacity:.7;font-size:.88rem">Aucune ressource trouvée.</div>');return}
+ $('#nav').innerHTML=`<a href="#accueil" data-id="accueil"><i>⌂</i><span class="t">Accueil</span></a><div class="grp">Séquences</div>`+
+  S.map(s=>`<a href="#${s.id}" data-id="${s.id}"><i>S${s.n}</i><span class="t">${esc(s.t)}</span><span class="c">${count(s)}</span></a>`).join('');
+ markNav()}
+function markNav(){const id=(location.hash||'#accueil').slice(1).split('-')[0];document.querySelectorAll('#nav a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===id))}
+
+/* ===== vues ===== */
+function home(){
+ return `<div class="hero"><div class="k">Collège · Classe de 5e</div><h1>Technologie 5e</h1><p>${all.length} ressources rangées par séquence et par séance. Choisis une séquence dans le menu, puis suis les séances dans l'ordre.</p></div>
+ <h2>🧭 Comment travailler une séance ?</h2>
+ <div class="how">${["ACTIVITE","DOC","VIDEO","SYNTHESE"].map(k=>`<div><span class="ico">${T[k].i}</span><b>${T[k].l}</b><p>${T[k].d}</p></div>`).join('')}</div>
+ <p style="color:var(--gris);font-size:.9rem;margin:10px 2px 0">N'oublie pas : range toujours ton travail dans ton <b>Drive</b>, dans le bon dossier.</p>
+ <h2>📚 Les séquences</h2>
+ <div class="seqgrid">${S.map(s=>`<a href="#${s.id}"><i>S${s.n}</i><span><b>${esc(s.t)}</b><small>${s.seances.length} séances · ${count(s)} ressources</small></span></a>`).join('')}</div>
+ <h2>🏷️ Légende</h2>
+ <div class="legend">${Object.keys(T).map(k=>`<span>${T[k].i} <b style="color:var(--${k})">${T[k].l}</b> ${T[k].d.toLowerCase()}</span>`).join('')}</div>`}
+
+function seqView(s){
+ const i=S.indexOf(s),prev=S[i-1],next=S[i+1];let n=0;
+ return `<div class="hero"><div class="num">S${s.n}</div><div class="k">Séquence ${s.n}</div><h1>${esc(s.t)}</h1></div>
+ <div class="box obj"><b>🎯 Ce que tu vas apprendre</b><ul>${s.o.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
+ <h2>🗺️ Les séances</h2>
+ ${s.seances.map((x,j)=>{const num=/^[^\wÀ-ÿ]/.test(x.t)?'':++n;return `<section class="seance" id="${s.id}-${j}"><h3>${num?`<span class="sn">${num}</span>`:''}${esc(x.t)}</h3>
+  ${x.note?`<div class="note">${x.note.map(t=>`<p>👉 ${esc(t)}</p>`).join('')}</div>`:''}
+  ${x.img&&x.img.length?`<div class="pics">${x.img.map(u=>`<img src="${u}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`).join('')}</div>`:''}
+  <div class="list">${x.items.map(card).join('')}</div></section>`}).join('')}
+ <div class="pn">${prev?`<a href="#${prev.id}">← Séquence ${prev.n} — ${esc(prev.t)}</a>`:'<span></span>'}${next?`<a href="#${next.id}">Séquence ${next.n} — ${esc(next.t)} →</a>`:'<span></span>'}</div>`}
+
+function route(){const h=(location.hash||'#accueil').slice(1),[id,j]=h.split('-'),s=S.find(x=>x.id===id);
+ $('#main').innerHTML=(s?seqView(s):home())+'<footer>Technologie 5e — M\'RASSI</footer>';
+ markNav();$('#side').classList.remove('open');
+ const el=j!==undefined&&document.getElementById(h);if(el)el.scrollIntoView();else window.scrollTo(0,0)}
+
+/* ===== fenêtre d'aperçu (PDF, vidéos) ===== */
+document.addEventListener('click',e=>{const b=e.target.closest('button.card');if(!b)return;
+ $('#mt').textContent=b.dataset.t;$('#mo').href=b.dataset.ext;$('#mf').src=b.dataset.src;$('#modal').classList.add('open')});
+function closeM(){$('#modal').classList.remove('open');$('#mf').src='about:blank'}
+$('#mc').addEventListener('click',closeM);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM()});
+
+$('#q').addEventListener('input',e=>buildNav(e.target.value));
+$('#menubtn').addEventListener('click',()=>$('#side').classList.toggle('open'));
+window.addEventListener('hashchange',route);
+buildNav();route();
+</script>
+</body>
+</html>

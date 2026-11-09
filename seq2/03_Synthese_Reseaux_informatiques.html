@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les réseaux informatiques – Synthèse 5e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF3F8; --panel:#FFFFFF; --ink:#17304F; --muted:#56687F; --line:#C9D5E3;
+  --orange:#D9701A; --green:#1F8A55; --blue:#2B63C9; --brown:#8A5A3B;
+  --ok:#1F8A55; --ko:#C23A3A; --soft:#E2EAF3;
+  --head:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1B2B; --panel:#172638; --ink:#E6EEF8; --muted:#9DB0C8; --line:#2C3F57;
+    --orange:#F2994A; --green:#4CC38A; --blue:#79A6F2; --brown:#C9946C; --ok:#4CC38A; --ko:#F07373; --soft:#1E3148;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1B2B; --panel:#172638; --ink:#E6EEF8; --muted:#9DB0C8; --line:#2C3F57;
+  --orange:#F2994A; --green:#4CC38A; --blue:#79A6F2; --brown:#C9946C; --ok:#4CC38A; --ko:#F07373; --soft:#1E3148;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:1.05rem;line-height:1.55}
+h1,h2,h3{font-family:var(--head);line-height:1.1;margin:0}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+
+/* ---------- En-tête / héros ---------- */
+header.hero{padding:18px 0 22px}
+.hero h1{font-size:clamp(2rem,6vw,3.2rem);font-weight:800;letter-spacing:-.01em}
+.hero p.lead{color:var(--muted);max-width:60ch;margin:.4em 0 1.4em}
+.ipboard{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:20px}
+.ipbig{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px;justify-content:center;margin:6px 0 16px}
+.oct{display:flex;flex-direction:column;align-items:center;min-width:78px}
+.oct b{font-family:var(--head);font-size:clamp(2.4rem,9vw,4.2rem);font-weight:800;line-height:1;padding:10px 14px 4px;border-radius:12px 12px 4px 4px;border-bottom:8px solid currentColor;transition:transform .25s}
+.oct small{font-size:.85rem;color:var(--muted);margin-top:6px}
+.oct.pop b{transform:translateY(-6px)}
+.dot{font-family:var(--head);font-size:3rem;font-weight:800;color:var(--muted);padding-bottom:26px}
+.c1{color:var(--orange)} .c2{color:var(--green)} .c3{color:var(--blue)} .c4{color:var(--brown)}
+.builder{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.builder label{display:flex;flex-direction:column;font-size:.9rem;color:var(--muted);gap:4px}
+select,input[type=text]{background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+input[type=text]{font-family:var(--head);font-size:1.1rem}
+
+/* ---------- Onglets ---------- */
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:2px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+nav.tabs .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:8px;padding-bottom:0}
+nav.tabs button{flex:0 0 auto;border:0;background:none;padding:10px 14px 8px;border-radius:10px 10px 0 0;cursor:pointer;font-family:var(--head);font-weight:700;font-size:1.05rem;color:var(--muted);border-bottom:5px solid transparent}
+nav.tabs button[aria-selected="true"]{color:var(--ink);background:var(--panel);border-bottom-color:var(--tabc,var(--blue))}
+main{padding:26px 0 60px}
+section.pane{display:none}
+section.pane.on{display:block}
+section h2{font-size:2rem;margin-bottom:.3em}
+section h3{font-size:1.35rem;margin:1.4em 0 .5em}
+p{max-width:72ch}
+.box{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:18px}
+.retiens{border-left:8px solid var(--tabc,var(--blue));background:var(--panel);border-radius:6px 14px 14px 6px;padding:14px 18px;margin-top:22px}
+.retiens h3{margin:0 0 .3em;font-size:1.2rem}
+.retiens ul{margin:.2em 0 0;padding-left:1.2em}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:700}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.msg{margin-top:10px;font-weight:700;min-height:1.5em}
+.msg.ok{color:var(--ok)} .msg.ko{color:var(--ko)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.scroll{overflow-x:auto}
+
+/* ---------- Architecture ---------- */
+svg text{font-family:var(--body);fill:var(--ink)}
+.node{cursor:pointer}
+.node rect{fill:var(--panel);stroke:var(--line);stroke-width:2.5}
+.node:hover rect,.node:focus rect{stroke:var(--blue)}
+.node.sel rect{stroke:var(--orange);stroke-width:4}
+.node.good rect{stroke:var(--ok);stroke-width:4}
+.node.bad rect{stroke:var(--ko);stroke-width:4}
+.node .ico{font-size:26px}
+.wire{stroke:var(--muted);stroke-width:3}
+.wire.wifi{stroke-dasharray:4 6}
+.zone{fill:none;stroke:var(--blue);stroke-width:2;stroke-dasharray:6 6}
+#archInfo h3{margin-top:0}
+
+/* ---------- Connexions ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 14px}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.conn{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.card{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:14px}
+.card h4{font-family:var(--head);font-size:1.25rem;margin:0 0 4px}
+.tag{display:inline-block;font-size:.8rem;border-radius:20px;padding:1px 10px;background:var(--soft);margin-bottom:8px}
+.meter{display:flex;align-items:center;gap:8px;font-size:.9rem;margin:3px 0}
+.meter span.lbl{width:72px;color:var(--muted)}
+.bars{display:flex;gap:3px}
+.bars i{width:22px;height:10px;border-radius:3px;background:var(--line)}
+.bars i.f{background:var(--green)}
+.scen{margin-top:10px}
+.scen .opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.opts button{border:2px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 12px;cursor:pointer}
+.opts button.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 15%,var(--panel))}
+.opts button.bad{border-color:var(--ko);background:color-mix(in srgb,var(--ko) 12%,var(--panel))}
+
+/* ---------- Internet ---------- */
+.dns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.dns input{max-width:320px}
+.journey{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:16px}
+.step{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:8px 12px;text-align:center;min-width:92px;opacity:.45;transition:opacity .3s,border-color .3s}
+.step.lit{opacity:1;border-color:var(--green)}
+.step b{display:block;font-size:1.6rem}
+.arrow{color:var(--muted);font-weight:700}
+.answer{font-family:var(--head);font-size:1.5rem;margin-top:12px}
+
+/* ---------- Filius ---------- */
+.link{stroke:var(--line);stroke-width:4;stroke-dasharray:8 8;cursor:pointer}
+.link.on{stroke:var(--ink);stroke-dasharray:none}
+.hit{stroke:transparent;stroke-width:22;cursor:pointer}
+.netbox1{fill:color-mix(in srgb,var(--blue) 10%,transparent);stroke:var(--line)}
+.netbox2{fill:color-mix(in srgb,var(--orange) 10%,transparent);stroke:var(--line)}
+.dev rect{fill:var(--panel);stroke:var(--ink);stroke-width:2}
+.devip{font-size:13px;font-weight:700}
+#packet{fill:var(--orange)}
+.cfg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
+.cfg fieldset{border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:0;background:var(--panel)}
+.cfg legend{font-family:var(--head);font-weight:700;padding:0 6px}
+.cfg label{display:block;font-size:.85rem;color:var(--muted);margin-top:6px}
+.cfg input{font-size:1rem;padding:6px 8px}
+ul.checks{list-style:none;padding:0;margin:14px 0 0}
+ul.checks li{padding:6px 0;border-bottom:1px dashed var(--line)}
+ul.checks li::before{content:"○ ";color:var(--muted)}
+ul.checks li.ok::before{content:"✔ ";color:var(--ok)}
+ul.checks li.ko::before{content:"✘ ";color:var(--ko)}
+ul.checks li.ko{color:var(--ko)}
+
+/* ---------- Quiz ---------- */
+.q{margin-bottom:16px}
+.q p{font-weight:700;margin:0 0 6px}
+.q .expl{font-size:.95rem;color:var(--muted);margin-top:6px;display:none}
+.q.done .expl{display:block}
+.score{font-family:var(--head);font-size:1.6rem}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Les réseaux informatiques</h1>
+    <p class="lead">Chaque ordinateur du collège a une adresse, comme un carton rangé dans un entrepôt : « Meuble 1, Étage 2, Rangée 3 ». Choisis un poste et regarde son adresse IP se construire.</p>
+    <div class="ipboard">
+      <div class="ipbig" aria-live="polite">
+        <div class="oct c1" id="o1"><b>10</b><small>collège</small></div><span class="dot">.</span>
+        <div class="oct c2" id="o2"><b>1</b><small>zone</small></div><span class="dot">.</span>
+        <div class="oct c3" id="o3"><b>2</b><small>salle</small></div><span class="dot">.</span>
+        <div class="oct c4" id="o4"><b>7</b><small>n° du poste</small></div>
+      </div>
+      <div class="builder">
+        <label>Zone du collège
+          <select id="selZone">
+            <option value="1">RDC droite (1)</option>
+            <option value="10">Étage de droite (10)</option>
+            <option value="2">RDC gauche (2)</option>
+            <option value="20">Étage de gauche (20)</option>
+          </select></label>
+        <label>Salle
+          <select id="selSalle"></select></label>
+        <label>Numéro du poste
+          <select id="selPoste"></select></label>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Parties de la synthèse">
+  <div class="wrap" role="tablist">
+    <button role="tab" data-pane="ip" style="--tabc:var(--orange)" aria-selected="true">Adresse IP</button>
+    <button role="tab" data-pane="archi" style="--tabc:var(--green)">Architecture</button>
+    <button role="tab" data-pane="conn" style="--tabc:var(--blue)">Connexions</button>
+    <button role="tab" data-pane="net" style="--tabc:var(--brown)">Internet</button>
+    <button role="tab" data-pane="filius" style="--tabc:var(--orange)">Défi Filius</button>
+    <button role="tab" data-pane="quiz" style="--tabc:var(--green)">Quiz</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ================= ADRESSE IP ================= -->
+<section class="pane on" id="ip" style="--tabc:var(--orange)">
+  <h2>L'adresse IP</h2>
+  <p>L'adresse IP (<em>Internet Protocol</em>) permet d'identifier tout appareil sur un réseau : ordinateur, imprimante, tablette, objet connecté, routeur… Elle est formée de <strong>4 nombres séparés par des points</strong>. Chaque nombre va de 0 à 255, mais 0 et 255 sont réservés à un usage spécial.</p>
+
+  <div class="grid2">
+    <div class="box">
+      <h3 style="margin-top:0">Vérifie une adresse IP</h3>
+      <p>Tape une adresse pour savoir si elle peut être donnée à un poste.</p>
+      <input type="text" id="ipTest" placeholder="ex : 192.168.0.12" autocomplete="off" inputmode="decimal">
+      <div class="msg" id="ipTestMsg"></div>
+    </div>
+    <div class="box">
+      <h3 style="margin-top:0">Où se trouve ce poste ?</h3>
+      <p>Retrouve l'emplacement du poste <strong id="whereIp" style="font-family:var(--head);font-size:1.2rem"></strong></p>
+      <div class="opts" id="whereOpts"></div>
+      <div class="msg" id="whereMsg"></div>
+      <button class="btn ghost" id="whereNext" style="margin-top:8px">Autre poste</button>
+    </div>
+  </div>
+
+  <div class="retiens">
+    <h3>Je retiens</h3>
+    <ul>
+      <li>Pour trouver un poste sur un réseau, il faut un <strong>plan d'adressage</strong>.</li>
+      <li>L'adresse IP est la solution utilisée dans le monde entier.</li>
+      <li>Elle a <strong>4 parties</strong> de 0 à 255 (0 et 255 réservés). Exemple : 10.1.2.7</li>
+      <li>Deux appareils d'un même réseau ne doivent <strong>jamais</strong> avoir la même adresse.</li>
+      <li>Pour voir son adresse : <code>ipconfig</code> sur PC, ou l'application Fing sur smartphone.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= ARCHITECTURE ================= -->
+<section class="pane" id="archi" style="--tabc:var(--green)">
+  <h2>L'architecture d'un réseau</h2>
+  <p>À la maison, une simple box (modem) suffit. Au collège ou dans une entreprise, il faut un vrai <strong>réseau local</strong> organisé. Clique sur chaque équipement pour savoir à quoi il sert.</p>
+
+  <div class="box scroll">
+    <svg viewBox="0 0 900 470" width="100%" style="min-width:640px" role="img" aria-label="Schéma du réseau du collège" id="archSvg">
+      <!-- câbles -->
+      <line class="wire" x1="190" y1="70" x2="330" y2="70"/>
+      <line class="wire" x1="330" y1="70" x2="520" y2="70"/>
+      <line class="wire" x1="520" y1="70" x2="690" y2="70"/>
+      <line class="wire" x1="690" y1="70" x2="810" y2="70"/>
+      <line class="wire" x1="330" y1="70" x2="330" y2="190"/>
+      <line class="wire" x1="130" y1="190" x2="330" y2="190"/>
+      <line class="wire" x1="330" y1="190" x2="170" y2="300"/>
+      <line class="wire" x1="330" y1="190" x2="440" y2="300"/>
+      <line class="wire" x1="330" y1="190" x2="720" y2="300"/>
+      <line class="wire" x1="170" y1="300" x2="60" y2="300"/>
+      <line class="wire" x1="170" y1="300" x2="170" y2="400"/>
+      <line class="wire wifi" x1="440" y1="300" x2="440" y2="400"/>
+      <line class="wire" x1="720" y1="300" x2="720" y2="400"/>
+      <!-- zones -->
+      <rect class="zone" x="20" y="360" width="300" height="90" rx="12"/>
+      <text x="170" y="465" text-anchor="middle" font-size="13">Salle informatique</text>
+      <rect class="zone" x="360" y="360" width="160" height="90" rx="12"/>
+      <text x="440" y="465" text-anchor="middle" font-size="13">Classe mobile</text>
+      <rect class="zone" x="580" y="360" width="280" height="90" rx="12"/>
+      <text x="720" y="465" text-anchor="middle" font-size="13">Salle de classe</text>
+      <g id="archNodes"></g>
+    </svg>
+  </div>
+
+  <div class="grid2" style="margin-top:16px">
+    <div class="box" id="archInfo" aria-live="polite">
+      <h3>Clique sur un équipement</h3>
+      <p>Sa fonction s'affichera ici.</p>
+    </div>
+    <div class="box">
+      <h3 style="margin-top:0">Défi : trouve l'équipement</h3>
+      <p id="archQ"></p>
+      <div class="msg" id="archMsg"></div>
+      <button class="btn" id="archStart">Commencer le défi</button>
+    </div>
+  </div>
+
+  <div class="retiens">
+    <h3>Je retiens</h3>
+    <ul>
+      <li><strong>Modem</strong> : relie le réseau à internet (câble téléphonique ou fibre).</li>
+      <li><strong>Routeur</strong> : relie plusieurs réseaux entre eux. Il est rangé dans la <strong>baie de brassage</strong>.</li>
+      <li><strong>Switch</strong> (commutateur) : relie plusieurs équipements d'un même réseau local.</li>
+      <li><strong>Routeur Wifi</strong> : relie des équipements sans fil et crée son propre sous-réseau.</li>
+      <li><strong>Serveur</strong> : gère les autorisations, stocke les données, protège le réseau (pare-feu).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= CONNEXIONS ================= -->
+<section class="pane" id="conn" style="--tabc:var(--blue)">
+  <h2>Les moyens de connexion</h2>
+  <p>On choisit le moyen de connexion selon l'appareil (fixe ou mobile), la <strong>portée</strong> (distance) et la <strong>rapidité</strong> voulues.</p>
+  <div class="filters" id="connFilters">
+    <button class="btn ghost" data-f="all" aria-pressed="true">Tous</button>
+    <button class="btn ghost" data-f="Filaire" aria-pressed="false">Filaire</button>
+    <button class="btn ghost" data-f="Sans fil" aria-pressed="false">Sans fil</button>
+  </div>
+  <div class="conn" id="connList"></div>
+
+  <h3>Quel moyen choisir ?</h3>
+  <div id="scenarios"></div>
+
+  <div class="retiens">
+    <h3>Je retiens</h3>
+    <ul>
+      <li><strong>Filaire</strong> : câble Ethernet, CPL (par les prises électriques), fibre optique.</li>
+      <li><strong>Sans fil</strong> : Wifi, Bluetooth, Li-Fi, satellite.</li>
+      <li>La <strong>fibre optique</strong> transporte des impulsions lumineuses : c'est la plus rapide et elle va loin.</li>
+      <li>Le Wifi et le Bluetooth utilisent des <strong>ondes radio</strong> ; le Li-Fi utilise la lumière infrarouge.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= INTERNET ================= -->
+<section class="pane" id="net" style="--tabc:var(--brown)">
+  <h2>Internet, un réseau mondial</h2>
+  <p>Internet relie des millions d'ordinateurs et d'objets pour échanger des informations. On s'y connecte grâce à un <strong>fournisseur d'accès à internet (FAI)</strong>, qui nous donne une adresse IP unique le temps de la connexion.</p>
+  <p>Retenir des nombres, c'est difficile. On tape donc une <strong>adresse URL</strong> (comme youtube.fr) et des serveurs spéciaux la traduisent en adresse IP.</p>
+
+  <div class="box">
+    <h3 style="margin-top:0">Suis le trajet d'une demande</h3>
+    <div class="dns">
+      <input type="text" id="urlIn" value="youtube.fr" aria-label="Adresse URL" autocomplete="off">
+      <button class="btn" id="urlGo">Chercher le site</button>
+    </div>
+    <div class="journey" id="journey">
+      <div class="step"><b>💻</b>Mon ordinateur</div><span class="arrow">→</span>
+      <div class="step"><b>📶</b>Modem</div><span class="arrow">→</span>
+      <div class="step"><b>🏢</b>FAI</div><span class="arrow">→</span>
+      <div class="step"><b>📒</b>Serveur « annuaire »</div><span class="arrow">→</span>
+      <div class="step"><b>🗄️</b>Serveur du site</div>
+    </div>
+    <div class="answer" id="urlAns" aria-live="polite"></div>
+  </div>
+
+  <div class="retiens">
+    <h3>Je retiens</h3>
+    <ul>
+      <li>Internet est un <strong>réseau de réseaux</strong> qui couvre le monde entier.</li>
+      <li>Le <strong>FAI</strong> fournit l'accès à internet et une adresse IP.</li>
+      <li>Chaque équipement connecté à internet a sa propre adresse IP.</li>
+      <li>Des serveurs font le lien entre une <strong>URL</strong> et une <strong>adresse IP</strong>. Exemple : youtube.fr = 173.194.40.110</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= FILIUS ================= -->
+<section class="pane" id="filius" style="--tabc:var(--orange)">
+  <h2>Défi : relie deux réseaux</h2>
+  <p>Comme dans le logiciel Filius : <strong>1.</strong> clique sur les pointillés pour brancher les câbles, <strong>2.</strong> donne une adresse IP à chaque appareil, <strong>3.</strong> teste la communication. Le masque de sous-réseau est 255.255.255.0 : les trois premiers nombres indiquent le <strong>réseau</strong>, le dernier indique le <strong>poste</strong>.</p>
+
+  <div class="box scroll">
+    <svg viewBox="0 0 800 330" width="100%" style="min-width:600px" id="fSvg" role="img" aria-label="Deux réseaux reliés par un routeur">
+      <rect class="netbox1" x="10" y="10" width="320" height="310" rx="14"/>
+      <text x="170" y="34" text-anchor="middle" font-weight="700">Réseau 1</text>
+      <rect class="netbox2" x="470" y="10" width="320" height="310" rx="14"/>
+      <text x="630" y="34" text-anchor="middle" font-weight="700">Réseau 2</text>
+      <g id="fLinks"></g>
+      <g id="fDevs"></g>
+      <circle id="packet" r="9" cx="-50" cy="-50"/>
+    </svg>
+  </div>
+
+  <div class="cfg" id="fCfg"></div>
+  <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+    <button class="btn" id="fTest">Tester la communication</button>
+    <button class="btn ghost" id="fReset">Recommencer</button>
+  </div>
+  <ul class="checks" id="fChecks"></ul>
+  <div class="msg" id="fMsg" aria-live="polite"></div>
+
+  <div class="retiens">
+    <h3>Je retiens</h3>
+    <ul>
+      <li>Dans un même réseau, les postes ont le <strong>même début d'adresse</strong> mais un <strong>numéro de poste différent</strong>.</li>
+      <li>Deux réseaux différents doivent avoir des <strong>adresses de réseau différentes</strong> (ex : 192.168.0.… et 192.168.1.…).</li>
+      <li>Le <strong>routeur</strong> a une adresse dans chaque réseau.</li>
+      <li>Chaque poste doit connaître la <strong>passerelle</strong> : l'adresse du routeur dans son réseau.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="pane" id="quiz" style="--tabc:var(--green)">
+  <h2>Quiz final</h2>
+  <p>Réponds aux questions. Tu vois tout de suite si tu as juste.</p>
+  <div id="quizBox"></div>
+  <div class="box"><span class="score" id="score">Score : 0 / 0</span>
+    <button class="btn ghost" id="quizReset" style="margin-left:12px">Recommencer le quiz</button></div>
+</section>
+
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const el = (tag, attrs={}, html='') => { const e=document.createElement(tag); for(const k in attrs) e.setAttribute(k,attrs[k]); e.innerHTML=html; return e; };
+const SVGNS='http://www.w3.org/2000/svg';
+const sv = (tag, attrs={}) => { const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; };
+
+/* ---------- Onglets ---------- */
+document.querySelectorAll('nav.tabs button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('on',p.id===b.dataset.pane));
+    try{localStorage.setItem('reseaux5e-tab',b.dataset.pane)}catch(e){}
+  });
+});
+try{const t=localStorage.getItem('reseaux5e-tab'); if(t){const b=document.querySelector(`nav.tabs button[data-pane="${t}"]`); b&&b.click();}}catch(e){}
+
+/* ---------- Héros : construire l'IP ---------- */
+const salles={1:[1,2,3],10:[6,7],2:[1,2],20:[7]};
+const zoneNames={1:'RDC droite',10:'Étage de droite',2:'RDC gauche',20:'Étage de gauche'};
+function fillSalles(){
+  const z=$('#selZone').value, s=$('#selSalle'); s.innerHTML='';
+  const list=[1,2,3,4,5,6,7];
+  list.forEach(n=>s.append(el('option',{value:n},'Salle '+n)));
+  s.value=(salles[z]||[1])[0];
+}
+function fillPostes(){ const p=$('#selPoste'); for(let i=1;i<=30;i++) p.append(el('option',{value:i},'Poste '+i)); p.value=7; }
+function setOct(id,val){ const o=$(id); if(o.querySelector('b').textContent!==String(val)){ o.querySelector('b').textContent=val; o.classList.add('pop'); setTimeout(()=>o.classList.remove('pop'),250);} }
+function updateHero(){ setOct('#o2',$('#selZone').value); setOct('#o3',$('#selSalle').value); setOct('#o4',$('#selPoste').value); }
+fillSalles(); fillPostes(); $('#selSalle').value=2;
+$('#selZone').addEventListener('change',()=>{fillSalles();updateHero()});
+$('#selSalle').addEventListener('change',updateHero);
+$('#selPoste').addEventListener('change',updateHero);
+
+/* ---------- Vérificateur d'IP ---------- */
+function parseIP(str){
+  const parts=str.trim().split('.');
+  if(parts.length!==4) return {ok:false,why:`Il faut exactement 4 nombres séparés par des points (tu en as ${parts.filter(x=>x!=='').length}).`};
+  for(const p of parts){
+    if(!/^\d{1,3}$/.test(p)) return {ok:false,why:`« ${p||'vide'} » n'est pas un nombre valable.`};
+    if(+p>255) return {ok:false,why:`${p} est trop grand : chaque nombre va de 0 à 255.`};
+  }
+  const n=parts.map(Number);
+  return {ok:true,n};
+}
+$('#ipTest').addEventListener('input',e=>{
+  const m=$('#ipTestMsg'), v=e.target.value; if(!v.trim()){m.textContent='';return;}
+  const r=parseIP(v);
+  if(!r.ok){m.className='msg ko';m.textContent='✘ '+r.why;return;}
+  const last=r.n[3];
+  if(last===0||last===255){m.className='msg ko';m.textContent=`✘ Le dernier nombre vaut ${last} : cette valeur est réservée, on ne la donne pas à un poste.`;return;}
+  m.className='msg ok';m.textContent='✔ Adresse valable pour un poste.';
+});
+
+/* ---------- Où se trouve ce poste ? ---------- */
+const places=[{z:1,s:1},{z:1,s:2},{z:1,s:3},{z:10,s:6},{z:10,s:7},{z:2,s:1},{z:2,s:2},{z:20,s:7}];
+function newWhere(){
+  const pick=places[Math.floor(Math.random()*places.length)], poste=1+Math.floor(Math.random()*20);
+  $('#whereIp').textContent=`10.${pick.z}.${pick.s}.${poste}`;
+  const opts=[pick]; while(opts.length<3){const c=places[Math.floor(Math.random()*places.length)]; if(!opts.some(o=>o.z===c.z&&o.s===c.s)) opts.push(c);}
+  opts.sort(()=>Math.random()-.5);
+  const box=$('#whereOpts'); box.innerHTML=''; $('#whereMsg').textContent='';
+  opts.forEach(o=>{
+    const b=el('button',{},`${zoneNames[o.z]}, salle ${o.s}`);
+    b.onclick=()=>{
+      const good=o===pick; b.classList.add(good?'good':'bad');
+      $('#whereMsg').className='msg '+(good?'ok':'ko');
+      $('#whereMsg').textContent=good?`✔ Oui ! ${pick.z} = ${zoneNames[pick.z]}, ${pick.s} = salle, ${poste} = poste n°${poste}.`:'✘ Regarde le 2e nombre (la zone) puis le 3e (la salle).';
+    };
+    box.append(b);
+  });
+}
+$('#whereNext').onclick=newWhere; newWhere();
+
+/* ---------- Architecture ---------- */
+const archNodes=[
+  {id:'donnees',x:130,y:190,ico:'🗄️',lbl:'Serveur de données',t:'Serveur de données',d:'Il stocke les fichiers des utilisateurs et gère leurs autorisations (qui a le droit de voir quoi).'},
+  {id:'securite',x:520,y:70,ico:'🛡️',lbl:'Serveur sécurité',t:'Serveur de gestion de sécurité',d:'Il surveille les données qui circulent entre internet et le réseau, et à l\'intérieur du réseau : c\'est le pare-feu (firewall).'},
+  {id:'switchp',x:330,y:190,ico:'🔀',lbl:'Switch principal',t:'Switch principal',d:'Le switch (commutateur) relie plusieurs équipements au sein du réseau local. Le switch principal relie ici tous les autres switchs.'},
+  {id:'routeur',x:330,y:70,ico:'🧭',lbl:'Routeur principal',t:'Routeur principal',d:'Le routeur relie plusieurs réseaux entre eux. Il est rangé dans la baie de brassage, une armoire technique qui centralise les connexions.'},
+  {id:'modem',x:690,y:70,ico:'📶',lbl:'Modem',t:'Modem',d:'Le modem permet la connexion à internet. C\'est l\'interface entre le réseau et l\'extérieur (câble téléphonique ou fibre optique).'},
+  {id:'internet',x:810,y:70,ico:'🌍',lbl:'Internet',t:'Réseau internet',d:'Le réseau mondial : des millions d\'ordinateurs et de serveurs reliés entre eux.'},
+  {id:'switch1',x:170,y:300,ico:'🔀',lbl:'Switch',t:'Switch de la salle informatique',d:'Il relie les ordinateurs et l\'imprimante de la salle au reste du réseau.'},
+  {id:'imprimante',x:60,y:300,ico:'🖨️',lbl:'Imprimante',t:'Imprimante réseau',d:'Branchée au réseau, elle a sa propre adresse IP : tous les postes peuvent imprimer dessus.'},
+  {id:'pcs',x:170,y:400,ico:'🖥️',lbl:'Postes',t:'Postes informatiques',d:'Chaque poste a une adresse IP unique dans le réseau.'},
+  {id:'wifi',x:440,y:300,ico:'📡',lbl:'Routeur Wifi',t:'Routeur Wifi',d:'Comme le switch, il relie plusieurs équipements, mais sans fil. Il crée son propre sous-réseau, d\'où le mot « routeur ».'},
+  {id:'tablettes',x:440,y:400,ico:'📱',lbl:'Tablettes',t:'Tablettes',d:'Elles se connectent sans fil au routeur Wifi.'},
+  {id:'switch2',x:720,y:300,ico:'🔀',lbl:'Switch',t:'Switch de la salle de classe',d:'Il relie les postes de la salle de classe au switch principal.'},
+  {id:'pcs2',x:720,y:400,ico:'🖥️',lbl:'Postes',t:'Postes de la salle de classe',d:'Des ordinateurs fixes reliés par câble Ethernet.'}
+];
+const archG=$('#archNodes');
+archNodes.forEach(n=>{
+  const g=sv('g',{class:'node',tabindex:0,role:'button','aria-label':n.t,'data-id':n.id});
+  g.append(sv('rect',{x:n.x-55,y:n.y-30,width:110,height:60,rx:12}));
+  const i=sv('text',{x:n.x,y:n.y+2,'text-anchor':'middle',class:'ico'}); i.textContent=n.ico; g.append(i);
+  const l=sv('text',{x:n.x,y:n.y+22,'text-anchor':'middle','font-size':12,'font-weight':700}); l.textContent=n.lbl; g.append(l);
+  const act=()=>archClick(n,g);
+  g.addEventListener('click',act); g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}});
+  archG.append(g);
+});
+const archQs=[
+  {q:'Clique sur l\'équipement qui relie le réseau du collège à internet.',a:['modem']},
+  {q:'Clique sur l\'équipement qui relie plusieurs réseaux entre eux.',a:['routeur']},
+  {q:'Clique sur l\'équipement qui protège le réseau (pare-feu).',a:['securite']},
+  {q:'Clique sur un équipement qui relie des appareils sans fil.',a:['wifi']},
+  {q:'Clique sur un équipement qui relie des postes dans un même réseau local.',a:['switchp','switch1','switch2']},
+  {q:'Clique sur l\'équipement où sont stockés les fichiers des élèves.',a:['donnees']}
+];
+let archStep=-1, archScore=0;
+function archClick(n,g){
+  document.querySelectorAll('.node').forEach(x=>x.classList.remove('sel','good','bad'));
+  $('#archInfo').innerHTML=`<h3>${n.ico} ${n.t}</h3><p>${n.d}</p>`;
+  if(archStep>=0 && archStep<archQs.length){
+    const good=archQs[archStep].a.includes(n.id);
+    g.classList.add(good?'good':'bad');
+    $('#archMsg').className='msg '+(good?'ok':'ko');
+    $('#archMsg').textContent=good?'✔ Bravo !':'✘ Ce n\'est pas celui-là. Lis sa fonction et réessaie.';
+    if(good){archScore++; archStep++; setTimeout(showArchQ,900);}
+  } else g.classList.add('sel');
+}
+function showArchQ(){
+  if(archStep>=archQs.length){$('#archQ').textContent='Défi terminé ! Tu connais les équipements du réseau.';$('#archStart').textContent='Refaire le défi';$('#archStart').hidden=false;return;}
+  $('#archQ').textContent=`(${archStep+1}/${archQs.length}) ${archQs[archStep].q}`;$('#archMsg').textContent='';
+}
+$('#archStart').onclick=()=>{archStep=0;archScore=0;$('#archStart').hidden=true;showArchQ();};
+$('#archQ').textContent='Lis une consigne, puis clique sur le bon équipement du schéma.';
+
+/* ---------- Connexions ---------- */
+const conns=[
+  {n:'Câble Ethernet',t:'Filaire',p:3,r:2,s:'Électrique',i:'🔌'},
+  {n:'CPL (courant porteur en ligne)',t:'Filaire',p:1,r:2,s:'Électrique',i:'⚡'},
+  {n:'Fibre optique',t:'Filaire',p:3,r:3,s:'Impulsion lumineuse',i:'💡'},
+  {n:'Wifi',t:'Sans fil',p:1,r:1,s:'Onde radio',i:'📶'},
+  {n:'Bluetooth',t:'Sans fil',p:1,r:1,s:'Onde radio',i:'🎧'},
+  {n:'Li-Fi',t:'Sans fil',p:1,r:3,s:'Lumière infrarouge',i:'🔦'},
+  {n:'Satellite',t:'Sans fil',p:3,r:1,s:'Onde radio',i:'🛰️'}
+];
+const bars=v=>`<span class="bars">${[1,2,3].map(k=>`<i class="${k<=v?'f':''}"></i>`).join('')}</span>`;
+function drawConn(f){
+  const box=$('#connList'); box.innerHTML='';
+  conns.filter(c=>f==='all'||c.t===f).forEach(c=>{
+    box.append(el('div',{class:'card'},`<h4>${c.i} ${c.n}</h4><span class="tag">${c.t}</span>
+      <div class="meter"><span class="lbl">Portée</span>${bars(c.p)}</div>
+      <div class="meter"><span class="lbl">Rapidité</span>${bars(c.r)}</div>
+      <div class="meter"><span class="lbl">Signal</span>${c.s}</div>`));
+  });
+}
+document.querySelectorAll('#connFilters button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#connFilters button').forEach(x=>x.setAttribute('aria-pressed','false'));
+  b.setAttribute('aria-pressed','true'); drawConn(b.dataset.f);
+});
+drawConn('all');
+const scen=[
+  {q:'Relier deux bâtiments éloignés avec un débit très rapide.',opts:['Wifi','Fibre optique','Bluetooth'],a:'Fibre optique',e:'La fibre optique a la meilleure portée et la meilleure rapidité.'},
+  {q:'Connecter un casque audio à ton téléphone.',opts:['Bluetooth','Câble Ethernet','Satellite'],a:'Bluetooth',e:'Le Bluetooth est fait pour relier des appareils proches, sans fil.'},
+  {q:'Avoir internet dans un chalet isolé en montagne, sans câble.',opts:['CPL','Satellite','Li-Fi'],a:'Satellite',e:'Le satellite a une très grande portée, même loin de tout, mais il est lent.'},
+  {q:'Brancher la box au salon et l\'ordinateur à l\'étage en passant par les prises électriques.',opts:['CPL','Fibre optique','Wifi'],a:'CPL',e:'Le CPL fait passer le réseau dans les fils électriques de la maison.'}
+];
+scen.forEach(s=>{
+  const d=el('div',{class:'box scen'},`<p style="margin:0"><strong>${s.q}</strong></p><div class="opts"></div><div class="msg"></div>`);
+  s.opts.forEach(o=>{const b=el('button',{},o); b.onclick=()=>{
+    const good=o===s.a; b.classList.add(good?'good':'bad');
+    const m=d.querySelector('.msg'); m.className='msg '+(good?'ok':'ko'); m.textContent=(good?'✔ ':'✘ Pas le meilleur choix. ')+(good?s.e:'Compare la portée et la rapidité.');
+  }; d.querySelector('.opts').append(b);});
+  $('#scenarios').append(d);
+});
+
+/* ---------- Internet ---------- */
+const known={'youtube.fr':'173.194.40.110'};
+function fakeIP(url){let h=0;for(const c of url)h=(h*31+c.charCodeAt(0))>>>0;return `${50+h%150}.${(h>>8)%254+1}.${(h>>16)%254+1}.${(h>>4)%253+1}`;}
+let running=false;
+$('#urlGo').onclick=()=>{
+  if(running) return;
+  let url=$('#urlIn').value.trim().toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/.*$/,'');
+  if(!url||!url.includes('.')){$('#urlAns').textContent='Tape une adresse comme youtube.fr';return;}
+  running=true; const steps=[...document.querySelectorAll('#journey .step')];
+  steps.forEach(s=>s.classList.remove('lit')); $('#urlAns').textContent='';
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  steps.forEach((s,i)=>setTimeout(()=>{
+    s.classList.add('lit');
+    if(i===3){const ip=known[url]||fakeIP(url);
+      $('#urlAns').innerHTML=`${url} = ${ip}${known[url]?'':' <small style="font-family:var(--body);font-size:.8rem;color:var(--muted)">(adresse d\'exemple)</small>'}`;}
+    if(i===steps.length-1) running=false;
+  }, reduce?0:i*600));
+};
+
+/* ---------- Défi Filius ---------- */
+const devs={
+  A:{x:80,y:90,lbl:'PC A',type:'pc'}, B:{x:80,y:250,lbl:'PC B',type:'pc'},
+  S1:{x:240,y:170,lbl:'Switch 1',type:'sw'}, R:{x:400,y:170,lbl:'Routeur',type:'rt'},
+  S2:{x:560,y:170,lbl:'Switch 2',type:'sw'}, C:{x:720,y:90,lbl:'PC C',type:'pc'}, D:{x:720,y:250,lbl:'PC D',type:'pc'}
+};
+const links=[['A','S1'],['B','S1'],['S1','R'],['R','S2'],['S2','C'],['S2','D']];
+let cabled=new Set();
+const fLinks=$('#fLinks'), fDevs=$('#fDevs');
+links.forEach(([a,b])=>{
+  const key=a+'-'+b, p=devs[a], q=devs[b];
+  const line=sv('line',{x1:p.x,y1:p.y,x2:q.x,y2:q.y,class:'link',id:'L'+key});
+  const hit=sv('line',{x1:p.x,y1:p.y,x2:q.x,y2:q.y,class:'hit',tabindex:0,role:'button','aria-label':`Brancher ${p.lbl} et ${q.lbl}`});
+  const tog=()=>{cabled.has(key)?cabled.delete(key):cabled.add(key); line.classList.toggle('on',cabled.has(key)); save();};
+  hit.addEventListener('click',tog); hit.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tog();}});
+  fLinks.append(line,hit);
+});
+Object.entries(devs).forEach(([k,d])=>{
+  const g=sv('g',{class:'dev'});
+  g.append(sv('rect',{x:d.x-40,y:d.y-24,width:80,height:48,rx:d.type==='pc'?8:14}));
+  const i=sv('text',{x:d.x,y:d.y+2,'text-anchor':'middle','font-size':22}); i.textContent=d.type==='pc'?'💻':d.type==='sw'?'🔀':'🧭'; g.append(i);
+  const l=sv('text',{x:d.x,y:d.y+18,'text-anchor':'middle','font-size':11,'font-weight':700}); l.textContent=d.lbl; g.append(l);
+  if(d.type!=='sw'){const ip=sv('text',{x:d.x,y:d.type==='rt'?d.y+44:(d.y<170?d.y-32:d.y+42),'text-anchor':'middle',class:'devip',id:'ip'+k}); g.append(ip);}
+  fDevs.append(g);
+});
+const fields=[
+  {leg:'PC A (réseau 1)',k:['A_ip','A_gw'],l:['Adresse IP','Passerelle']},
+  {leg:'PC B (réseau 1)',k:['B_ip','B_gw'],l:['Adresse IP','Passerelle']},
+  {leg:'Routeur',k:['R1','R2'],l:['Côté réseau 1','Côté réseau 2']},
+  {leg:'PC C (réseau 2)',k:['C_ip','C_gw'],l:['Adresse IP','Passerelle']},
+  {leg:'PC D (réseau 2)',k:['D_ip','D_gw'],l:['Adresse IP','Passerelle']}
+];
+const start={A_ip:'192.168.0.10',B_ip:'192.168.0.10',C_ip:'192.168.0.10',D_ip:'192.168.0.10',A_gw:'',B_gw:'',C_gw:'',D_gw:'',R1:'',R2:''};
+fields.forEach(f=>{
+  const fs=el('fieldset',{},`<legend>${f.leg}</legend>`);
+  f.k.forEach((k,i)=>{const lab=el('label',{},f.l[i]); const inp=el('input',{type:'text',id:'f_'+k,autocomplete:'off',inputmode:'decimal',placeholder:'…'});
+    inp.addEventListener('input',()=>{refreshLabels();save();}); lab.append(inp); fs.append(lab);});
+  $('#fCfg').append(fs);
+});
+const v=k=>$('#f_'+k).value.trim();
+function refreshLabels(){
+  ['A','B','C','D'].forEach(k=>$('#ip'+k).textContent=v(k+'_ip')||'?');
+  $('#ipR').textContent=`${v('R1')||'?'}  |  ${v('R2')||'?'}`;
+}
+function save(){try{const o={c:[...cabled]};Object.keys(start).forEach(k=>o[k]=v(k));localStorage.setItem('reseaux5e-filius',JSON.stringify(o));}catch(e){}}
+function load(reset){
+  let o=null; if(!reset){try{o=JSON.parse(localStorage.getItem('reseaux5e-filius'));}catch(e){}}
+  o=o||{...start,c:[]};
+  Object.keys(start).forEach(k=>$('#f_'+k).value=o[k]??start[k]);
+  cabled=new Set(o.c||[]); links.forEach(([a,b])=>$('#L'+a+'-'+b).classList.toggle('on',cabled.has(a+'-'+b)));
+  refreshLabels(); $('#fChecks').innerHTML=''; $('#fMsg').textContent='';
+}
+$('#fReset').onclick=()=>{load(true);save();};
+load(false);
+
+const net=ip=>ip.n.slice(0,3).join('.');
+function hostOK(s){const r=parseIP(s); return r.ok && r.n[3]!==0 && r.n[3]!==255 ? r : null;}
+$('#fTest').onclick=()=>{
+  const checks=[]; const add=(ok,txt,fix)=>checks.push({ok,txt:ok?txt:fix});
+  const missing=links.filter(([a,b])=>!cabled.has(a+'-'+b)).map(([a,b])=>`${devs[a].lbl} – ${devs[b].lbl}`);
+  add(!missing.length,'Tous les câbles sont branchés.','Câbles manquants : '+missing.join(', ')+'.');
+  const ips={}; let allValid=true;
+  ['A_ip','B_ip','C_ip','D_ip','R1','R2'].forEach(k=>{ips[k]=hostOK(v(k)); if(!ips[k]) allValid=false;});
+  add(allValid,'Toutes les adresses IP sont bien écrites.','Une adresse est mal écrite ou vide (4 nombres de 0 à 255, le dernier ni 0 ni 255).');
+  if(allValid){
+    const list=['A_ip','B_ip','C_ip','D_ip','R1','R2'].map(k=>v(k));
+    const dup=list.filter((x,i)=>list.indexOf(x)!==i);
+    add(!dup.length,'Chaque appareil a une adresse unique.',`L'adresse ${dup[0]} est utilisée plusieurs fois : change le numéro de poste (dernier nombre).`);
+    const n1=net(ips.A_ip), n2=net(ips.C_ip);
+    add(n1===net(ips.B_ip),'PC A et PC B sont dans le même réseau.','PC A et PC B n\'ont pas le même début d\'adresse (les 3 premiers nombres).');
+    add(n2===net(ips.D_ip),'PC C et PC D sont dans le même réseau.','PC C et PC D n\'ont pas le même début d\'adresse (les 3 premiers nombres).');
+    add(n1!==n2,'Les deux réseaux ont des adresses différentes.','Réseau 1 et réseau 2 ont la même adresse de réseau : change le 3e nombre dans le réseau 2 (ex : 192.168.1.…).');
+    add(net(ips.R1)===n1 && net(ips.R2)===n2,'Le routeur a une adresse dans chaque réseau.','Le routeur doit avoir une adresse du réseau 1 d\'un côté et du réseau 2 de l\'autre.');
+    const gwOK=v('A_gw')===v('R1')&&v('B_gw')===v('R1')&&v('C_gw')===v('R2')&&v('D_gw')===v('R2');
+    add(gwOK,'Chaque PC connaît sa passerelle.','La passerelle d\'un PC doit être l\'adresse du routeur dans son réseau.');
+  }
+  const ul=$('#fChecks'); ul.innerHTML=''; checks.forEach(c=>ul.append(el('li',{class:c.ok?'ok':'ko'},c.txt)));
+  const win=checks.length===8 && checks.every(c=>c.ok);
+  const m=$('#fMsg');
+  if(win){m.className='msg ok';m.textContent='✔ Ping réussi : PC A communique avec PC D à travers le routeur !';sendPacket();}
+  else{m.className='msg ko';m.textContent='✘ La communication ne passe pas encore. Corrige les lignes en rouge.';}
+};
+function sendPacket(){
+  const path=['A','S1','R','S2','D'].map(k=>devs[k]), pk=$('#packet');
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){pk.setAttribute('cx',devs.D.x);pk.setAttribute('cy',devs.D.y);return;}
+  let seg=0,t0=null;
+  function frame(ts){ if(!t0)t0=ts; const t=Math.min((ts-t0)/450,1), a=path[seg], b=path[seg+1];
+    pk.setAttribute('cx',a.x+(b.x-a.x)*t); pk.setAttribute('cy',a.y+(b.y-a.y)*t);
+    if(t<1) return requestAnimationFrame(frame);
+    seg++; t0=null; if(seg<path.length-1) requestAnimationFrame(frame); else setTimeout(()=>{pk.setAttribute('cx',-50);pk.setAttribute('cy',-50);},900);
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ---------- Quiz ---------- */
+const quiz=[
+  {q:'Combien de nombres forment une adresse IP ?',o:['2','4','6','8'],a:1,e:'Une adresse IP a 4 nombres séparés par des points.'},
+  {q:'Quelle adresse IP peut être donnée à un poste ?',o:['192.168.0.300','10.1.2','192.168.1.25','10.1.2.255'],a:2,e:'300 dépasse 255, 10.1.2 n\'a que 3 nombres, et 255 est réservé.'},
+  {q:'Quel équipement relie le réseau du collège à internet ?',o:['Le switch','Le modem','L\'imprimante','Le serveur de données'],a:1,e:'Le modem est l\'interface entre le réseau et l\'extérieur.'},
+  {q:'Quel équipement relie plusieurs réseaux entre eux ?',o:['Le routeur','Le switch','La tablette','Le câble'],a:0,e:'Le routeur relie des réseaux différents.'},
+  {q:'À quoi sert un switch ?',o:['À relier le réseau à internet','À relier des équipements dans un même réseau local','À stocker des fichiers','À traduire une URL'],a:1,e:'Le switch (commutateur) relie les équipements d\'un réseau local.'},
+  {q:'Quel moyen de connexion est à la fois le plus rapide et va le plus loin ?',o:['Wifi','Bluetooth','Fibre optique','CPL'],a:2,e:'La fibre optique transporte la lumière : portée et rapidité maximales.'},
+  {q:'Qui fournit l\'accès à internet et une adresse IP à la maison ?',o:['Le FAI','Le navigateur','Le switch','Le Bluetooth'],a:0,e:'Le fournisseur d\'accès à internet (FAI).'},
+  {q:'PC A a l\'adresse 192.168.0.10. Quelle adresse donner à PC B dans le même réseau ?',o:['192.168.0.10','192.168.1.10','192.168.0.11','192.168.0.255'],a:2,e:'Même début (192.168.0), numéro de poste différent et non réservé.'},
+  {q:'Dans le défi Filius, pourquoi les 4 PC en 192.168.0.10 ne communiquent pas ?',o:['Il manque le Wifi','Ils ont tous la même adresse','Le routeur est éteint','Il faut un modem'],a:1,e:'Deux appareils ne doivent jamais avoir la même adresse. Il faut aussi deux adresses de réseau différentes.'}
+];
+let answered=0, good=0;
+function drawQuiz(){
+  answered=0;good=0; const box=$('#quizBox'); box.innerHTML='';
+  quiz.forEach((q,qi)=>{
+    const d=el('div',{class:'box q'},`<p>${qi+1}. ${q.q}</p><div class="opts"></div><div class="expl">${q.e}</div>`);
+    q.o.forEach((o,oi)=>{const b=el('button',{},o); b.onclick=()=>{
+      if(d.classList.contains('done')) return; d.classList.add('done'); answered++;
+      if(oi===q.a){good++;b.classList.add('good');} else {b.classList.add('bad'); d.querySelectorAll('.opts button')[q.a].classList.add('good');}
+      $('#score').textContent=`Score : ${good} / ${answered}`+(answered===quiz.length?` ${good>=7?'— excellent !':good>=5?'— bien, relis les « Je retiens ».':'— relis les « Je retiens » et recommence.'}`:'');
+    }; d.querySelector('.opts').append(b);});
+    box.append(d);
+  });
+  $('#score').textContent=`Score : 0 / 0`;
+}
+$('#quizReset').onclick=drawQuiz; drawQuiz();
+</script>
+<a href="../index.html" style="position:fixed;bottom:16px;left:16px;z-index:99999;background:#0f5c4d;color:#fff;padding:10px 16px;border-radius:24px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.25)">← Retour au site</a>
+</body>
+</html>
