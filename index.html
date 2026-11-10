@@ -94,6 +94,7 @@ footer{text-align:center;color:var(--gris);font-size:.8rem;padding:24px}
 <div class="layout">
 <aside class="side" id="side">
  <a class="brand" href="#accueil"><div class="logo">🛠️</div><div><b>Technologie 5e</b><span>Collège — Ressources interactives</span></div></a>
+ <div id="gcbadge" style="display:none;margin:-4px 6px 12px;padding:6px 10px;border-radius:9px;background:rgba(255,255,255,.12);font-size:.85rem;font-weight:700;color:#fff">👀 <span id="gcn"></span> visites</div>
  <button class="menubtn" id="menubtn">☰ Séquences</button>
  <div class="inner">
   <input class="search" id="q" type="search" placeholder="🔍 Chercher une ressource…">
@@ -965,7 +966,7 @@ $('#menubtn').addEventListener('click',()=>$('#side').classList.toggle('open'));
 window.addEventListener('hashchange',route);
 buildNav();route();
 </script>
-<script>window.goatcounter={path:function(p){return location.pathname+(location.hash&&location.hash!=="#accueil"?location.hash:"")}};window.addEventListener("hashchange",function(){if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:location.pathname+location.hash})});var GCV="";fetch("https://mrassi-techno5e.goatcounter.com/counter/TOTAL.json").then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&j.count){GCV=j.count;var e=document.getElementById("gcv");if(e)e.textContent=" · 👀 "+GCV+" visites"}}).catch(function(){});</script>
+<script>window.goatcounter={path:function(p){return location.pathname+(location.hash&&location.hash!=="#accueil"?location.hash:"")}};window.addEventListener("hashchange",function(){if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:location.pathname+location.hash})});var GCV="";fetch("https://mrassi-techno5e.goatcounter.com/counter/TOTAL.json").then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&j.count){GCV=j.count;var e=document.getElementById("gcv");if(e)e.textContent=" · 👀 "+GCV+" visites";var n=document.getElementById("gcn");if(n){n.textContent=GCV;document.getElementById("gcbadge").style.display="block"}}}).catch(function(){});</script>
 <script data-goatcounter="https://mrassi-techno5e.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
