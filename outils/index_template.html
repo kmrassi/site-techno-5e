@@ -133,6 +133,7 @@ const all=[];S.forEach(s=>s.seances.forEach((x,j)=>x.items.forEach(r=>all.push([
 function card(r){const ty=T[r.k];const st=`style="--c:var(--${r.k});--cb:var(--${r.k}b)"`;
  const inner=`<span class="ic">${ty.i}</span><span class="bd"><span class="tag">${ty.l}</span><b>${esc(r.t)}</b><span class="s">${esc(r.s)}</span></span>`;
  if(r.h) return `<a class="card" href="${r.h}" ${st}>${inner}<span class="go">Ouvrir →</span></a>`;
+ if(r.u) return `<a class="card" href="${r.u}" target="_blank" rel="noopener" ${st}>${inner}<span class="go">${esc(r.go||'Ouvrir ↗')}</span></a>`;
  if(r.drive) return `<a class="card" href="https://drive.google.com/file/d/${r.drive}/view" target="_blank" rel="noopener" ${st}>${inner}<span class="go">${r.mode==='dl'?'Télécharger ↗':r.k==='VIDEO'?'Regarder ↗':'Ouvrir ↗'}</span></a>`;
  const src=r.yt?`https://www.youtube-nocookie.com/embed/${r.yt}`:`https://drive.google.com/file/d/${r.drive}/preview`;
  const ext=r.yt?`https://www.youtube.com/watch?v=${r.yt}`:`https://drive.google.com/file/d/${r.drive}/view`;

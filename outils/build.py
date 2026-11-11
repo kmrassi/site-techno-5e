@@ -67,7 +67,12 @@ def doc(b, titre=None, sous=None, typ=None):
     mode = "dl" if e in ("ODS", "FLS", "URL") else "view"
     return {"k": t, "t": titre or pretty(name), "s": s, "drive": b["id"], "mode": mode}
 
+SLIDES_ID = "1ydoKChR1IFuJVgbmaVKjpNWMtDw3E-uu6RLZyijVxrU"
+SLIDES_COPY = f"https://docs.google.com/presentation/d/{SLIDES_ID}/copy"
+
 def act(rel, html, titre, sous, typ="ACTIVITE"):
+    # chaque élève doit créer SA copie du diaporama, pas modifier l'original partagé
+    html = html.replace(f"https://docs.google.com/presentation/d/{SLIDES_ID}/edit?usp=sharing", SLIDES_COPY)
     write_activity(rel, html, titre)
     return {"k": typ, "t": titre, "s": sous, "h": rel}
 
@@ -88,6 +93,9 @@ s1["seances"].append({"t": "Séance 1 — Où sont les données numériques ?", 
         "Classeur numérique & localisation des données", "Activité interactive de la séance"),
     doc(p[0], "Activité 1 — Le classeur numérique", "Fiche d'activité (PDF)", "DOC"),
     doc(p[1], "Activité 2 — Où sont les données ?", "Fiche d'activité (PDF)", "DOC"),
+    {"k": "ACTIVITE", "t": "Activité 2 — Mon diaporama « Mes données numériques »",
+     "s": "Je crée ma copie du diaporama, je la renomme et je la range dans « 0_Rentrée »",
+     "u": SLIDES_COPY, "go": "Créer mon diaporama ↗"},
     doc(p[2], "Diaporama de la séance 1", "Document (PDF)", "DOC"),
     doc(p[3], "Activité 2 — Les données numériques", "Document (PDF)", "DOC"),
     act("seq1/02_Tuto_Drive.html", code(3), "Tuto Drive", "Je crée mes dossiers de Technologie pas à pas", "TUTO"),
