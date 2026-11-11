@@ -8,7 +8,7 @@
 :root{--vert:#0f5c4d;--vert2:#1a8a72;--clair:#e8f5f1;--fond:#f4f7f6;--txt:#1d2a28;--gris:#66746f;--ligne:#dbe6e2;--accent:#f2a33a;
  --ACTIVITE:#1f4f8f;--ACTIVITEb:#e2ecfa;--JEU:#7c3aed;--JEUb:#efe7fd;--DOC:#475569;--DOCb:#e8edf3;--VIDEO:#b42318;--VIDEOb:#fde7e4;
  --TUTO:#a65411;--TUTOb:#fdeedd;--SYNTHESE:#5f2f9a;--SYNTHESEb:#efe6fa;--CORRIGE:#1f7a3d;--CORRIGEb:#e5f5ea;--EVAL:#9d174d;--EVALb:#fce7f3;
- --LOGICIEL:#334155;--LOGICIELb:#e2e8f0;--FICHIER:#0e7490;--FICHIERb:#dff3f7}
+ --LOGICIEL:#334155;--LOGICIELb:#e2e8f0;--FICHIER:#0e7490;--FICHIERb:#dff3f7;--QUIZ:#c2410c;--QUIZb:#ffedd5}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--fond);color:var(--txt);line-height:1.5}
 a{color:inherit}
@@ -66,6 +66,23 @@ h2{font-size:1.15rem;color:var(--vert);margin:26px 0 10px;display:flex;align-ite
 .pn{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
 .pn a{background:#fff;border:1px solid var(--ligne);border-radius:10px;padding:9px 14px;text-decoration:none;font-weight:600;color:var(--vert);font-size:.9rem}
 .pn a:hover{border-color:var(--vert2)}
+/* « Je cherche… » */
+.find{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.find a{display:block;background:#fff;border:2px solid var(--ligne);border-radius:16px;padding:16px;text-decoration:none;transition:.15s}
+.find a:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 18px rgba(15,92,77,.12)}
+.find .big{font-size:2rem;line-height:1}.find b{display:block;font-size:1.05rem;margin:8px 0 4px;color:var(--vert)}
+.find p{margin:0;font-size:.9rem;color:var(--gris)}.find .btn{display:inline-block;margin-top:10px;background:var(--vert);color:#fff;border-radius:99px;padding:5px 14px;font-weight:700;font-size:.86rem}
+.info{background:#eef7ff;border:1px solid #c9e2fb;border-left:6px solid #2b7bd0;border-radius:12px;padding:12px 16px;margin:0 0 18px;font-size:.95rem}
+.info b{color:#1b5ea8}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px}
+.chips a{background:#fff;border:1px solid var(--ligne);border-radius:99px;padding:6px 14px;text-decoration:none;font-weight:600;font-size:.88rem;color:var(--vert)}
+.chips a:hover{border-color:var(--accent);background:#fff8ec}
+/* mode d'emploi */
+.step{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:18px;align-items:center;background:#fff;border:1px solid var(--ligne);border-radius:16px;padding:16px 18px;margin:0 0 14px}
+.step .n{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;margin-bottom:6px}
+.step h3{margin:0 0 6px;color:var(--vert);font-size:1.1rem}.step p{margin:4px 0;font-size:.95rem}
+.step img{width:100%;border-radius:10px;border:1px solid var(--ligne);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+@media(max-width:900px){.find{grid-template-columns:1fr}.step{grid-template-columns:1fr}}
 footer{text-align:center;color:var(--gris);font-size:.8rem;padding:24px}
 /* fenêtre d'aperçu */
 .modal{position:fixed;inset:0;background:rgba(10,30,26,.72);display:none;z-index:100;padding:18px}
@@ -95,7 +112,7 @@ footer{text-align:center;color:var(--gris);font-size:.8rem;padding:24px}
 <aside class="side" id="side">
  <a class="brand" href="#accueil"><div class="logo">🛠️</div><div><b>Technologie 5e</b><span>Collège — Ressources interactives</span></div></a>
  <a id="gcbadge" href="https://mrassi-techno5e.goatcounter.com" target="_blank" rel="noopener" title="Statistiques (accès réservé au professeur)" style="text-decoration:none;display:none;margin:-4px 6px 12px;padding:6px 10px;border-radius:9px;background:rgba(255,255,255,.12);font-size:.85rem;font-weight:700;color:#fff">👀 <span id="gcn"></span> visites</a>
- <button class="menubtn" id="menubtn">☰ Séquences</button>
+ <button class="menubtn" id="menubtn">☰ Menu : séquences, séances, quiz</button>
  <div class="inner">
   <input class="search" id="q" type="search" placeholder="🔍 Chercher une ressource…">
   <nav id="nav"></nav>
@@ -119,7 +136,8 @@ const T={
  LOGICIEL:{l:"LOGICIEL",i:"💾",d:"J'installe le logiciel"},
  SYNTHESE:{l:"SYNTHÈSE",i:"🧠",d:"Je retiens l'essentiel"},
  EVAL:{l:"ÉVALUATION",i:"📝",d:"Je montre ce que je sais"},
- CORRIGE:{l:"CORRECTION",i:"✅",d:"Je vérifie mon travail"}
+ CORRIGE:{l:"CORRECTION",i:"✅",d:"Je vérifie mon travail"},
+ QUIZ:{l:"QUIZ",i:"🧩",d:"Je me teste, la correction est automatique"}
 };
 
 /* ===== Séquences ===== */
@@ -219,6 +237,12 @@ const S=[
 "h": "seq1/05_Synthese_Arborescence_Drive.html"
 },
 {
+"k": "QUIZ",
+"t": "Quiz — Teste-toi : fichiers, dossiers et extensions",
+"s": "Quiz autocorrigé : je vois tout de suite si j'ai juste",
+"h": "seq1/05_Synthese_Arborescence_Drive.html#quiz"
+},
+{
 "k": "SYNTHESE",
 "t": "L'armoire et l'arborescence",
 "s": "Synthèse (PDF)",
@@ -242,6 +266,18 @@ const S=[
 "t": "Fichiers, taille & mots de passe",
 "s": "Activité interactive de la séance 2",
 "h": "seq1/06_Seance2_Fichiers_taille_mots_de_passe.html"
+},
+{
+"k": "QUIZ",
+"t": "Quiz — Fichier et taille",
+"s": "Quiz autocorrigé : je vois tout de suite si j'ai juste",
+"h": "seq1/06_Seance2_Fichiers_taille_mots_de_passe.html#quiz-taille"
+},
+{
+"k": "QUIZ",
+"t": "Quiz — Mots de passe et sécurité",
+"s": "Quiz autocorrigé : je vois tout de suite si j'ai juste",
+"h": "seq1/06_Seance2_Fichiers_taille_mots_de_passe.html#quiz-mdp"
 },
 {
 "k": "DOC",
@@ -289,6 +325,12 @@ const S=[
 "h": "seq1/08_Seance3_Phishing_hameconnage.html"
 },
 {
+"k": "QUIZ",
+"t": "Quiz — Phishing et hameçonnage",
+"s": "Quiz autocorrigé : je vois tout de suite si j'ai juste",
+"h": "seq1/08_Seance3_Phishing_hameconnage.html#quiz-phishing"
+},
+{
 "k": "DOC",
 "t": "Le phishing",
 "s": "Diaporama (PDF)",
@@ -321,6 +363,12 @@ const S=[
 "t": "Synthèse — Le phishing",
 "s": "Je retiens l'essentiel de la séance 3",
 "h": "seq1/09_Synthese_Seance3_Phishing.html"
+},
+{
+"k": "QUIZ",
+"t": "Quiz d'entraînement — Le phishing",
+"s": "Quiz autocorrigé : je vois tout de suite si j'ai juste",
+"h": "seq1/09_Synthese_Seance3_Phishing.html#quiz"
 }
 ]
 },
@@ -408,6 +456,12 @@ const S=[
 "t": "Fiche de révision — Fichiers, dossiers & cybersécurité",
 "s": "Tout ce qu'il faut savoir pour l'évaluation",
 "h": "seq1/12_Fiche_revision_Fichiers_dossiers_cybersecurite.html"
+},
+{
+"k": "QUIZ",
+"t": "Exercices autocorrigés de révision",
+"s": "QCM, vrai ou faux, conversions, extensions",
+"h": "seq1/12_Fiche_revision_Fichiers_dossiers_cybersecurite.html#quiz"
 }
 ]
 }
@@ -474,6 +528,12 @@ const S=[
 "h": "seq2/01_Seance2_Reseau_informatique_du_college.html"
 },
 {
+"k": "QUIZ",
+"t": "QCM — Le réseau du collège",
+"s": "Quiz autocorrigé : je vois tout de suite si j'ai juste",
+"h": "seq2/01_Seance2_Reseau_informatique_du_college.html#p-qcm"
+},
+{
 "k": "DOC",
 "t": "Fiche de la séance 2",
 "s": "Document (PDF)",
@@ -506,6 +566,18 @@ const S=[
 "h": "seq2/02_Seance3_Ajouter_station_adresser_reseau.html"
 },
 {
+"k": "QUIZ",
+"t": "Entraînement — Le plan d'adressage",
+"s": "Exercices autocorrigés avec score",
+"h": "seq2/02_Seance3_Ajouter_station_adresser_reseau.html#ex1"
+},
+{
+"k": "QUIZ",
+"t": "Défi — Le binaire",
+"s": "Exercices autocorrigés avec score",
+"h": "seq2/02_Seance3_Ajouter_station_adresser_reseau.html#ex3"
+},
+{
 "k": "DOC",
 "t": "Fiche de la séance 3",
 "s": "Document (PDF)",
@@ -536,6 +608,12 @@ const S=[
 "t": "Synthèse — Les réseaux informatiques",
 "s": "Je retiens l'essentiel de la séquence",
 "h": "seq2/03_Synthese_Reseaux_informatiques.html"
+},
+{
+"k": "QUIZ",
+"t": "Quiz final — Les réseaux informatiques",
+"s": "Quiz autocorrigé : je vois tout de suite si j'ai juste",
+"h": "seq2/03_Synthese_Reseaux_informatiques.html#quiz"
 },
 {
 "k": "SYNTHESE",
@@ -915,6 +993,10 @@ const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const count=s=>s.seances.reduce((n,x)=>n+x.items.length,0);
 const all=[];S.forEach(s=>s.seances.forEach((x,j)=>x.items.forEach(r=>all.push([s,j,r]))));
+const quizzes=all.filter(([s,j,r])=>r.k==='QUIZ'||r.k==='JEU');
+/* numéro affiché de chaque séance (les titres qui commencent par un emoji ne sont pas numérotés) */
+function nums(s){let n=0;return s.seances.map(x=>/^[^\wÀ-ÿ]/.test(x.t)?'':++n)}
+const short=t=>t.replace(/\s+—.*$/,'');
 
 function card(r){const ty=T[r.k];const st=`style="--c:var(--${r.k});--cb:var(--${r.k}b)"`;
  const inner=`<span class="ic">${ty.i}</span><span class="bd"><span class="tag">${ty.l}</span><b>${esc(r.t)}</b><span class="s">${esc(r.s)}</span></span>`;
@@ -928,16 +1010,27 @@ function card(r){const ty=T[r.k];const st=`style="--c:var(--${r.k});--cb:var(--$
 /* ===== menu ===== */
 function buildNav(filter){
  const f=(filter||"").trim().toLowerCase();
- if(f){const hits=all.filter(([s,j,r])=>(r.t+" "+r.s+" "+s.t+" "+s.seances[j].t).toLowerCase().includes(f));
-  $('#nav').innerHTML=`<div class="grp">Résultats (${hits.length})</div>`+(hits.length?hits.map(([s,j,r])=>`<a href="#${s.id}-${j}"><i>S${s.n}</i><span class="t">${T[r.k].i} ${esc(r.t)}</span></a>`).join(''):'<div style="padding:6px 8px;opacity:.7;font-size:.88rem">Aucune ressource trouvée.</div>');return}
- $('#nav').innerHTML=`<a href="#accueil" data-id="accueil"><i>⌂</i><span class="t">Accueil</span></a><div class="grp">Séquences</div>`+
-  S.map(s=>`<a href="#${s.id}" data-id="${s.id}"><i>S${s.n}</i><span class="t">${esc(s.t)}</span><span class="c">${count(s)}</span></a>`).join('');
+ if(f){const hits=all.filter(([s,j,r])=>(r.t+" "+r.s+" "+T[r.k].l+" "+s.t+" "+s.seances[j].t).toLowerCase().includes(f));
+  $('#nav').innerHTML=`<div class="grp">Résultats (${hits.length})</div>`+(hits.length?hits.map(([s,j,r])=>`<a href="${r.h&&r.k==='QUIZ'?r.h:`#${s.id}-${j}`}"><i>S${s.n}</i><span class="t">${T[r.k].i} ${esc(r.t)}</span></a>`).join(''):'<div style="padding:6px 8px;opacity:.7;font-size:.88rem">Aucune ressource trouvée.</div>');return}
+ const cur=(location.hash||'#accueil').slice(1).split('-')[0];
+ $('#nav').innerHTML=`<a href="#accueil" data-id="accueil"><i>⌂</i><span class="t">Accueil</span></a>
+  <a href="#quiz" data-id="quiz"><i>🧩</i><span class="t">Tous les quiz autocorrigés</span><span class="c">${quizzes.length}</span></a>
+  <a href="#aide" data-id="aide"><i>❓</i><span class="t">Comment utiliser le site ?</span></a><div class="grp">Séquences</div>`+
+  S.map(s=>{const nn=nums(s);return `<a href="#${s.id}" data-id="${s.id}"><i>S${s.n}</i><span class="t">${esc(s.t)}</span><span class="c">${count(s)}</span></a>`+
+   (s.id===cur?s.seances.map((x,j)=>`<a class="sub" href="#${s.id}-${j}">${esc(x.t)}</a>`).join(''):'')}).join('');
  markNav()}
 function markNav(){const id=(location.hash||'#accueil').slice(1).split('-')[0];document.querySelectorAll('#nav a[data-id]').forEach(a=>a.classList.toggle('on',a.dataset.id===id))}
 
 /* ===== vues ===== */
 function home(){
- return `<div class="hero"><div class="k">Collège · Classe de 5e</div><h1>Technologie 5e</h1><p>${all.length} ressources rangées par séquence et par séance. Choisis une séquence dans le menu, puis suis les séances dans l'ordre.</p></div>
+ return `<div class="hero"><div class="k">Collège · Classe de 5e</div><h1>Technologie 5e</h1><p>Tous les documents, les activités et les quiz, rangés par séquence et par séance.</p></div>
+ <div class="info">📢 <b>Le site a changé !</b> Les documents qui étaient dans le <b>Drive</b> (séance 1, séance 2, séance 3…) sont maintenant <b>ici</b>, rangés séance par séance. Les <b>quiz autocorrigés</b> ont leur propre page. Tu ne trouves pas ? Lis le <a href="#aide" style="font-weight:700;color:#1b5ea8">mode d'emploi</a>.</div>
+ <h2>🔎 Je cherche…</h2>
+ <div class="find">
+  <a href="#seq1"><span class="big">📂</span><b>Les documents des séances</b><p>Fiches, diaporamas, vidéos… (ce qui était dans le Drive). Choisis la séquence, puis ta séance.</p><span class="btn">Séquence 1 : séances 1, 2, 3 →</span></a>
+  <a href="#quiz"><span class="big">🧩</span><b>Les quiz autocorrigés</b><p>Tous les quiz sur une seule page. La correction s'affiche tout de suite.</p><span class="btn">Voir les ${quizzes.length} quiz →</span></a>
+  <a href="#aide"><span class="big">❓</span><b>Comment marche le site ?</b><p>Le mode d'emploi en images, étape par étape.</p><span class="btn">Mode d'emploi →</span></a>
+ </div>
  <h2>🧭 Comment travailler une séance ?</h2>
  <div class="how">${["ACTIVITE","DOC","VIDEO","SYNTHESE"].map(k=>`<div><span class="ico">${T[k].i}</span><b>${T[k].l}</b><p>${T[k].d}</p></div>`).join('')}</div>
  <p style="color:var(--gris);font-size:.9rem;margin:10px 2px 0">N'oublie pas : range toujours ton travail dans ton <b>Drive</b>, dans le bon dossier.</p>
@@ -946,11 +1039,26 @@ function home(){
  <h2>🏷️ Légende</h2>
  <div class="legend">${Object.keys(T).map(k=>`<span>${T[k].i} <b style="color:var(--${k})">${T[k].l}</b> ${T[k].d.toLowerCase()}</span>`).join('')}</div>`}
 
+function quizView(){
+ return `<div class="hero"><div class="num">🧩</div><div class="k">Je m'entraîne</div><h1>Tous les quiz autocorrigés</h1><p>Clique sur un quiz : la page s'ouvre directement au bon endroit. Tu vois tout de suite si ta réponse est juste.</p></div>
+ ${S.map(s=>{const nn=nums(s);const g=s.seances.map((x,j)=>[x,j,x.items.filter(r=>r.k==='QUIZ'||r.k==='JEU')]).filter(a=>a[2].length);
+  return g.length?`<h2>S${s.n} · ${esc(s.t)}</h2>`+g.map(([x,j,it])=>`<section class="seance"><h3>${nn[j]?`<span class="sn">${nn[j]}</span>`:''}${esc(x.t)}</h3><div class="list">${it.map(card).join('')}</div></section>`).join(''):''}).join('')}`}
+function shot(f,alt){return `<img src="img/aide/${f}" alt="${esc(alt)}" loading="lazy">`}
+function aideView(){
+ return `<div class="hero"><div class="num">❓</div><div class="k">Mode d'emploi</div><h1>Comment utiliser le site ?</h1><p>En 4 étapes, tu trouves tout : documents, activités et quiz.</p></div>
+ <div class="info">💡 <b>Avant de commencer :</b> connecte-toi avec ton compte <b>ert.tn</b> (le même que pour le Drive). Sinon, les documents ne s'ouvrent pas.</div>
+ <div class="step"><div><span class="n">1</span><h3>Je choisis la séquence</h3><p>À gauche, il y a le <b>menu vert</b>. Je clique sur la séquence (S1, S2, S3, S4).</p><p>📱 Sur téléphone, j'appuie d'abord sur le bouton orange <b>☰ Menu</b>.</p><p>Exemple : les séances 1, 2 et 3 sur les données numériques sont dans <b>S1</b>.</p></div>${shot('etape1-menu.png','Le menu vert avec les séquences')}</div>
+ <div class="step"><div><span class="n">2</span><h3>Je vais à ma séance</h3><p>En haut de la séquence, je clique sur le nom de ma séance (Séance 1, Séance 2…).</p><p>Chaque séance est dans un <b>cadre blanc</b> avec son numéro dans un rond orange.</p></div>${shot('etape2-seances.png','Les boutons pour aller à une séance')}</div>
+ <div class="step"><div><span class="n">3</span><h3>J'ouvre un document ou une activité</h3><p>Chaque ligne est une ressource. L'étiquette de couleur dit ce que c'est :</p><p>🎯 <b style="color:var(--ACTIVITE)">ACTIVITÉ</b> · 📄 <b style="color:var(--DOC)">DOCUMENT</b> · 🎬 <b style="color:var(--VIDEO)">VIDÉO</b> · 🧠 <b style="color:var(--SYNTHESE)">SYNTHÈSE</b> · 🧩 <b style="color:var(--QUIZ)">QUIZ</b></p><p>Je clique sur la ligne pour l'ouvrir. Pour revenir, j'utilise le bouton <b>← Retour à la séance</b> en bas à gauche.</p></div>${shot('etape3-ressources.png','Les ressources d une séance')}</div>
+ <div class="step"><div><span class="n">4</span><h3>Je fais les quiz</h3><p>Dans le menu, je clique sur <b>🧩 Tous les quiz autocorrigés</b>. Tous les quiz sont rangés par séance.</p><p>Je clique sur un quiz : la page s'ouvre directement sur le quiz, entouré en orange.</p></div>${shot('etape4-quiz.png','La page des quiz')}</div>
+ <div class="step"><div><span class="n">🔍</span><h3>Astuce : je cherche un mot</h3><p>Dans la case <b>Chercher une ressource</b>, j'écris un mot, par exemple <b>phishing</b> ou <b>quiz</b>. La liste des ressources apparaît. Je clique dessus.</p></div>${shot('astuce-recherche.png','La case de recherche')}</div>
+ <p style="text-align:center;margin-top:20px"><a href="#seq1" class="btn" style="display:inline-block;background:var(--vert);color:#fff;border-radius:99px;padding:10px 20px;font-weight:700;text-decoration:none">C'est parti : Séquence 1 →</a></p>`}
 function seqView(s){
- const i=S.indexOf(s),prev=S[i-1],next=S[i+1];let n=0;
+ const i=S.indexOf(s),prev=S[i-1],next=S[i+1];let n=0;const nn=nums(s);
  return `<div class="hero"><div class="num">S${s.n}</div><div class="k">Séquence ${s.n}</div><h1>${esc(s.t)}</h1></div>
  <div class="box obj"><b>🎯 Ce que tu vas apprendre</b><ul>${s.o.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>
  <h2>🗺️ Les séances</h2>
+ <div class="chips">👉 Aller directement à : ${s.seances.map((x,j)=>`<a href="#${s.id}-${j}">${esc(short(x.t))}</a>`).join('')}</div>
  ${s.seances.map((x,j)=>{const num=/^[^\wÀ-ÿ]/.test(x.t)?'':++n;return `<section class="seance" id="${s.id}-${j}"><h3>${num?`<span class="sn">${num}</span>`:''}${esc(x.t)}</h3>
   ${x.note||x.links?`<div class="note">${(x.note||[]).map(t=>`<p>👉 ${esc(t)}</p>`).join('')}${(x.links||[]).map(([l,u])=>`<p><a href="${u}" target="_blank" rel="noopener" style="font-weight:700;color:var(--vert)">${esc(l)} ↗</a></p>`).join('')}</div>`:''}
   ${x.img&&x.img.length?`<div class="pics">${x.img.map(u=>`<img src="${u}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`).join('')}</div>`:''}
@@ -958,8 +1066,8 @@ function seqView(s){
  <div class="pn">${prev?`<a href="#${prev.id}">← Séquence ${prev.n} — ${esc(prev.t)}</a>`:'<span></span>'}${next?`<a href="#${next.id}">Séquence ${next.n} — ${esc(next.t)} →</a>`:'<span></span>'}</div>`}
 
 function route(){const h=(location.hash||'#accueil').slice(1),[id,j]=h.split('-'),s=S.find(x=>x.id===id);
- $('#main').innerHTML=(s?seqView(s):home())+'<footer>Technologie 5e — M\'RASSI<span id="gcv">'+(typeof GCV!=='undefined'&&GCV?' · 👀 '+GCV+' visites':'')+'</span></footer>';
- markNav();$('#side').classList.remove('open');
+ $('#main').innerHTML=(s?seqView(s):id==='quiz'?quizView():id==='aide'?aideView():home())+'<footer>Technologie 5e — M\'RASSI<span id="gcv">'+(typeof GCV!=='undefined'&&GCV?' · 👀 '+GCV+' visites':'')+'</span></footer>';
+ buildNav($('#q').value);$('#side').classList.remove('open');
  const el=j!==undefined&&document.getElementById(h);if(el)el.scrollIntoView();else window.scrollTo(0,0)}
 
 /* ===== fenêtre d'aperçu (PDF, vidéos) ===== */

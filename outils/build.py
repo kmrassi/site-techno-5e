@@ -76,6 +76,10 @@ def act(rel, html, titre, sous, typ="ACTIVITE"):
     write_activity(rel, html, titre)
     return {"k": typ, "t": titre, "s": sous, "h": rel}
 
+def quiz(h, titre, sous="Quiz autocorrigé : je vois tout de suite si j'ai juste"):
+    # lien direct vers le quiz qui se trouve à l'intérieur d'une page d'activité
+    return {"k": "QUIZ", "t": titre, "s": sous, "h": h}
+
 # ---------- contenu ----------
 S = []
 
@@ -104,12 +108,15 @@ s1["seances"].append({"t": "Séance 1 — Où sont les données numériques ?", 
     doc(drives(4)[0], "Vidéo : bien tenir son Drive en 5e", "Vidéo", "VIDEO"),
     act("seq1/04_Jeu_Range_l_armoire_arborescence.html", code(5), "Range l'armoire ! Le jeu de l'arborescence", "Exercice interactif", "JEU"),
     act("seq1/05_Synthese_Arborescence_Drive.html", code(6), "Synthèse — L'arborescence du Drive", "Je retiens l'essentiel de la séance 1", "SYNTHESE"),
+    quiz("seq1/05_Synthese_Arborescence_Drive.html#quiz", "Quiz — Teste-toi : fichiers, dossiers et extensions"),
     doc(drives(6)[0], "L'armoire et l'arborescence", "Synthèse (PDF)", "SYNTHESE"),
     doc(drives(6)[1], "Conversion des octets", "Exercice (PDF)", "DOC"),
 ]})
 p = drives(7)
 s1["seances"].append({"t": "Séance 2 — Cybersécurité", "items": [
     act("seq1/06_Seance2_Fichiers_taille_mots_de_passe.html", code(7), "Fichiers, taille & mots de passe", "Activité interactive de la séance 2"),
+    quiz("seq1/06_Seance2_Fichiers_taille_mots_de_passe.html#quiz-taille", "Quiz — Fichier et taille"),
+    quiz("seq1/06_Seance2_Fichiers_taille_mots_de_passe.html#quiz-mdp", "Quiz — Mots de passe et sécurité"),
     doc(p[0], "Présentation : la cybersécurité", "Diaporama (PDF)", "DOC"),
     doc(p[1], "Les mots de passe", "Document (PDF)", "DOC"),
     doc(p[2], "Politique de gestion des mots de passe", "Document (PDF)", "DOC"),
@@ -119,11 +126,13 @@ s1["seances"].append({"t": "Séance 2 — Cybersécurité", "items": [
 p = drives(9)
 s1["seances"].append({"t": "Séance 3 — Le phishing (hameçonnage)", "items": [
     act("seq1/08_Seance3_Phishing_hameconnage.html", code(9), "Phishing & hameçonnage", "Activité interactive de la séance 3"),
+    quiz("seq1/08_Seance3_Phishing_hameconnage.html#quiz-phishing", "Quiz — Phishing et hameçonnage"),
     doc(p[0], "Le phishing", "Diaporama (PDF)", "DOC"),
     doc(p[1], "Cyberattaque avec Netsim", "Document (PDF)", "DOC"),
     doc(p[2], "L'hameçonnage : comment pêcher un naïf ?", "Vidéo", "VIDEO"),
     doc(p[3], "Le faux message « Réception colis »", "Vidéo", "VIDEO"),
     act("seq1/09_Synthese_Seance3_Phishing.html", code(10), "Synthèse — Le phishing", "Je retiens l'essentiel de la séance 3", "SYNTHESE"),
+    quiz("seq1/09_Synthese_Seance3_Phishing.html#quiz", "Quiz d'entraînement — Le phishing"),
 ]})
 p = drives(11)
 s1["seances"].append({"t": "Séances 4 et 5 — Plagiat et droit d'auteur (Hadopi)",
@@ -142,6 +151,7 @@ s1["seances"].append({"t": "Séances 4 et 5 — Plagiat et droit d'auteur (Hadop
 s1["seances"].append({"t": "📝 Préparer l'évaluation", "items": [
     act("seq1/12_Fiche_revision_Fichiers_dossiers_cybersecurite.html", code(12),
         "Fiche de révision — Fichiers, dossiers & cybersécurité", "Tout ce qu'il faut savoir pour l'évaluation", "SYNTHESE"),
+    quiz("seq1/12_Fiche_revision_Fichiers_dossiers_cybersecurite.html#quiz", "Exercices autocorrigés de révision", "QCM, vrai ou faux, conversions, extensions"),
 ]})
 S.append(s1)
 
@@ -163,6 +173,7 @@ s2["seances"].append({"t": "Séance 2 — Le réseau du collège", "img": imgs(1
     "note": ["Le logiciel Filius sert à simuler un réseau. Tu peux l'installer à la maison avec le lien ci-dessous."],
     "links": [["💾 Télécharger Filius (site officiel)", "https://freischlad.name/Herunterladen"]], "items": [
     act("seq2/01_Seance2_Reseau_informatique_du_college.html", code(15), "Le réseau informatique du collège", "Activité interactive de la séance 2"),
+    quiz("seq2/01_Seance2_Reseau_informatique_du_college.html#p-qcm", "QCM — Le réseau du collège"),
     doc(p[0], "Fiche de la séance 2", "Document (PDF)", "DOC"),
     doc(p[1], "Le masque et l'adresse IP", "Fiche (PDF)", "DOC"),
     doc(p[2], "Le matériel du réseau", "Fiche (PDF)", "DOC"),
@@ -170,6 +181,8 @@ s2["seances"].append({"t": "Séance 2 — Le réseau du collège", "img": imgs(1
 p = drives(16)
 s2["seances"].append({"t": "Séance 3 — Ajouter un ordinateur au réseau", "items": [
     act("seq2/02_Seance3_Ajouter_station_adresser_reseau.html", code(16), "Ajouter une station et donner les adresses", "Activité interactive de la séance 3"),
+    quiz("seq2/02_Seance3_Ajouter_station_adresser_reseau.html#ex1", "Entraînement — Le plan d'adressage", "Exercices autocorrigés avec score"),
+    quiz("seq2/02_Seance3_Ajouter_station_adresser_reseau.html#ex3", "Défi — Le binaire", "Exercices autocorrigés avec score"),
     doc(p[0], "Fiche de la séance 3", "Document (PDF)", "DOC"),
     doc(p[1], "Entraînement : masque et adresse IP", "Exercices (PDF)", "DOC"),
     doc(p[2], "Fichier Filius du réseau", "Fichier .fls à ouvrir avec Filius", "FICHIER"),
@@ -177,6 +190,7 @@ s2["seances"].append({"t": "Séance 3 — Ajouter un ordinateur au réseau", "it
 p = drives(17)
 s2["seances"].append({"t": "🧠 Synthèse de la séquence", "items": [
     act("seq2/03_Synthese_Reseaux_informatiques.html", code(17), "Synthèse — Les réseaux informatiques", "Je retiens l'essentiel de la séquence", "SYNTHESE"),
+    quiz("seq2/03_Synthese_Reseaux_informatiques.html#quiz", "Quiz final — Les réseaux informatiques"),
     doc(p[0], "L'architecture d'un réseau et d'Internet", "Synthèse (PDF)", "SYNTHESE"),
     doc(p[1], "L'adressage IP", "Synthèse (PDF)", "SYNTHESE"),
 ]})
@@ -272,5 +286,8 @@ data = json.dumps(S, ensure_ascii=False, indent=0)
 tpl = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "index_template.html"), encoding="utf-8").read()
 open(os.path.join(OUT, "index.html"), "w", encoding="utf-8").write(tpl.replace("/*DATA*/[]", data))
 open(os.path.join(OUT, ".nojekyll"), "w").write("")
+import importlib.util as _u
+_sp = _u.spec_from_file_location("ameliorer", os.path.join(os.path.dirname(os.path.abspath(__file__)), "ameliorer.py"))
+_m = _u.module_from_spec(_sp); _sp.loader.exec_module(_m); _m.run(OUT)
 n = sum(len(x["items"]) for s in S for x in s["seances"])
 print("ressources:", n, "activités HTML:", sum(1 for s in S for x in s["seances"] for i in x["items"] if "h" in i))
