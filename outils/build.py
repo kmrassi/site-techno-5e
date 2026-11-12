@@ -137,7 +137,7 @@ s1["seances"].append({"t": "Séance 3 — Le phishing (hameçonnage)", "items": 
 p = drives(11)
 s1["seances"].append({"t": "Séances 4 et 5 — Plagiat et droit d'auteur (Hadopi)",
     "note": ["Le logiciel BDnF s'installe directement sur la clé USB."], "items": [
-    act("seq1/10_Installer_BDnF.html", code(11, 0), "Installer BDnF", "Je mets le logiciel de BD sur ma clé USB", "LOGICIEL"),
+    act("seq1/10_Installer_BDnF.html", code(11, 0).replace('clique sur le lien du drive à gauche : <code>https://drive.google.com/file/d/1w5sgu7g0HJgxvk0L0_h232tahA8jdP-3/view?usp=drive_link</code>', 'Clique sur ce lien : <a href="https://bdnf.bnf.fr/fr" target="_blank" rel="noopener"><code>https://bdnf.bnf.fr/fr</code></a>'), "Installer BDnF", "Je mets le logiciel de BD sur ma clé USB", "LOGICIEL"),
     act("seq1/11_BDnF_BD_cyberharcelement.html", code(11, 1), "Fabrique ta BD sur le cyberharcèlement", "Activité avec le logiciel BDnF"),
     doc(p[0], "Le plagiat", "Diaporama (PDF)", "DOC"),
     doc(p[2], "Fiche 1 — Qu'est-ce qu'une œuvre protégée ?", "Synthèse (PDF)", "SYNTHESE"),
