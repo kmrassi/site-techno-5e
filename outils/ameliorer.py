@@ -52,6 +52,11 @@ def run(out):
                 html = re.sub(r'href="\.\./index\.html(#[^"]*)?"(\s+style="position:fixed)',
                               f'href="../index.html#{retour[rel]}"\\2', html)
                 html = html.replace("← Retour au site</a>", "← Retour à la séance</a>")
+            if rel == "seq1/10_Installer_BDnF.html" and 'id="planB"' not in html:
+                open(p, "w", encoding="utf-8").write(html)
+                import subprocess
+                subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), "bdnf_planb.py"), p], check=True)
+                html = open(p, encoding="utf-8").read()
             if 'id="ouvre-ancre"' not in html:
                 k = html.rfind("</body>")
                 html = html[:k] + OPENER + html[k:] if k >= 0 else html + OPENER
